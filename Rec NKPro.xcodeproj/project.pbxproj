@@ -7,21 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C3EEC911BF8FA6D00FE0C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EEC901BF8FA6D00FE0C4C /* AppDelegate.swift */; };
-		4C3EEC931BF8FA6D00FE0C4C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EEC921BF8FA6D00FE0C4C /* ViewController.swift */; };
-		4C3EEC961BF8FA6D00FE0C4C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EEC941BF8FA6D00FE0C4C /* Main.storyboard */; };
-		4C3EEC981BF8FA6D00FE0C4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EEC971BF8FA6D00FE0C4C /* Assets.xcassets */; };
-		4C3EEC9B1BF8FA6D00FE0C4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EEC991BF8FA6D00FE0C4C /* LaunchScreen.storyboard */; };
+		4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */; };
+		4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */; };
+		4C3EECAF1BF8FA9300FE0C4C /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA41BF8FA9300FE0C4C /* Settings.swift */; };
+		4C3EECB01BF8FA9300FE0C4C /* CaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */; };
+		4C3EECB11BF8FA9300FE0C4C /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */; };
+		4C3EECB21BF8FA9300FE0C4C /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */; };
+		4C3EECB31BF8FA9300FE0C4C /* AssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */; };
+		4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */; };
+		4C3EECB51BF8FA9300FE0C4C /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */; };
+		4C3EECB61BF8FA9300FE0C4C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECAB1BF8FA9300FE0C4C /* Main.storyboard */; };
+		4C3EECB71BF8FA9300FE0C4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */; };
+		4C3EECB91BF8FA9E00FE0C4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		4C3EEC8D1BF8FA6D00FE0C4C /* Rec NKPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rec NKPro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C3EEC901BF8FA6D00FE0C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		4C3EEC921BF8FA6D00FE0C4C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		4C3EEC951BF8FA6D00FE0C4C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		4C3EEC971BF8FA6D00FE0C4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4C3EEC9A1BF8FA6D00FE0C4C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetItem.swift; sourceTree = "<group>"; };
+		4C3EECA41BF8FA9300FE0C4C /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureManager.swift; sourceTree = "<group>"; };
+		4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsViewController.swift; sourceTree = "<group>"; };
+		4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
+		4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		4C3EECAB1BF8FA9300FE0C4C /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,11 +68,18 @@
 		4C3EEC8F1BF8FA6D00FE0C4C /* Rec NKPro */ = {
 			isa = PBXGroup;
 			children = (
-				4C3EEC901BF8FA6D00FE0C4C /* AppDelegate.swift */,
-				4C3EEC921BF8FA6D00FE0C4C /* ViewController.swift */,
-				4C3EEC941BF8FA6D00FE0C4C /* Main.storyboard */,
-				4C3EEC971BF8FA6D00FE0C4C /* Assets.xcassets */,
-				4C3EEC991BF8FA6D00FE0C4C /* LaunchScreen.storyboard */,
+				4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */,
+				4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */,
+				4C3EECA41BF8FA9300FE0C4C /* Settings.swift */,
+				4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */,
+				4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */,
+				4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */,
+				4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */,
+				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
+				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
+				4C3EECAB1BF8FA9300FE0C4C /* Main.storyboard */,
+				4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */,
+				4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */,
 				4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */,
 			);
 			path = "Rec NKPro";
@@ -122,9 +143,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C3EEC9B1BF8FA6D00FE0C4C /* LaunchScreen.storyboard in Resources */,
-				4C3EEC981BF8FA6D00FE0C4C /* Assets.xcassets in Resources */,
-				4C3EEC961BF8FA6D00FE0C4C /* Main.storyboard in Resources */,
+				4C3EECB91BF8FA9E00FE0C4C /* LaunchScreen.storyboard in Resources */,
+				4C3EECB71BF8FA9300FE0C4C /* Assets.xcassets in Resources */,
+				4C3EECB61BF8FA9300FE0C4C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,31 +156,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C3EEC931BF8FA6D00FE0C4C /* ViewController.swift in Sources */,
-				4C3EEC911BF8FA6D00FE0C4C /* AppDelegate.swift in Sources */,
+				4C3EECAF1BF8FA9300FE0C4C /* Settings.swift in Sources */,
+				4C3EECB11BF8FA9300FE0C4C /* CameraViewController.swift in Sources */,
+				4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */,
+				4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */,
+				4C3EECB01BF8FA9300FE0C4C /* CaptureManager.swift in Sources */,
+				4C3EECB51BF8FA9300FE0C4C /* PlayerViewController.swift in Sources */,
+				4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */,
+				4C3EECB21BF8FA9300FE0C4C /* SettingsViewController.swift in Sources */,
+				4C3EECB31BF8FA9300FE0C4C /* AssetsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		4C3EEC941BF8FA6D00FE0C4C /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C3EEC951BF8FA6D00FE0C4C /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		4C3EEC991BF8FA6D00FE0C4C /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C3EEC9A1BF8FA6D00FE0C4C /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4C3EEC9D1BF8FA6D00FE0C4C /* Debug */ = {
@@ -249,10 +258,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = "Rec NKPro/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.nkpro.Rec-NKPro";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -260,7 +272,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = "Rec NKPro/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.nkpro.Rec-NKPro";
 				PRODUCT_NAME = "$(TARGET_NAME)";
