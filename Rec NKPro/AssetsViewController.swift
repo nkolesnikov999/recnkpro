@@ -29,14 +29,14 @@ class AssetsViewController : UIViewController {
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
   override func viewDidLoad() {
-    print("AssetsViewController.viewDidLoad")
+    //print("AssetsViewController.viewDidLoad")
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     
   }
   
   deinit {
-    print("AssetsViewController.deinit")
+    //print("AssetsViewController.deinit")
   }
   
   override func prefersStatusBarHidden() -> Bool {
@@ -66,7 +66,7 @@ class AssetsViewController : UIViewController {
   }
   
   func moveMovieToCameraRoll(fileURL: NSURL) {
-    print("CaptureManager.saveMovieToCameraRoll")
+    //print("CaptureManager.saveMovieToCameraRoll")
     self.activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
@@ -87,7 +87,7 @@ class AssetsViewController : UIViewController {
   }
   
   func copyMovieToCameraRoll(fileURL: NSURL) {
-    print("CaptureManager.saveMovieToCameraRoll")
+    //print("CaptureManager.saveMovieToCameraRoll")
     self.activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
@@ -106,7 +106,7 @@ class AssetsViewController : UIViewController {
   }
   
   func removeFile(fileURL: NSURL) {
-    print("AssetsVC.removeFile")
+    //print("AssetsVC.removeFile")
     
     let fileManager = NSFileManager.defaultManager()
     let filePath = fileURL.path
@@ -168,7 +168,7 @@ extension AssetsViewController : UITableViewDataSource {
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    print("AssetsVC.cellForRowAtIndexPath: \(indexPath.row)")
+    //print("AssetsVC.cellForRowAtIndexPath: \(indexPath.row)")
     let cell = tableView.dequeueReusableCellWithIdentifier("AssetCell", forIndexPath: indexPath) as UITableViewCell
     let asset = assetItemsList[indexPath.row]
     

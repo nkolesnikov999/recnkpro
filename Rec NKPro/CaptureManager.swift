@@ -80,12 +80,12 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   var referenceOrientation: AVCaptureVideoOrientation! {
     didSet {
-      print("SET referenceOrientation: \(referenceOrientation.rawValue)")
+      //print("SET referenceOrientation: \(referenceOrientation.rawValue)")
     }
   }
   var videoOrientation: AVCaptureVideoOrientation! {
     didSet {
-      print("SET videoOrientation: \(videoOrientation.rawValue)")
+      //print("SET videoOrientation: \(videoOrientation.rawValue)")
     }
   }
   
@@ -133,7 +133,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   //MARK: - Init
   
   override init() {
-    print("CaptureManager.init")
+    //print("CaptureManager.init")
     
     super.init()
     
@@ -147,9 +147,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     ciContext = CIContext(EAGLContext: eaglContext)
     colorSpace = CGColorSpaceCreateDeviceRGB()
     
-    
-    // The temporary path for the video before saving it to the photo album
-    //movieURL = NSURL.fileURLWithPath(NSString(format: "%@%@", NSTemporaryDirectory(), "Movie.MOV") as String)
   }
   
   //MARK: - Asset writing
@@ -163,7 +160,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           assetWriter.startSessionAtSourceTime(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         } else {
           if let error = assetWriter.error {
-            print("ERROR1: CaptureManager.writeSampleBuffer")
+            //print("ERROR1: CaptureManager.writeSampleBuffer")
             delegate?.showError(error)
           }
         }
@@ -182,7 +179,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             if assetWriterAudioIn.readyForMoreMediaData {
               if !assetWriterAudioIn.appendSampleBuffer(sampleBuffer) {
                 if let error = assetWriter.error {
-                  print("ERROR3: CaptureManager.writeSampleBuffer")
+                  //print("ERROR3: CaptureManager.writeSampleBuffer")
                   delegate?.showError(error)
                 }
               }
@@ -222,8 +219,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             if let adaptor = self.assetWriterInputPixelBufferAdaptor {
               if !adaptor.appendPixelBuffer(buffer, withPresentationTime: timestamp) {
                 print("Timestamp error: \(timestamp) <=======================")
-              } else {
-                //print("Timestamp: \(timestamp)")
               }
             }
             //print("Timestamp: \(timestamp)")
@@ -337,7 +332,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func setupAssetWriterAudioInput(currentFormatDescription: CMFormatDescriptionRef) -> Bool {
-    print("CaptureManager.setupAssetWriterAudioInput")
+    //print("CaptureManager.setupAssetWriterAudioInput")
     // Create audio output settings dictionary which would be used to configure asset writer input
     let currentASBD = CMAudioFormatDescriptionGetStreamBasicDescription(currentFormatDescription)
     var aclSize: size_t = 0
@@ -382,13 +377,13 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func setupAssetWriterVideoInput(currentFormatDescription: CMFormatDescriptionRef) -> Bool {
-    print("CaptureManager.setupAssetWriterVideoInput")
+    //print("CaptureManager.setupAssetWriterVideoInput")
     // Create video output settings dictionary which would be used to configure asset writer input
     var bitsPerPixel: CGFloat = 0
     var bitsPerSecond: UInt = 0
     let dimensions = CMVideoFormatDescriptionGetDimensions(currentFormatDescription)
     
-    print("WIDTH: \(dimensions.width), HEIGHT: \(dimensions.height)")
+    //print("WIDTH: \(dimensions.width), HEIGHT: \(dimensions.height)")
     widthVideo = CGFloat(dimensions.width)
     heightVideo = CGFloat(dimensions.height)
     
@@ -449,7 +444,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   
   func setupAssetWriterMetadataInputAndMetadataAdaptor() -> Bool {
-    print("CaptureManager.setupAssetWriterMetadataInputAndMetadataAdaptor")
+    //print("CaptureManager.setupAssetWriterMetadataInputAndMetadataAdaptor")
     
     // All combinations of identifiers, data types and extended language tags that will be appended to the metadata adaptor must form the specifications dictionary
     var metadataFormatDescription : CMMetadataFormatDescription?
@@ -490,7 +485,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func startRecording() {
-    print("CaptureManager.startRecording")
+    //print("CaptureManager.startRecording")
     resumeCaptureSession()
     locationManager.startUpdatingLocation()
     
@@ -510,7 +505,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       do {
         try self.assetWriter = AVAssetWriter(URL: self.movieURL, fileType: AVFileTypeQuickTimeMovie)
       } catch {
-        print("ERROR: CaptureManager.startRecording")
+        //print("ERROR: CaptureManager.startRecording")
         let nserror = error as NSError
         self.delegate?.showError(nserror)
       }
@@ -518,7 +513,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func stopRecording() {
-    print("CaptureManager.stopRecording")
+    //print("CaptureManager.stopRecording")
     //pauseCaptureSession()
     locationManager.stopUpdatingLocation()
     
@@ -561,7 +556,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           
         case AVAssetWriterStatus.Failed:
           if let error = writer!.error {
-            print("ERROR: CaptureManager.stopRecording")
+            //print("ERROR: CaptureManager.stopRecording")
             self.delegate?.showError(error)
           }
         default:
@@ -619,7 +614,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func videoDeviceWithPosition(position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-    print("CaptureManager.videoDeviceWithPosition")
+    //print("CaptureManager.videoDeviceWithPosition")
     let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as! [AVCaptureDevice]
     for device in devices {
       if device.position == position {
@@ -630,7 +625,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func audioDevice() -> AVCaptureDevice? {
-    print("CaptureManager.audioDevice")
+    //print("CaptureManager.audioDevice")
     let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeAudio) as! [AVCaptureDevice]
     if devices.count > 0 {
       return devices.first
@@ -639,7 +634,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func setupCaptureSession() -> Bool {
-    print("CaptureManager.setupCaptureSession")
+    //print("CaptureManager.setupCaptureSession")
     // Create capture session
     captureSession = AVCaptureSession()
     if let session = captureSession {
@@ -672,7 +667,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func setupAndStartCaptureSession() {
-    print("CaptureManager.setupAndStartCaptureSession")
+    //print("CaptureManager.setupAndStartCaptureSession")
     // Create serial queue for movie writing
     movieWritingQueue = dispatch_queue_create("net.nkpro.fixdrive.movie.queue", DISPATCH_QUEUE_SERIAL)
     imageCreateQueue = dispatch_queue_create("net.nkpro.fixdrive.image.queue", DISPATCH_QUEUE_SERIAL)
@@ -690,7 +685,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func pauseCaptureSession() {
-    print("CaptureManager.pauseCaptureSession")
+    //print("CaptureManager.pauseCaptureSession")
     if let session = captureSession {
       if session.running {
         session.stopRunning()
@@ -699,7 +694,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func resumeCaptureSession() {
-    print("CaptureManager.resumeCaptureSession")
+    //print("CaptureManager.resumeCaptureSession")
     if let session = captureSession {
       if !session.running {
         session.startRunning()
@@ -709,7 +704,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func captureSessionStoppedRunningNotification(notification: NSNotification) {
-    print("CaptureManager.captureSessionStoppedRunningNotification")
+    //print("CaptureManager.captureSessionStoppedRunningNotification")
     dispatch_async(movieWritingQueue!) { () -> Void in
       if self.recording {
         self.stopRecording()
@@ -718,7 +713,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func stopAndTearDownCaptureSession() {
-    print("CaptureManager.stopAndTearDownCaptureSession")
+    //print("CaptureManager.stopAndTearDownCaptureSession")
     if let session = captureSession {
       session.stopRunning()
       NSNotificationCenter.defaultCenter().removeObserver(self, name: AVCaptureSessionDidStopRunningNotification, object: session)
@@ -802,7 +797,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   //MARK: - Utilities
     
   func cmTimeForNSDate(date: NSDate) -> CMTime {
-    print("CaptureManager.cmTimeForNSDate")
+    //print("CaptureManager.cmTimeForNSDate")
     let now = CMClockGetTime(CMClockGetHostTimeClock())
     let elapsed = -(date.timeIntervalSinceNow) // this will be a negative number if date was in the past (it should be).
     let subtact = CMTimeMake(Int64(elapsed) * Int64(now.timescale), Int32(now.timescale))
@@ -812,7 +807,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func movieTimeForLocationTime(date: NSDate) -> CMTime {
-    print("CaptureManager.movieTimeForLocationTime")
+    //print("CaptureManager.movieTimeForLocationTime")
     let locationTime = cmTimeForNSDate(date)
     let locationMovieTime = CMSyncConvertTime(locationTime, CMClockGetHostTimeClock(), captureSession!.masterClock)
     
@@ -820,7 +815,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func angleOffsetFromPortraitOrientationToOrientation(orientation: AVCaptureVideoOrientation, video: Bool) -> CGFloat {
-    print("CaptureManager.angleOffsetFromPortraitOrientationToOrientation")
+    //print("CaptureManager.angleOffsetFromPortraitOrientationToOrientation")
     var angle: CGFloat = 0.0
     
     if typeCamera == .Back || video {
@@ -867,7 +862,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func transformFromCurrentVideoOrientationToOrientation(orientation: AVCaptureVideoOrientation) -> CGAffineTransform {
-    print("CaptureManager.transformFromCurrentVideoOrientationToOrientation")
+    //print("CaptureManager.transformFromCurrentVideoOrientationToOrientation")
     var transform = CGAffineTransformIdentity
     
     // Calculate offsets from an arbitrary reference orientation (portrait)
@@ -883,7 +878,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func createDateString() -> String {
-    print("CaptureManager.createDateString")
+    //print("CaptureManager.createDateString")
     let dateFormater = NSDateFormatter()
     //dateFormater.dateFormat = "yy/MM/dd HH:mm:ss"
     dateFormater.dateFormat = "yyMMdd_HHmmss"
@@ -906,11 +901,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
 extension CaptureManager : CLLocationManagerDelegate {
   
   func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    print("CaptureManager.locationManager_didUpdateLocations")
+    //print("CaptureManager.locationManager_didUpdateLocations")
     
     for newLocation in locations {
       
-      print("Distance: \(locationManager.distanceFilter)")
+      //print("Distance: \(locationManager.distanceFilter)")
       
       // Disregard location updates that aren't accurate to within 1000 meters.
       if newLocation.horizontalAccuracy > 1000.0 { continue }

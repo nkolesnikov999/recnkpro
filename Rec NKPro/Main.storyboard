@@ -8,7 +8,7 @@
         <!--Camera-->
         <scene sceneID="2eq-UA-bzU">
             <objects>
-                <viewController id="eOE-Im-nve" customClass="CameraViewController" customModule="FixDrive" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="eOE-Im-nve" customClass="CameraViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="DKv-GT-l0r"/>
                         <viewControllerLayoutGuide type="bottom" id="SSq-jP-VFA"/>
@@ -250,7 +250,7 @@
         <!--Settings-->
         <scene sceneID="kRR-Dt-ws9">
             <objects>
-                <tableViewController id="u8v-CQ-GHX" customClass="SettingsViewController" customModule="FixDrive" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="u8v-CQ-GHX" customClass="SettingsViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="jrc-w6-bu4">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -636,7 +636,7 @@
         <!--Assets View Controller-->
         <scene sceneID="sWW-SN-gkb">
             <objects>
-                <viewController modalTransitionStyle="flipHorizontal" id="gyA-ih-oXg" customClass="AssetsViewController" customModule="FixDrive" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalTransitionStyle="flipHorizontal" id="gyA-ih-oXg" customClass="AssetsViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="qnp-B3-B4m"/>
                         <viewControllerLayoutGuide type="bottom" id="1Cf-ES-xcB"/>
@@ -744,7 +744,7 @@
         <!--Player View Controller-->
         <scene sceneID="Q6n-Zs-2uu">
             <objects>
-                <viewController id="ytf-7o-fDd" customClass="PlayerViewController" customModule="FixDrive" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="ytf-7o-fDd" customClass="PlayerViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="57c-jF-n7j"/>
                         <viewControllerLayoutGuide type="bottom" id="ENt-hI-aOY"/>

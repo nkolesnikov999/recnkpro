@@ -103,7 +103,7 @@ class PlayerViewController : UIViewController {
         self.drawPathOnMap()
         self.trackStatusLabel.text = ""
       } else {
-        print("The input movie \(asset.URL) does not contain location metadata")
+        //print("The input movie \(asset.URL) does not contain location metadata")
         self.trackStatusLabel.text = "No Data"
         self.centeredButton.enabled = false
       }

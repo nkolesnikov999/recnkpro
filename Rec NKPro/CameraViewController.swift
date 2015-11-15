@@ -72,7 +72,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   //MARK: - View Loading
   
   override func viewDidLoad() {
-    print("CameraVC.viewDidLoad")
+    //print("CameraVC.viewDidLoad")
     super.viewDidLoad()
     
     // Keep track of changes to the device orientation so we can update the capture manager
@@ -112,7 +112,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   
   override func viewDidAppear(animated: Bool) {
-    print("CameraVC.viewDidAppear")
+    //print("CameraVC.viewDidAppear")
     super.viewDidAppear(animated)
     
     speedLabel.text = ""
@@ -174,7 +174,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   override func viewWillDisappear(animated: Bool) {
-    print("CameraVC.viewWillDisappear")
+    //print("CameraVC.viewWillDisappear")
     super.viewWillDisappear(animated)
     
     //Stop update timer label
@@ -185,24 +185,24 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   deinit {
-    print("CameraVC.deinit")
+    //print("CameraVC.deinit")
     cleanup()
   }
   
   override func prefersStatusBarHidden() -> Bool {
-    print("CameraVC.prefersStatusBarHidden")
+    //print("CameraVC.prefersStatusBarHidden")
     return true
   }
   
   
   override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-    print("CameraVC.supportedInterfaceOrientations")
+    //print("CameraVC.supportedInterfaceOrientations")
     return .All
   }
   
   
   override func shouldAutorotate() -> Bool {
-    print("CameraVC.shouldAutorotate")
+    //print("CameraVC.shouldAutorotate")
     if let cm = captureManager {
       return !cm.recording
     }
@@ -210,7 +210,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func cleanup() {
-    print("CameraVC.cleanup")
+    //print("CameraVC.cleanup")
     
     let notificationCenter = NSNotificationCenter.defaultCenter()
     notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
@@ -229,7 +229,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func applicationDidBecomeActive(notification: NSNotification) {
-    print("CameraVC.applicationDidBecomeActive")
+    //print("CameraVC.applicationDidBecomeActive")
     // For performance reasons, we manually pause/resume the session when saving a recording.
     // If we try to resume the session in the background it will fail. Resume the session here as well to ensure we will succeed.
     captureManager?.resumeCaptureSession()
@@ -240,7 +240,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func applicationWillResignActive(notification: NSNotification) {
-    print("CameraVC.applicationWillResignActive")
+    //print("CameraVC.applicationWillResignActive")
     if let cm = captureManager {
       if cm.recording {
           cm.stopRecording()
@@ -252,7 +252,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   
   func deviceOrientationDidChange() {
-    print("CameraVC.deviceOrientationDidChange")
+    //print("CameraVC.deviceOrientationDidChange")
     
     let orientation = UIDevice.currentDevice().orientation
     
@@ -291,7 +291,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   //MARK: - IBActions
   
   @IBAction func toggleRecording(sender: UIButton) {
-    print("CameraVC.toggleRecording")
+    //print("CameraVC.toggleRecording")
     // Wait for the recording to start/stop before re-enabling the record button.
     recordButton.enabled = false
     if let cm = captureManager {
@@ -375,7 +375,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   @IBAction func tapGesture(sender: UITapGestureRecognizer) {
-    print("TAP")
+    //print("TAP")
     drawControlView()
   }
   
@@ -386,7 +386,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
 extension CameraViewController : CaptureManagerDelegate {
   
   func recordingWillStart() {
-    print("CameraVC.recordingWillStart")
+    //print("CameraVC.recordingWillStart")
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       self.recordButton.enabled = false
       self.settingsButton.enabled = false
@@ -404,7 +404,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func recordingDidStart() {
-    print("CameraVC.recordingDidStart")
+    //print("CameraVC.recordingDidStart")
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       self.recordingTimer = NSTimer.scheduledTimerWithTimeInterval(Double(self.settings.maxRecordingTime * 60), target: self, selector: Selector("stopRecordigByTimer"), userInfo: nil, repeats: false)
       
@@ -417,7 +417,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func recordingWillStop() {
-    print("CameraVC.recordingWillStop")
+    //print("CameraVC.recordingWillStop")
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       // Disable until saving to the camera roll is complete
       
@@ -433,11 +433,9 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func recordingDidStop() {
-    print("CameraVC.recordingDidStop")
+    //print("CameraVC.recordingDidStop")
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
      
-      
-      
         // Enable record and update mode buttons
         self.updateBatteryAndDiskLabels()
         self.recordButton.enabled = true
@@ -469,15 +467,15 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func newLocationUpdate(speed: String) {
-    print("CameraVC.newLocationUpdate")
+    //print("CameraVC.newLocationUpdate")
     // Use this method to update the label which indicates the current speed
     speedLabel.text = speed
     resetLocationTimer()
   }
   
   func showError(error: NSError) {
-    print("CameraVC.showError")
-    print("_ERROR_: \(error), \(error.userInfo)")
+    //print("CameraVC.showError")
+    //print("_ERROR_: \(error), \(error.userInfo)")
     
     let alert = UIAlertController(title: error.localizedDescription, message: error.localizedFailureReason, preferredStyle: .Alert)
     let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
@@ -508,7 +506,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func resetControlViewTimer() {
-    print("CameraVC.resetControlViewTimer")
+    //print("CameraVC.resetControlViewTimer")
     stopTimer(&removeControlViewTimer)
     if removeControlViewTimer == nil {
       removeControlViewTimer = NSTimer.scheduledTimerWithTimeInterval(kRemoveControlViewInterval, target: self, selector: Selector("removeControlView"), userInfo: nil, repeats: false)
@@ -516,7 +514,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func stopTimer(inout timer: NSTimer?) {
-    print("CameraVC.stopTimer")
+    //print("CameraVC.stopTimer")
     if timer != nil {
       timer!.invalidate()
       timer = nil
@@ -573,7 +571,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func removeControlView() {
-    print("CameraVC.removeControlView")
+    //print("CameraVC.removeControlView")
     controlViewConstraint.constant = -80.0
     UIView.animateWithDuration(0.5) { () -> Void in
       self.view.layoutIfNeeded()
@@ -582,7 +580,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func drawControlView() {
-    print("CameraVC.drawControlView")
+    //print("CameraVC.drawControlView")
     controlViewConstraint.constant = 0
     UIView.animateWithDuration(0.5) { () -> Void in
       self.view.layoutIfNeeded()
@@ -591,7 +589,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func transitionCaptureOrientationFromDeviceOrientation(orientation: UIDeviceOrientation) -> AVCaptureVideoOrientation? {
-    print("CameraVC.transitionCaptureOrientationFromDeviceOrientation")
+    //print("CameraVC.transitionCaptureOrientationFromDeviceOrientation")
     
     switch orientation {
     case .LandscapeLeft:
@@ -645,7 +643,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func treatPhoneCall(call: CTCall) {
-    print("CALL: \(call.callState)")
+    //print("CALL: \(call.callState)")
     if let cm = captureManager {
       if cm.recording {
         if call.callState == CTCallStateIncoming {
@@ -712,7 +710,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func createMovieContents() {
-    print("AssetsVC.createMovieContents")
+    //print("AssetsVC.createMovieContents")
     assetItemsList = [AssetItem]()
     
     let fileManager = NSFileManager.defaultManager()
@@ -724,18 +722,18 @@ extension CameraViewController : CaptureManagerDelegate {
           
           let asset = AssetItem(title: item)
           assetItemsList.append(asset)
-          print("ASSETS_COUNT: \(assetItemsList.count)")
+          //print("ASSETS_COUNT: \(assetItemsList.count)")
         }
       }
     } catch {
-      print("ERROR: AssetsVC.createMovieContents")
+      //print("ERROR: AssetsVC.createMovieContents")
       let nserror = error as NSError
       NSLog("MoviesURL error: \(nserror), \(nserror.userInfo)")
     }
   }
   
   func removeFile(fileURL: NSURL) {
-    print("CameraVC.removeFile")
+    //print("CameraVC.removeFile")
     
     let fileManager = NSFileManager.defaultManager()
     let filePath = fileURL.path
