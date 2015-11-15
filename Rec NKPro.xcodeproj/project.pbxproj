@@ -300,6 +300,7 @@
 				4C3EECA11BF8FA6D00FE0C4C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
