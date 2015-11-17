@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // Set tint color
     let sharedApplication = UIApplication.sharedApplication()
-    sharedApplication.delegate?.window??.tintColor = UIColor.blueColor()
+    sharedApplication.delegate?.window??.tintColor = UIColor(red: 252.0/255.0, green: 142.0/255.0, blue: 37.0/255.0, alpha: 1.0)
     
     // Set sliders
     UISlider.appearance().setThumbImage(UIImage(named: "SliderThumb"), forState: .Normal)
