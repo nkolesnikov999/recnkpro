@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C320C051BFA525200AC2FC5 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C320C041BFA525200AC2FC5 /* MapKit.framework */; };
 		4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */; };
 		4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */; };
 		4C3EECAF1BF8FA9300FE0C4C /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA41BF8FA9300FE0C4C /* Settings.swift */; };
@@ -23,7 +22,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4C320C041BFA525200AC2FC5 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		4C3EEC8D1BF8FA6D00FE0C4C /* Rec NKPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rec NKPro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,7 +43,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C320C051BFA525200AC2FC5 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,7 +54,6 @@
 			children = (
 				4C3EEC8F1BF8FA6D00FE0C4C /* Rec NKPro */,
 				4C3EEC8E1BF8FA6D00FE0C4C /* Products */,
-				4C320C041BFA525200AC2FC5 /* MapKit.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -121,9 +117,10 @@
 				TargetAttributes = {
 					4C3EEC8C1BF8FA6D00FE0C4C = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = 8SH8NY37S7;
 						SystemCapabilities = {
 							com.apple.Maps.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -268,6 +265,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = "Rec NKPro/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -282,6 +281,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = "Rec NKPro/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

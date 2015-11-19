@@ -376,7 +376,15 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   @IBAction func tapGesture(sender: UITapGestureRecognizer) {
     //print("TAP")
-    drawControlView()
+    if let cm = captureManager {
+      if cm.recording {
+        if controlViewConstraint.constant != 0 {
+          drawControlView()
+        } else {
+          resetControlViewTimer()
+        }
+      }
+    }
   }
   
 }
