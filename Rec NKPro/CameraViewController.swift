@@ -16,6 +16,7 @@
 
 import UIKit
 import CoreTelephony
+import CoreLocation
 import AVFoundation
 
 let QualityModeKey = "QualityModeKey"
@@ -26,6 +27,7 @@ let TypeSpeedKey = "TypeSpeedKey"
 let MaxRecordingTimeKey = "MaxRecordingTimeKey"
 let MaxNumberFilesKey = "MaxNumberFilesKey"
 let LayerOpacityValueKey = "LayerOpacityValueKey"
+let OdometerMetersKey = "OdometerMetersKey"
 
 
 class CameraViewController : UIViewController, SettingsControllerDelegate {
@@ -46,6 +48,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   var callCenter: CTCallCenter!
   var assetItemsList: [AssetItem]!
+  var odometer: Odometer!
   
   let kUpdateTimeInterval: NSTimeInterval = 1
   let kUpdateLocationInterval: NSTimeInterval = 3.0
@@ -56,6 +59,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   @IBOutlet weak var previewView: UIView!
   @IBOutlet weak var speedLabel: UILabel!
+  @IBOutlet weak var odometerLabel: UILabel!
   @IBOutlet weak var settingsButton: UIButton!
   @IBOutlet weak var recordButton: UIButton!
   @IBOutlet weak var layerOpacitySlider: UISlider!
@@ -91,6 +95,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       self.treatPhoneCall(call)
     }
     
+    odometerLabel.text = ""
     speedLabel.text = ""
     timeLabel.text = ""
     batteryLabel.text = ""
@@ -108,6 +113,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     // Setup and start the capture session
     captureManager?.setupAndStartCaptureSession()
+    
+    odometer = Odometer(distance: settings.odometerMeters)
   }
   
   
@@ -115,6 +122,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("CameraVC.viewDidAppear")
     super.viewDidAppear(animated)
     
+    odometerLabel.text = "\(settings.odometerMeters) m"
     speedLabel.text = ""
     timeLabel.text = ""
     
@@ -151,9 +159,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
           layer.opacity = storedOpacity
           layerOpacitySlider.value = storedOpacity
         }
-        
+        layer.transform = CATransform3DIdentity
         layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
         layer.frame = previewView.frame
+
         previewView.layer.addSublayer(layer)
       }
     }
@@ -287,6 +296,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       }
     }
   }
+  
+  
   
   //MARK: - IBActions
   
@@ -482,6 +493,12 @@ extension CameraViewController : CaptureManagerDelegate {
     // Use this method to update the label which indicates the current speed
     speedLabel.text = speed
     resetLocationTimer()
+  }
+  
+  func distanceUpdate(location: CLLocation) {
+    if let distance = odometer.distanceUpdate(location) {
+      odometerLabel.text = "\(distance) m"
+    }
   }
   
   func showError(error: NSError) {
@@ -699,6 +716,10 @@ extension CameraViewController : CaptureManagerDelegate {
     if let storedMaxNumberFiles = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberFilesKey)?.integerValue {
       settings.maxNumberFiles = storedMaxNumberFiles
     }
+    
+    if let storedOdometerMeters = NSUserDefaults.standardUserDefaults().valueForKey(OdometerMetersKey)?.integerValue {
+      settings.odometerMeters = storedOdometerMeters
+    }
 
   }
   
@@ -717,6 +738,7 @@ extension CameraViewController : CaptureManagerDelegate {
     NSUserDefaults.standardUserDefaults().setValue(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberFiles, forKey: MaxNumberFilesKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.odometerMeters, forKey: OdometerMetersKey)
     
     NSUserDefaults.standardUserDefaults().synchronize()
   }

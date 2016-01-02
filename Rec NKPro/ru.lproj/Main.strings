@@ -8,8 +8,11 @@
 /* Class = "UINavigationItem"; title = "TMP"; ObjectID = "3vp-Mc-V76"; */
 "3vp-Mc-V76.title" = "Врм Записи";
 
-/* Class = "UIButton"; normalTitle = "Default Settings"; ObjectID = "661-Fx-7Ty"; */
-"661-Fx-7Ty.normalTitle" = "Сброс настроек";
+/* Class = "UIButton"; normalTitle = "Default Settings"; ObjectID = "5MK-5u-Y4E"; */
+"5MK-5u-Y4E.normalTitle" = "Сброс настроек";
+
+/* Class = "UIButton"; normalTitle = "Reset Odometer"; ObjectID = "661-Fx-7Ty"; */
+"661-Fx-7Ty.normalTitle" = "Сброс одометра";
 
 /* Class = "UILabel"; text = "Loading..."; ObjectID = "8f3-Qe-Zvz"; */
 "8f3-Qe-Zvz.text" = "Загрузка...";
@@ -94,6 +97,9 @@
 
 /* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[1] = "mph"; ObjectID = "mOX-GY-Lwt"; */
 "mOX-GY-Lwt.segmentTitles[1]" = "миль/ч";
+
+/* Class = "UILabel"; text = "0.0 km"; ObjectID = "mRS-bt-HHr"; */
+"mRS-bt-HHr.text" = "0.0 km";
 
 /* Class = "UILabel"; text = "Max Recording Time:"; ObjectID = "pvf-QP-kmD"; */
 "pvf-QP-kmD.text" = "Макс время записи:";

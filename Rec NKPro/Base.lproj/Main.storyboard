@@ -27,11 +27,19 @@
                                 </connections>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="200 mph" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emU-Lb-NdJ">
-                                <rect key="frame" x="15" y="130" width="99" height="30"/>
+                                <rect key="frame" x="250" y="110" width="99" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" red="1" green="0.89391629750159751" blue="0.11041354218234301" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <size key="shadowOffset" width="-1" height="-1"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.0 km" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mRS-bt-HHr">
+                                <rect key="frame" x="256" y="455.5" width="88" height="34.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                <color key="textColor" red="0.99607843137254903" green="0.8784313725490196" blue="0.094117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                                <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Battery" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HAL-Hr-e9b">
@@ -184,23 +192,24 @@
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="T2h-dV-0Y4" secondAttribute="bottom" id="0jA-NC-uUg"/>
                             <constraint firstItem="LMP-r4-PGn" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" constant="20" id="2tM-E6-P9T"/>
                             <constraint firstItem="LMP-r4-PGn" firstAttribute="centerX" secondItem="ac8-gS-Hsc" secondAttribute="centerX" id="3VQ-0z-S91"/>
-                            <constraint firstItem="emU-Lb-NdJ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Mjl-GR-1Mx" secondAttribute="leading" constant="15" id="5dg-aa-B6D"/>
+                            <constraint firstItem="emU-Lb-NdJ" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="8gr-5C-Ogd"/>
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="VN3-rA-N7X" secondAttribute="bottom" id="8od-W5-BLs"/>
                             <constraint firstItem="HAL-Hr-e9b" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" constant="30" id="FL1-wn-EXd"/>
                             <constraint firstItem="VN3-rA-N7X" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="FmG-lH-pOE"/>
                             <constraint firstItem="T2h-dV-0Y4" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="HPY-Nl-S84"/>
                             <constraint firstItem="ac8-gS-Hsc" firstAttribute="top" secondItem="LMP-r4-PGn" secondAttribute="bottom" constant="5" id="HTk-Hu-6NO"/>
+                            <constraint firstItem="mRS-bt-HHr" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="IDZ-l4-3vD"/>
                             <constraint firstItem="PtV-hu-ps3" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="Jih-pg-za4"/>
                             <constraint firstItem="LMP-r4-PGn" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" constant="30" id="Kol-rk-Ueg"/>
                             <constraint firstAttribute="trailing" secondItem="VN3-rA-N7X" secondAttribute="trailing" id="Ny5-V6-IV8"/>
                             <constraint firstItem="PtV-hu-ps3" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" id="Q40-53-zfk"/>
-                            <constraint firstItem="emU-Lb-NdJ" firstAttribute="top" secondItem="ac8-gS-Hsc" secondAttribute="bottom" constant="19.5" id="Xph-Xq-Ys0"/>
+                            <constraint firstItem="emU-Lb-NdJ" firstAttribute="top" secondItem="PtV-hu-ps3" secondAttribute="bottom" constant="62" id="Yfw-uT-djq"/>
                             <constraint firstItem="T2h-dV-0Y4" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" id="bFr-Y3-l9q"/>
                             <constraint firstItem="Owy-tK-M4D" firstAttribute="centerX" secondItem="HAL-Hr-e9b" secondAttribute="centerX" id="c1V-F4-HWO"/>
                             <constraint firstItem="Owy-tK-M4D" firstAttribute="top" secondItem="HAL-Hr-e9b" secondAttribute="bottom" constant="5" id="fWk-vO-vap"/>
                             <constraint firstAttribute="trailing" secondItem="T2h-dV-0Y4" secondAttribute="trailing" id="lgD-wa-WDA"/>
                             <constraint firstAttribute="trailing" secondItem="HAL-Hr-e9b" secondAttribute="trailing" constant="25" id="o4n-Zi-EaF"/>
-                            <constraint firstItem="emU-Lb-NdJ" firstAttribute="centerX" secondItem="LMP-r4-PGn" secondAttribute="centerX" priority="200" id="zwB-ue-tCb"/>
+                            <constraint firstItem="VN3-rA-N7X" firstAttribute="top" secondItem="mRS-bt-HHr" secondAttribute="bottom" constant="30" id="xPe-Tz-i76"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Camera" id="Vbd-jF-gBE"/>
@@ -213,6 +222,7 @@
                         <outlet property="fillDiskLabel" destination="ac8-gS-Hsc" id="m4E-e2-17W"/>
                         <outlet property="freeSpaceTitle" destination="LMP-r4-PGn" id="TK5-dW-5oG"/>
                         <outlet property="layerOpacitySlider" destination="vae-3r-AqZ" id="Q3b-Hz-TKu"/>
+                        <outlet property="odometerLabel" destination="mRS-bt-HHr" id="f0R-ag-sae"/>
                         <outlet property="previewView" destination="T2h-dV-0Y4" id="zpI-Ac-Hv1"/>
                         <outlet property="recordButton" destination="DGh-KT-Yf0" id="fPm-dB-rxk"/>
                         <outlet property="settingsButton" destination="vNi-il-TA3" id="j58-70-ds3"/>
@@ -526,18 +536,43 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="661-Fx-7Ty">
-                                                    <rect key="frame" x="245" y="7" width="110" height="30"/>
-                                                    <state key="normal" title="Default Settings"/>
+                                                    <rect key="frame" x="200" y="7" width="200" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="200" id="Koh-MI-xyJ"/>
+                                                    </constraints>
+                                                    <state key="normal" title="Reset Odometer"/>
                                                     <connections>
-                                                        <action selector="setDefaultSettings:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="crp-14-ydg"/>
+                                                        <action selector="resetOdometer:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="02a-I8-fd8"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="661-Fx-7Ty" firstAttribute="centerY" secondItem="div-9G-FWb" secondAttribute="centerY" id="7mb-t4-7IG"/>
                                                 <constraint firstItem="661-Fx-7Ty" firstAttribute="centerX" secondItem="div-9G-FWb" secondAttribute="centerX" id="bIf-Q5-N4D"/>
-                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="centerY" secondItem="div-9G-FWb" secondAttribute="centerY" id="dkr-Oy-sVx"/>
-                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="centerX" secondItem="div-9G-FWb" secondAttribute="centerX" id="zcI-0j-Eg5"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="uh1-1j-nFB">
+                                        <rect key="frame" x="0.0" y="500" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uh1-1j-nFB" id="uog-g5-RIb">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5MK-5u-Y4E">
+                                                    <rect key="frame" x="200" y="7" width="200" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="200" id="auT-ib-0dW"/>
+                                                    </constraints>
+                                                    <state key="normal" title="Default Settings"/>
+                                                    <connections>
+                                                        <action selector="setDefaultSettings:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="sOs-TR-rV4"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="5MK-5u-Y4E" firstAttribute="centerX" secondItem="uog-g5-RIb" secondAttribute="centerX" id="MGP-nF-xXM"/>
+                                                <constraint firstItem="5MK-5u-Y4E" firstAttribute="centerY" secondItem="uog-g5-RIb" secondAttribute="centerY" id="z0B-oZ-nyb"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>

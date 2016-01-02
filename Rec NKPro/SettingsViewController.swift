@@ -107,6 +107,10 @@ class SettingsViewController: UITableViewController {
     settings.maxNumberFiles = value
   }
   
+  @IBAction func resetOdometer(sender: AnyObject) {
+    settings.odometerMeters = 0
+  }
+  
   @IBAction func setDefaultSettings(sender: AnyObject) {
     let new = Settings()
     
@@ -114,7 +118,6 @@ class SettingsViewController: UITableViewController {
     settings.typeCamera = new.typeCamera
     settings.autofocusing = new.autofocusing
     settings.minIntervalLocations = new.minIntervalLocations
-    settings.typeSpeed = new.typeSpeed
     settings.maxRecordingTime = new.maxRecordingTime
     settings.maxNumberFiles = new.maxNumberFiles
 

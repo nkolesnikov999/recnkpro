@@ -32,4 +32,5 @@ class Settings {
   var typeSpeed: TypeSpeed = .Kmph
   var maxRecordingTime: Int = 30
   var maxNumberFiles: Int = 20
+  var odometerMeters: Int = 0
 }
