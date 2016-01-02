@@ -328,7 +328,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
           mustRecord = false
         }
       }
-      let alert = UIAlertController(title: "No Disk Space", message: "Please, Clear Storage", preferredStyle: .Alert)
+      let alert = UIAlertController(
+        title: NSLocalizedString("No Disk Space", comment: "CameraVC Error-Title: No Disk Space"),
+        message: NSLocalizedString("Please, Clear Storage", comment: "CameraVC Error-Message: Please, Clear Storage"),
+        preferredStyle: .Alert)
       let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
         
       }
@@ -431,7 +434,7 @@ extension CameraViewController : CaptureManagerDelegate {
       
       self.recordButton.enabled = false
       self.recordButton.setImage(UIImage(named: "StopHighlight"), forState: .Normal)
-      self.speedLabel.text = "Saving..."
+      self.speedLabel.text = NSLocalizedString("Saving...", comment: "CameraVC: Saving...")
       // Pause the capture session so that saving will be as fast as possible.
       // We resume the sesssion in recordingDidStop:
       self.captureManager?.pauseCaptureSession()
@@ -531,8 +534,9 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func speedLabelNoData() {
     //print("CameraVC.speedUpdate")
-    speedLabel.text = "No data"
-    captureManager?.speed = "No data"
+    let strNoData = NSLocalizedString("No data", comment: "CameraVC: No data")
+    speedLabel.text = strNoData
+    captureManager?.speed = strNoData
   }
   
   func updateBatteryAndDiskLabels() {

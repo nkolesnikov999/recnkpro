@@ -104,7 +104,7 @@ class PlayerViewController : UIViewController {
         self.trackStatusLabel.text = ""
       } else {
         //print("The input movie \(asset.URL) does not contain location metadata")
-        self.trackStatusLabel.text = "No Data"
+        self.trackStatusLabel.text = NSLocalizedString("No Data", comment: "PlayerVC: No Data")
         self.centeredButton.enabled = false
       }
       self.player.play()
@@ -143,10 +143,12 @@ class PlayerViewController : UIViewController {
   @IBAction func setMapType(sender: UIButton) {
     if mapView.mapType == .Standard {
       mapView.mapType = .Satellite
-      mapTypeButton.setTitle("Standard", forState: .Normal)
+      mapTypeButton.setTitle(NSLocalizedString("Standard", comment: "PlayerVC: Standard"),
+        forState: .Normal)
     } else {
       mapView.mapType = .Standard
-      mapTypeButton.setTitle("Satellite", forState: .Normal)
+      mapTypeButton.setTitle(NSLocalizedString("Satellite", comment: "PlayerVC: Satellite"),
+        forState: .Normal)
     }
   }
   

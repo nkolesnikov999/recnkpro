@@ -83,7 +83,7 @@ class SettingsViewController: UITableViewController {
     let partValue = sender.value/10
     let value = Int(partValue) * 10
     sender.value = Float(value)
-    minIntervalLabel.text = "\(value) m"
+    minIntervalLabel.text = String(format: NSLocalizedString("%d m", comment: "SettingsVC Format for minIntervalLabel"), value)
     settings.minIntervalLocations = value
   }
   
@@ -95,7 +95,8 @@ class SettingsViewController: UITableViewController {
     let partValue = sender.value/5
     let value = Int(partValue) * 5
     sender.value = Float(value)
-    maxRecordingTimeLabel.text = "\(value) min"
+    maxRecordingTimeLabel.text =  String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), value)
+
     settings.maxRecordingTime = value
   }
   
@@ -129,8 +130,8 @@ class SettingsViewController: UITableViewController {
     maxRecordingTimeSlider.value = Float(settings.maxRecordingTime)
     maxNumberFilesSlider.value = Float(settings.maxNumberFiles)
     
-    minIntervalLabel.text = "\(settings.minIntervalLocations) m"
-    maxRecordingTimeLabel.text = "\(settings.maxRecordingTime) min"
+    minIntervalLabel.text = String(format: NSLocalizedString("%d m", comment: "SettingsVC Format for minIntervalLabel"), settings.minIntervalLocations)
+    maxRecordingTimeLabel.text = String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), settings.maxRecordingTime)
     maxNumberFilesLabel.text = "\(settings.maxNumberFiles)"
   }
   

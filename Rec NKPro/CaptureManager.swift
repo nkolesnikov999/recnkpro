@@ -949,10 +949,10 @@ extension CaptureManager : CLLocationManagerDelegate {
             speedItem.dataType = kCMMetadataBaseDataType_UTF8 as String
             
             var kSpeed: Double = 3.6
-            var strSpeed = "km/h"
+            var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")
             if self.typeSpeed == .Mph {
               kSpeed = 2.236936
-              strSpeed = "mph"
+              strSpeed = NSLocalizedString("mph", comment: "CaptureManager: mph")
             }
             
             let speed = Int(newLocation.speed*kSpeed)

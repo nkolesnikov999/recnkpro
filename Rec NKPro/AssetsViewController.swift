@@ -140,7 +140,10 @@ class AssetsViewController : UIViewController {
     var success = false
     let assetSize = Float(asset.size) / 1_000_000_000
     if assetSize > freeSpace - 0.2 {
-      let alert = UIAlertController(title: "No Disk Space", message: "Please, Clear Storage", preferredStyle: .Alert)
+      let alert = UIAlertController(
+        title: NSLocalizedString("No Disk Space", comment: "AssetsVC Error-Title: No Disk Space"),
+        message: NSLocalizedString("Please, Clear Storage", comment: "AssetsVC Error-Message: Please, Clear Storage"),
+        preferredStyle: .Alert)
       let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
         
       }
@@ -202,7 +205,8 @@ extension AssetsViewController : UITableViewDelegate {
     let movieURL = asset.url
     let optionMenu = UIAlertController(title: asset.title, message: nil, preferredStyle: .ActionSheet)
     
-    let moveAction = UIAlertAction(title: "Move to Photo", style: .Default, handler: {
+    let moveAction = UIAlertAction(title: NSLocalizedString("Move to Photo", comment: "AssetsVC: Move to Photo"),
+      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       
       if self.checkFreeSpace(asset) {
@@ -211,14 +215,15 @@ extension AssetsViewController : UITableViewDelegate {
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
       }
     })
-    let copyAction = UIAlertAction(title: "Copy to Photo", style: .Default, handler: {
+    let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
       if self.checkFreeSpace(asset) {
         self.copyMovieToCameraRoll(movieURL)
       }
     })
-    let deleteAction = UIAlertAction(title: "Delete", style: .Default, handler: {
+    let deleteAction = UIAlertAction(title: NSLocalizedString("Delete", comment: "AssetsVC: Delete"),
+      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Delete file
       self.removeFile(movieURL)
@@ -226,7 +231,8 @@ extension AssetsViewController : UITableViewDelegate {
       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
     })
     
-    let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: {
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "AssetsVC: Cancel"),
+      style: .Cancel, handler: {
       (alert: UIAlertAction!) -> Void in
     })
     

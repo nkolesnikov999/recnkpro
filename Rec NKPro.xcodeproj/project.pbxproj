@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C2773321C37D91600348A99 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C2773301C37D91600348A99 /* Localizable.strings */; };
 		4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */; };
 		4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */; };
 		4C3EECAF1BF8FA9300FE0C4C /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA41BF8FA9300FE0C4C /* Settings.swift */; };
@@ -16,12 +17,14 @@
 		4C3EECB31BF8FA9300FE0C4C /* AssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */; };
 		4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */; };
 		4C3EECB51BF8FA9300FE0C4C /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */; };
-		4C3EECB61BF8FA9300FE0C4C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECAB1BF8FA9300FE0C4C /* Main.storyboard */; };
 		4C3EECB71BF8FA9300FE0C4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */; };
 		4C3EECB91BF8FA9E00FE0C4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */; };
+		4CB6F3B61C371E05009BF45B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CB6F3B81C371E05009BF45B /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C2773311C37D91600348A99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4C2773331C37D92900348A99 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C3EEC8D1BF8FA6D00FE0C4C /* Rec NKPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rec NKPro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -33,9 +36,10 @@
 		4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsViewController.swift; sourceTree = "<group>"; };
 		4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
 		4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
-		4C3EECAB1BF8FA9300FE0C4C /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4CB6F3B71C371E05009BF45B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		4CB6F3B91C371E19009BF45B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,9 +81,10 @@
 				4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */,
 				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
 				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
-				4C3EECAB1BF8FA9300FE0C4C /* Main.storyboard */,
+				4CB6F3B81C371E05009BF45B /* Main.storyboard */,
 				4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */,
 				4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */,
+				4C2773301C37D91600348A99 /* Localizable.strings */,
 				4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */,
 			);
 			path = "Rec NKPro";
@@ -133,6 +138,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 4C3EEC841BF8FA6D00FE0C4C;
 			productRefGroup = 4C3EEC8E1BF8FA6D00FE0C4C /* Products */;
@@ -150,8 +156,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C3EECB91BF8FA9E00FE0C4C /* LaunchScreen.storyboard in Resources */,
+				4C2773321C37D91600348A99 /* Localizable.strings in Resources */,
 				4C3EECB71BF8FA9300FE0C4C /* Assets.xcassets in Resources */,
-				4C3EECB61BF8FA9300FE0C4C /* Main.storyboard in Resources */,
+				4CB6F3B61C371E05009BF45B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,6 +182,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		4C2773301C37D91600348A99 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4C2773311C37D91600348A99 /* Base */,
+				4C2773331C37D92900348A99 /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		4CB6F3B81C371E05009BF45B /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4CB6F3B71C371E05009BF45B /* Base */,
+				4CB6F3B91C371E19009BF45B /* ru */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4C3EEC9D1BF8FA6D00FE0C4C /* Debug */ = {
