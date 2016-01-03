@@ -11,7 +11,7 @@ import Foundation
 enum QualityMode : Int {
   case Low = 0
   case Medium = 1
-  case Hight = 2
+  case High = 2
 }
 
 enum TypeCamera: Int {
@@ -28,7 +28,7 @@ class Settings {
   var qualityMode: QualityMode = .Medium
   var typeCamera: TypeCamera = .Back
   var autofocusing: Bool = false
-  var textOnVideo: Bool = false
+  var textOnVideo: Bool = true
   var logotype: String = "NKPRO.NET"
   var minIntervalLocations: Int = 0
   var typeSpeed: TypeSpeed = .Kmph

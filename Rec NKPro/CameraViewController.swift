@@ -133,45 +133,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     timeLabel.text = ""
     
     // Setup preview layer
-    if let session = captureManager?.captureSession {
-      
-      setSessionPresetAndSelectedQuality(settings.qualityMode)
-      
-      let orientation = UIDevice.currentDevice().orientation
-      var angle: CGFloat = 0.0
-      
-      switch orientation {
-      case UIDeviceOrientation.LandscapeLeft:
-        angle = CGFloat(-M_PI_2)
-      case UIDeviceOrientation.LandscapeRight:
-        angle = CGFloat(M_PI_2)
-      case UIDeviceOrientation.PortraitUpsideDown:
-        angle = CGFloat(M_PI)
-      default :
-        angle = 0.0
-      }
-      
-      if let captureOrient = transitionCaptureOrientationFromDeviceOrientation(orientation) {
-        captureManager?.referenceOrientation = captureOrient
-      }
-      if layer == nil {
-        layer = AVCaptureVideoPreviewLayer(session: session)
-      }
-      if let layer = self.layer {
-        //A string defining how the video is displayed within an AVCaptureVideoPreviewLayer bounds rect.
-        layer.videoGravity = AVLayerVideoGravityResizeAspect
-        
-        if let storedOpacity = NSUserDefaults.standardUserDefaults().valueForKey(LayerOpacityValueKey)?.floatValue {
-          layer.opacity = storedOpacity
-          layerOpacitySlider.value = storedOpacity
-        }
-        layer.transform = CATransform3DIdentity
-        layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
-        layer.frame = previewView.frame
-
-        previewView.layer.addSublayer(layer)
-      }
-    }
+    setupPreviewLayer()
+    
     updateBatteryAndDiskLabels()
     timeLabelUpdate()
     controlViewConstraint.constant = 0
@@ -646,14 +609,56 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
+  func setupPreviewLayer() {
+    if let session = captureManager?.captureSession {
+      
+      setSessionPresetAndSelectedQuality(settings.qualityMode)
+      
+      let orientation = UIDevice.currentDevice().orientation
+      var angle: CGFloat = 0.0
+      
+      switch orientation {
+      case UIDeviceOrientation.LandscapeLeft:
+        angle = CGFloat(-M_PI_2)
+      case UIDeviceOrientation.LandscapeRight:
+        angle = CGFloat(M_PI_2)
+      case UIDeviceOrientation.PortraitUpsideDown:
+        angle = CGFloat(M_PI)
+      default :
+        angle = 0.0
+      }
+      
+      if let captureOrient = transitionCaptureOrientationFromDeviceOrientation(orientation) {
+        captureManager?.referenceOrientation = captureOrient
+      }
+      if layer == nil {
+        layer = AVCaptureVideoPreviewLayer(session: session)
+      }
+      if let layer = self.layer {
+        //A string defining how the video is displayed within an AVCaptureVideoPreviewLayer bounds rect.
+        layer.videoGravity = AVLayerVideoGravityResizeAspect
+        
+        if let storedOpacity = NSUserDefaults.standardUserDefaults().valueForKey(LayerOpacityValueKey)?.floatValue {
+          layer.opacity = storedOpacity
+          layerOpacitySlider.value = storedOpacity
+        }
+        layer.transform = CATransform3DIdentity
+        layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
+        layer.frame = previewView.frame
+        
+        previewView.layer.addSublayer(layer)
+      }
+    }
+  }
+  
   func setSessionPresetAndSelectedQuality(value: QualityMode) {
     if let session = captureManager?.captureSession {
       switch value {
-      case .Hight:
-        if session.canSetSessionPreset(AVCaptureSessionPresetHigh) {
-          session.sessionPreset = AVCaptureSessionPresetHigh
+      case .High:
+        if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) && settings.typeCamera == .Back {
+          session.sessionPreset = AVCaptureSessionPreset1280x720
           captureManager?.scaleText = 2
-          settings.qualityMode = .Hight
+          settings.qualityMode = .High
         } else if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
           session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 1

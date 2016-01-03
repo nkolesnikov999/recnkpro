@@ -46,7 +46,7 @@ class SettingsViewController: UITableViewController {
     let modelName = UIDevice.currentDevice().modelName
     
     if modelName == "iPhone 4s" {
-      qualityModeSegment.removeSegmentAtIndex(2, animated: false)
+      //qualityModeSegment.removeSegmentAtIndex(2, animated: false)
     }
     
     logotypeTextField.delegate = self

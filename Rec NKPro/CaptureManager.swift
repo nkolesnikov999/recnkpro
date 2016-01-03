@@ -25,6 +25,7 @@ protocol CaptureManagerDelegate : class {
   func recordingDidStart()
   func recordingWillStop()
   func recordingDidStop()
+  func setupPreviewLayer()
   func newLocationUpdate(speed: String)
   func showError(error: NSError)
   func distanceUpdate(location: CLLocation)
@@ -740,6 +741,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func changeTypeCamera() {
+    delegate?.setupPreviewLayer()
     if let session = captureSession {
       session.stopRunning()
       session.beginConfiguration()
