@@ -11,6 +11,7 @@
 *  http://stackoverflow.com/questions/30609241/render-dynamic-text-onto-cvpixelbufferref-while-recording-video
 *  http://www.iphones.ru/forum/index.php?showtopic=90033
 *  https://github.com/FlexMonkey/MetalVideoCapture
+*  http://flexmonkey.blogspot.co.uk/2015/07/generating-filtering-metal-textures.html
 *  http://stackoverflow.com/questions/30141940/avfoundation-camera-switches-once-and-only-once
 *
 */
@@ -18,7 +19,6 @@
 import UIKit
 import AVFoundation
 import CoreLocation
-
 
 protocol CaptureManagerDelegate : class {
   func recordingWillStart()
@@ -35,8 +35,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   weak var delegate: CaptureManagerDelegate?
   
   let FixdriveSpeedIdentifier = "mdta/net.nkpro.fixdrive.speed.field"
-  
-  var locationManager: CLLocationManager!
   
   var typeCamera: TypeCamera! {
     didSet {
@@ -61,7 +59,10 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var scaleText = 0
   var time: String = "" {
     didSet {
-      imageFromText()
+      if textOnVideo {
+        imageFromText()
+      }
+      //print("FPS: \(frc.frameRate)")
     }
   }
   
@@ -77,7 +78,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
   }
   
-  let logotype: String = "NKPRO.NET"
+  var logotype: String = "NKPRO.NET"
   
   var referenceOrientation: AVCaptureVideoOrientation! {
     didSet {
@@ -89,6 +90,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       //print("SET videoOrientation: \(videoOrientation.rawValue)")
     }
   }
+  
+  var locationManager: CLLocationManager!
+  var frc: FrameRateCalculator!
   
   var videoDevice: AVCaptureDevice!
   var videoIn: AVCaptureDeviceInput!
@@ -113,7 +117,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var widthVideo: CGFloat = 0
   var heightVideo: CGFloat = 0 {
     didSet {
-      imageFromText()
+      if textOnVideo {
+        imageFromText()
+      }
     }
   }
   
@@ -131,6 +137,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     return readyToRecordAudio && readyToRecordVideo && readyToRecordMetadata
   }
   
+  var textOnVideo = false
+  
   //MARK: - Init
   
   override init() {
@@ -143,6 +151,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     locationManager.requestWhenInUseAuthorization()
     locationManager.delegate = self
     
+    frc = FrameRateCalculator()
     
     let eaglContext = EAGLContext(API: EAGLRenderingAPI.OpenGLES2)
     ciContext = CIContext(EAGLContext: eaglContext)
@@ -200,11 +209,17 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     let options : [String : AnyObject]? = nil // [kCIImageColorSpace : colorSpace!]
     let inputBackImage = CIImage(CVPixelBuffer: pixelBuffer! as CVPixelBuffer, options: options)
     
-    let filter = CIFilter(name: "CIBlendWithMask")
-    filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
-    filter?.setValue(self.ciMaskImage, forKey: "inputMaskImage")
-    filter?.setValue(self.ciInputImage, forKey: "inputImage")
-    let outputImage = filter?.outputImage
+    var outputImage: CIImage?
+    
+    if textOnVideo {
+      let filter = CIFilter(name: "CIBlendWithMask")
+      filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
+      filter?.setValue(self.ciMaskImage, forKey: "inputMaskImage")
+      filter?.setValue(self.ciInputImage, forKey: "inputImage")
+      outputImage = filter?.outputImage
+    } else {
+      outputImage = inputBackImage
+    }
     
     var renderedOutputPixelBuffer: CVPixelBuffer? = nil
     
@@ -222,7 +237,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
                 print("Timestamp error: \(timestamp) <=======================")
               }
             }
-            //print("Timestamp: \(timestamp)")
+            frc.calculateFramerateAtTimestamp(timestamp)
           }
         }
       }
@@ -395,7 +410,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       bitsPerPixel = 4.05 // This bitrate matches the quality produced by AVCaptureSessionPresetMedium or Low.
     } else {
       bitsPerPixel =
-      11.4 // This bitrate matches the quality produced by AVCaptureSessionPresetHigh.
+      10.1 // This bitrate matches the quality produced by AVCaptureSessionPresetHigh.
     }
     bitsPerSecond = UInt(numPixels) * UInt(bitsPerPixel)
     
@@ -553,6 +568,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           self.recordingWillBeStopped = false
           self.recording = false
           self.delegate?.recordingDidStop()
+          self.frc.reset()
           //
           
         case AVAssetWriterStatus.Failed:

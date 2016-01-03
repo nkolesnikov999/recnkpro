@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C0D2D6A1C38292600B14E22 /* Odometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0D2D691C38292600B14E22 /* Odometer.swift */; };
+		4C1E791C1C391B6C004A86B9 /* FrameRateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */; };
 		4C2773321C37D91600348A99 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C2773301C37D91600348A99 /* Localizable.strings */; };
 		4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */; };
 		4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */; };
@@ -26,6 +27,7 @@
 /* Begin PBXFileReference section */
 		4C0D2D691C38292600B14E22 /* Odometer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Odometer.swift; sourceTree = "<group>"; };
 		4C1E791A1C38438C004A86B9 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
+		4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameRateCalculator.swift; sourceTree = "<group>"; };
 		4C2773311C37D91600348A99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C2773331C37D92900348A99 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C3EEC8D1BF8FA6D00FE0C4C /* Rec NKPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rec NKPro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +80,7 @@
 				4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */,
 				4C3EECA41BF8FA9300FE0C4C /* Settings.swift */,
 				4C0D2D691C38292600B14E22 /* Odometer.swift */,
+				4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */,
 				4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */,
 				4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */,
 				4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */,
@@ -174,6 +177,7 @@
 			files = (
 				4C0D2D6A1C38292600B14E22 /* Odometer.swift in Sources */,
 				4C3EECAF1BF8FA9300FE0C4C /* Settings.swift in Sources */,
+				4C1E791C1C391B6C004A86B9 /* FrameRateCalculator.swift in Sources */,
 				4C3EECB11BF8FA9300FE0C4C /* CameraViewController.swift in Sources */,
 				4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */,
 				4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */,

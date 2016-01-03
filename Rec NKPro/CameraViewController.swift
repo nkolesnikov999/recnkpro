@@ -28,6 +28,8 @@ let MaxRecordingTimeKey = "MaxRecordingTimeKey"
 let MaxNumberFilesKey = "MaxNumberFilesKey"
 let LayerOpacityValueKey = "LayerOpacityValueKey"
 let OdometerMetersKey = "OdometerMetersKey"
+let TextOnVideoKey = "TextOnVideoKey"
+let LogotypeKey = "LogotypeKey"
 
 
 class CameraViewController : UIViewController, SettingsControllerDelegate {
@@ -65,6 +67,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var layerOpacitySlider: UISlider!
   @IBOutlet weak var controlView: UIView!
   @IBOutlet weak var timeLabel: UILabel!
+  @IBOutlet weak var frameRateLabel: UILabel!
   @IBOutlet weak var backButton: UIButton!
   @IBOutlet weak var fillDiskLabel: UILabel!
   @IBOutlet weak var batteryLabel: UILabel!
@@ -100,8 +103,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     timeLabel.text = ""
     batteryLabel.text = ""
     fillDiskLabel.text = ""
+    frameRateLabel.text = ""
     recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
-    controlView.hidden = true
+    //controlView.hidden = true
     
     // Initialize the class responsible for managing AV capture session and asset writer
     captureManager = CaptureManager()
@@ -110,6 +114,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     captureManager?.typeSpeed = settings.typeSpeed
     captureManager?.autofocusing = settings.autofocusing
     captureManager?.typeCamera = settings.typeCamera
+    captureManager?.logotype = settings.logotype
+    captureManager?.textOnVideo = settings.textOnVideo
     
     // Setup and start the capture session
     captureManager?.setupAndStartCaptureSession()
@@ -451,6 +457,8 @@ extension CameraViewController : CaptureManagerDelegate {
       self.captureManager?.pauseCaptureSession()
       self.stopTimer(&self.removeControlViewTimer)
       self.stopTimer(&self.updateLocationTimer)
+      
+      self.odometer.stop()
     }
   }
   
@@ -522,6 +530,10 @@ extension CameraViewController : CaptureManagerDelegate {
     let timeString = dateFormater.stringFromDate(NSDate())
     timeLabel.text = timeString
     captureManager?.time = timeString
+    
+    if let cm = captureManager {
+      frameRateLabel.text = String(format: "%.1f", cm.frc.frameRate)
+    }
   }
   
   // Reset timer update location after receive newLocation
@@ -701,6 +713,14 @@ extension CameraViewController : CaptureManagerDelegate {
       settings.autofocusing = storedAutofocusing
     }
     
+    if let storedTextOnVideo = NSUserDefaults.standardUserDefaults().valueForKey(TextOnVideoKey)?.boolValue {
+      settings.textOnVideo = storedTextOnVideo
+    }
+    
+    if let storedLogotype = NSUserDefaults.standardUserDefaults().objectForKey(LogotypeKey) {
+      settings.logotype = storedLogotype as! String
+    }
+    
     if let storedMinIntervalLocations = NSUserDefaults.standardUserDefaults().valueForKey(MinIntervalLocationsKey)?.integerValue {
       settings.minIntervalLocations = storedMinIntervalLocations
     }
@@ -728,6 +748,12 @@ extension CameraViewController : CaptureManagerDelegate {
     captureManager?.minInterval = settings.minIntervalLocations
     captureManager?.typeSpeed = settings.typeSpeed
     captureManager?.autofocusing = settings.autofocusing
+    captureManager?.logotype = settings.logotype
+    captureManager?.textOnVideo = settings.textOnVideo
+    
+    if settings.odometerMeters == 0 {
+      odometer.reset()
+    }
     
     checkMaxNumberFiles()
     
@@ -738,7 +764,8 @@ extension CameraViewController : CaptureManagerDelegate {
     NSUserDefaults.standardUserDefaults().setValue(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberFiles, forKey: MaxNumberFilesKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.odometerMeters, forKey: OdometerMetersKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.textOnVideo, forKey: TextOnVideoKey)
+    NSUserDefaults.standardUserDefaults().setObject(settings.logotype, forKey: LogotypeKey)
     
     NSUserDefaults.standardUserDefaults().synchronize()
   }

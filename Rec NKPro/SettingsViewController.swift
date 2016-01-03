@@ -30,6 +30,7 @@ class SettingsViewController: UITableViewController {
   @IBOutlet weak var qualityModeSegment: UISegmentedControl!
   @IBOutlet weak var typeCameraSegment: UISegmentedControl!
   @IBOutlet weak var autofocusingSwitch: UISwitch!
+  @IBOutlet weak var textOnVideoSwitch: UISwitch!
   @IBOutlet weak var minIntervalLabel: UILabel!
   @IBOutlet weak var minIntervalSlider: UISlider!
   @IBOutlet weak var typeSpeedSegment: UISegmentedControl!
@@ -37,6 +38,7 @@ class SettingsViewController: UITableViewController {
   @IBOutlet weak var maxRecordingTimeSlider: UISlider!
   @IBOutlet weak var maxNumberFilesLabel: UILabel!
   @IBOutlet weak var maxNumberFilesSlider: UISlider!
+  @IBOutlet weak var logotypeTextField: UITextField!
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -46,6 +48,8 @@ class SettingsViewController: UITableViewController {
     if modelName == "iPhone 4s" {
       qualityModeSegment.removeSegmentAtIndex(2, animated: false)
     }
+    
+    logotypeTextField.delegate = self
     
     setAllControls()
   }
@@ -77,6 +81,11 @@ class SettingsViewController: UITableViewController {
   
   @IBAction func selectAutofocusing(sender: UISwitch) {
     settings.autofocusing = sender.on
+  }
+  
+  @IBAction func selectTextOnVideo(sender: UISwitch) {
+    settings.textOnVideo = sender.on
+    tableView.reloadData()
   }
   
   @IBAction func setMinInterval(sender: UISlider) {
@@ -120,8 +129,10 @@ class SettingsViewController: UITableViewController {
     settings.minIntervalLocations = new.minIntervalLocations
     settings.maxRecordingTime = new.maxRecordingTime
     settings.maxNumberFiles = new.maxNumberFiles
+    settings.textOnVideo = new.textOnVideo
 
     setAllControls()
+    tableView.reloadData()
   }
   
   func setAllControls() {
@@ -132,6 +143,8 @@ class SettingsViewController: UITableViewController {
     typeSpeedSegment.selectedSegmentIndex = settings.typeSpeed.rawValue
     maxRecordingTimeSlider.value = Float(settings.maxRecordingTime)
     maxNumberFilesSlider.value = Float(settings.maxNumberFiles)
+    logotypeTextField.text = settings.logotype
+    textOnVideoSwitch.on = settings.textOnVideo
     
     minIntervalLabel.text = String(format: NSLocalizedString("%d m", comment: "SettingsVC Format for minIntervalLabel"), settings.minIntervalLocations)
     maxRecordingTimeLabel.text = String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), settings.maxRecordingTime)
@@ -139,8 +152,27 @@ class SettingsViewController: UITableViewController {
   }
   
   
+  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    if section == 0 {
+      if settings.textOnVideo {
+        return 5
+      } else {
+        return 4
+      }
+    } else {
+      return 2
+    }
+  }
+  
 }
 
+extension SettingsViewController: UITextFieldDelegate {
+  func textFieldShouldReturn(textField: UITextField) -> Bool {
+    settings.logotype = textField.text!
+    textField.resignFirstResponder()
+    return true
+  }
+}
 
 
 public extension UIDevice {
