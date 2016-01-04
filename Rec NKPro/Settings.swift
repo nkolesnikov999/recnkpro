@@ -20,8 +20,8 @@ enum TypeCamera: Int {
 }
 
 enum TypeSpeed: Int {
-  case Kmph = 0
-  case Mph = 1
+  case Km = 0
+  case Mi = 1
 }
 
 class Settings {
@@ -31,7 +31,7 @@ class Settings {
   var textOnVideo: Bool = true
   var logotype: String = "NKPRO.NET"
   var minIntervalLocations: Int = 0
-  var typeSpeed: TypeSpeed = .Kmph
+  var typeSpeed: TypeSpeed = .Km
   var maxRecordingTime: Int = 30
   var maxNumberFiles: Int = 20
   var odometerMeters: Int = 0

@@ -35,15 +35,15 @@
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="200 mph" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emU-Lb-NdJ">
-                                <rect key="frame" x="250" y="128" width="99" height="30"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <rect key="frame" x="238" y="128" width="123" height="37"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <color key="textColor" red="1" green="0.89391629750159751" blue="0.11041354218234301" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                                 <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00.0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmk-Mx-NGs">
-                                <rect key="frame" x="270" y="75.5" width="60" height="34.5"/>
+                                <rect key="frame" x="270" y="76" width="60" height="34.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                 <color key="textColor" red="1" green="0.89391629750000001" blue="0.11041354220000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -51,11 +51,11 @@
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.0 km" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mRS-bt-HHr">
-                                <rect key="frame" x="256" y="455" width="88" height="34.5"/>
+                                <rect key="frame" x="256" y="460" width="88" height="34.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                 <color key="textColor" red="0.99607843137254903" green="0.8784313725490196" blue="0.094117647058823528" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
-                                <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Battery" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HAL-Hr-e9b">
@@ -211,6 +211,7 @@
                             <constraint firstItem="5JI-kN-88E" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="4vF-hN-REA"/>
                             <constraint firstItem="emU-Lb-NdJ" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="8gr-5C-Ogd"/>
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="VN3-rA-N7X" secondAttribute="bottom" id="8od-W5-BLs"/>
+                            <constraint firstItem="Owy-tK-M4D" firstAttribute="top" secondItem="ac8-gS-Hsc" secondAttribute="top" id="DeS-ML-WYG"/>
                             <constraint firstItem="HAL-Hr-e9b" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" constant="30" id="FL1-wn-EXd"/>
                             <constraint firstItem="VN3-rA-N7X" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="FmG-lH-pOE"/>
                             <constraint firstItem="T2h-dV-0Y4" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="HPY-Nl-S84"/>
@@ -227,9 +228,10 @@
                             <constraint firstItem="Owy-tK-M4D" firstAttribute="centerX" secondItem="HAL-Hr-e9b" secondAttribute="centerX" id="c1V-F4-HWO"/>
                             <constraint firstItem="Owy-tK-M4D" firstAttribute="top" secondItem="HAL-Hr-e9b" secondAttribute="bottom" constant="5" id="fWk-vO-vap"/>
                             <constraint firstItem="fmk-Mx-NGs" firstAttribute="top" secondItem="5JI-kN-88E" secondAttribute="bottom" constant="4" id="g9o-Jq-Gbg"/>
+                            <constraint firstItem="fmk-Mx-NGs" firstAttribute="top" secondItem="ac8-gS-Hsc" secondAttribute="top" id="kMC-tB-3cn"/>
                             <constraint firstAttribute="trailing" secondItem="T2h-dV-0Y4" secondAttribute="trailing" id="lgD-wa-WDA"/>
                             <constraint firstAttribute="trailing" secondItem="HAL-Hr-e9b" secondAttribute="trailing" constant="25" id="o4n-Zi-EaF"/>
-                            <constraint firstItem="VN3-rA-N7X" firstAttribute="top" secondItem="mRS-bt-HHr" secondAttribute="bottom" constant="30" id="xPe-Tz-i76"/>
+                            <constraint firstItem="VN3-rA-N7X" firstAttribute="top" secondItem="mRS-bt-HHr" secondAttribute="bottom" constant="25" id="xPe-Tz-i76"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Camera" id="Vbd-jF-gBE"/>
@@ -278,8 +280,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quality Mode:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ffM-sO-38I">
-                                                    <rect key="frame" x="8" y="11" width="106.5" height="20.5"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Resolution:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ffM-sO-38I">
+                                                    <rect key="frame" x="8" y="11" width="85" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -290,9 +292,9 @@
                                                         <constraint firstAttribute="width" constant="180" id="PgQ-3t-hDp"/>
                                                     </constraints>
                                                     <segments>
-                                                        <segment title="Low"/>
-                                                        <segment title="Medium"/>
-                                                        <segment title="High"/>
+                                                        <segment title="288p"/>
+                                                        <segment title="480p"/>
+                                                        <segment title="720p"/>
                                                     </segments>
                                                     <connections>
                                                         <action selector="selectQualityMode:" destination="u8v-CQ-GHX" eventType="valueChanged" id="Msw-Yc-s0d"/>
@@ -486,8 +488,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Speed:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gkR-4V-vtd">
-                                                    <rect key="frame" x="8" y="11.5" width="54" height="20.5"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Units:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gkR-4V-vtd">
+                                                    <rect key="frame" x="8" y="11.5" width="45" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -498,8 +500,8 @@
                                                         <constraint firstAttribute="width" constant="120" id="GRB-In-9JT"/>
                                                     </constraints>
                                                     <segments>
-                                                        <segment title="km/h"/>
-                                                        <segment title="mph"/>
+                                                        <segment title="km"/>
+                                                        <segment title="mi"/>
                                                     </segments>
                                                     <connections>
                                                         <action selector="setTypeSpeed:" destination="u8v-CQ-GHX" eventType="valueChanged" id="TNj-ik-5HO"/>

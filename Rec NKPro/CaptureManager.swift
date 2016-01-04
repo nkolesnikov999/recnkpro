@@ -741,7 +741,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func changeTypeCamera() {
-    delegate?.setupPreviewLayer()
+    //if typeCamera == .Front {
+      delegate?.setupPreviewLayer()
+    //}
     if let session = captureSession {
       session.stopRunning()
       session.beginConfiguration()
@@ -973,7 +975,7 @@ extension CaptureManager : CLLocationManagerDelegate {
             
             var kSpeed: Double = 3.6
             var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")
-            if self.typeSpeed == .Mph {
+            if self.typeSpeed == .Mi {
               kSpeed = 2.236936
               strSpeed = NSLocalizedString("mph", comment: "CaptureManager: mph")
             }

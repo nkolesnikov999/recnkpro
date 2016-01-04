@@ -128,7 +128,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("CameraVC.viewDidAppear")
     super.viewDidAppear(animated)
     
-    odometerLabel.text = "\(settings.odometerMeters) m"
+    createOdometerLabel(settings.odometerMeters)
     speedLabel.text = ""
     timeLabel.text = ""
     
@@ -414,7 +414,7 @@ extension CameraViewController : CaptureManagerDelegate {
       
       self.recordButton.enabled = false
       self.recordButton.setImage(UIImage(named: "StopHighlight"), forState: .Normal)
-      self.speedLabel.text = NSLocalizedString("Saving...", comment: "CameraVC: Saving...")
+      self.speedLabel.text = NSLocalizedString("Stop", comment: "CameraVC: Stop")
       // Pause the capture session so that saving will be as fast as possible.
       // We resume the sesssion in recordingDidStop:
       self.captureManager?.pauseCaptureSession()
@@ -468,7 +468,15 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func distanceUpdate(location: CLLocation) {
     if let distance = odometer.distanceUpdate(location) {
-      odometerLabel.text = "\(distance) m"
+      createOdometerLabel(distance)
+    }
+  }
+  
+  func createOdometerLabel(distance: Int) {
+    if settings.typeSpeed == .Km {
+      odometerLabel.text = String(format: "%.1f %@", Float(distance)/1000.0, NSLocalizedString("km", comment: "CameraVC distance: km"))
+    } else {
+      odometerLabel.text = String(format: "%.1f %@", Float(distance)/1609.344, NSLocalizedString("mi", comment: "CameraVC distance: mi"))
     }
   }
   
@@ -496,6 +504,13 @@ extension CameraViewController : CaptureManagerDelegate {
     
     if let cm = captureManager {
       frameRateLabel.text = String(format: "%.1f", cm.frc.frameRate)
+      if cm.frc.frameRate < 13 {
+        frameRateLabel.textColor = UIColor.redColor()
+      } else if cm.frc.frameRate < 24 {
+        frameRateLabel.textColor = UIColor.yellowColor()
+      } else {
+        frameRateLabel.textColor = UIColor.greenColor()
+      }
     }
   }
   
@@ -553,8 +568,10 @@ extension CameraViewController : CaptureManagerDelegate {
       fillDiskLabel.text = "\(freeSpace)G"
       if freeSpace < 1 {
         fillDiskLabel.textColor = UIColor.redColor()
-      } else {
+      } else if freeSpace < 5 {
         fillDiskLabel.textColor = UIColor.yellowColor()
+      } else {
+        fillDiskLabel.textColor = UIColor.greenColor()
       }
       if mustRecord && freeSpace < 0.3 {
         checkFilesStopRecordingDueSpaceLimit()

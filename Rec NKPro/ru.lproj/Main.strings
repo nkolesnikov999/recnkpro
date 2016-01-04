@@ -29,14 +29,14 @@
 /* Class = "UITableViewSection"; headerTitle = "Location"; ObjectID = "Fnl-Ca-9ge"; */
 "Fnl-Ca-9ge.headerTitle" = "Локация";
 
-/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[0] = "Low"; ObjectID = "GYt-8r-HXd"; */
-"GYt-8r-HXd.segmentTitles[0]" = "Низк";
+/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[0] = "288p"; ObjectID = "GYt-8r-HXd"; */
+"GYt-8r-HXd.segmentTitles[0]" = "288p";
 
-/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[1] = "Medium"; ObjectID = "GYt-8r-HXd"; */
-"GYt-8r-HXd.segmentTitles[1]" = "Сред";
+/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[1] = "480p"; ObjectID = "GYt-8r-HXd"; */
+"GYt-8r-HXd.segmentTitles[1]" = "480p";
 
-/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[2] = "High"; ObjectID = "GYt-8r-HXd"; */
-"GYt-8r-HXd.segmentTitles[2]" = "Выск";
+/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[2] = "720p"; ObjectID = "GYt-8r-HXd"; */
+"GYt-8r-HXd.segmentTitles[2]" = "720p";
 
 /* Class = "UILabel"; text = "Battery"; ObjectID = "HAL-Hr-e9b"; */
 "HAL-Hr-e9b.text" = "Батарея";
@@ -86,17 +86,17 @@
 /* Class = "UILabel"; text = "999"; ObjectID = "emU-Lb-NdJ"; */
 "emU-Lb-NdJ.text" = "999";
 
-/* Class = "UILabel"; text = "Quality Mode:"; ObjectID = "ffM-sO-38I"; */
+/* Class = "UILabel"; text = "Resolution:"; ObjectID = "ffM-sO-38I"; */
 "ffM-sO-38I.text" = "Разрешение:";
 
-/* Class = "UILabel"; text = "Speed:"; ObjectID = "gkR-4V-vtd"; */
-"gkR-4V-vtd.text" = "Скорость:";
+/* Class = "UILabel"; text = "Units:"; ObjectID = "gkR-4V-vtd"; */
+"gkR-4V-vtd.text" = "Ед измерения:";
 
-/* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[0] = "km/h"; ObjectID = "mOX-GY-Lwt"; */
-"mOX-GY-Lwt.segmentTitles[0]" = "км/ч";
+/* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[0] = "km"; ObjectID = "mOX-GY-Lwt"; */
+"mOX-GY-Lwt.segmentTitles[0]" = "км";
 
-/* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[1] = "mph"; ObjectID = "mOX-GY-Lwt"; */
-"mOX-GY-Lwt.segmentTitles[1]" = "миль/ч";
+/* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[1] = "mi"; ObjectID = "mOX-GY-Lwt"; */
+"mOX-GY-Lwt.segmentTitles[1]" = "миля";
 
 /* Class = "UILabel"; text = "0.0 km"; ObjectID = "mRS-bt-HHr"; */
 "mRS-bt-HHr.text" = "0.0 km";
