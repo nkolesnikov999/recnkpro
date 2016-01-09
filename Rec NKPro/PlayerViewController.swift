@@ -42,6 +42,12 @@ class PlayerViewController : UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    mapTypeButton.layer.cornerRadius = 10
+    mapTypeButton.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    
+    trackStatusLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    trackStatusLabel.layer.cornerRadius = 10.0
+    
     defineStackAxis()
     let notificationCenter = NSNotificationCenter.defaultCenter()
     notificationCenter.addObserver(self, selector: "defineStackAxis", name: UIDeviceOrientationDidChangeNotification, object: nil)
@@ -74,6 +80,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setupVariables() {
+    print("setupVariables")
     
     // Initialize reader queue to perform all reading related operations on a background queue
     readerQueue = dispatch_queue_create("net.nkpro.fixdrive.reader.queue", DISPATCH_QUEUE_SERIAL)
@@ -81,7 +88,7 @@ class PlayerViewController : UIViewController {
     // Initialize metadata output with location identifier to get delegate callbacks with location metadata groups
     let metadataQueue = dispatch_queue_create("net.nkpro.fixdrive.metadata.queue", DISPATCH_QUEUE_SERIAL)
     
-    metadataOutput = AVPlayerItemMetadataOutput(identifiers: [AVMetadataIdentifierQuickTimeMetadataLocationISO6709])
+    metadataOutput = AVPlayerItemMetadataOutput(identifiers: [AVMetadataIdentifierQuickTimeMetadataLocationISO6709, FixdriveSpeedIdentifier, FixdriveTimeIdentifier])
     metadataOutput.setDelegate(self, queue: metadataQueue)
     
     setCentered()
@@ -126,6 +133,7 @@ class PlayerViewController : UIViewController {
   }
   
   @IBAction func setPointOnMap(sender: UITapGestureRecognizer) {
+    print("TAP: setPointOnMap")
     if sender.state == .Ended {
       let point = sender.locationInView(mapView)
       let locCoord = mapView.convertPoint(point, toCoordinateFromView: mapView)
@@ -165,6 +173,7 @@ class PlayerViewController : UIViewController {
   
   
   func userDidSeekToNewPosition(newLocation: CLLocation) {
+    print("userDidSeekToNewPosition")
     
     var updatedLocation: CLLocation? = nil
     var closestDistance: CLLocationDistance = DBL_MAX
@@ -197,6 +206,7 @@ class PlayerViewController : UIViewController {
   // MARK: - Asset reading
   
   func readMetadataFromAsset(asset: AVAsset, completionHandler: ((Bool) -> Void)) {
+    print("readMetadataFromAsset")
     
     asset.loadValuesAsynchronouslyForKeys(["tracks"]) { () -> Void in
       // Dispatch all the reading work to a background queue, so we do not block the main thread
@@ -234,6 +244,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setUpReaderForAsset(asset: AVAsset) -> Bool {
+    print("setUpReaderForAsset")
     
     var success = true
     
@@ -283,6 +294,7 @@ class PlayerViewController : UIViewController {
   }
   
   func startReadingLocationMetadata() -> Bool {
+    print("startReadingLocationMetadata")
     
     // Instruct the asset reader to get ready to do work
     let success = reader.startReading()
@@ -310,6 +322,7 @@ class PlayerViewController : UIViewController {
   // MARK: - Utilites
   
   func drawPathOnMap() {
+    print("drawPathOnMap")
     
     let numberOfPoints = locationPoints.count
     var pointsToUse = [CLLocationCoordinate2D](count: numberOfPoints, repeatedValue: CLLocationCoordinate2D())
@@ -327,8 +340,15 @@ class PlayerViewController : UIViewController {
     // Set initial coordinate to the starting coordinate of the path
     mapView.centerCoordinate = locationPoints.first!.coordinate
     
+    var distance: Double = 0.0
+    
+    if numberOfPoints > 0 {
+      distance = max(locationPoints.first!.distanceFromLocation(locationPoints.last!) * 1.5, 800.0)
+    }
+    
     // Set initial region to some region around the starting coordinate
-    mapView.region = MKCoordinateRegionMakeWithDistance(mapView.centerCoordinate, 800, 800)
+    mapView.region = MKCoordinateRegionMakeWithDistance(mapView.centerCoordinate, distance, distance)
+    
     currentPin = MKPointAnnotation()
     currentPin.coordinate = mapView.centerCoordinate
     mapView.addAnnotation(currentPin)
@@ -336,6 +356,7 @@ class PlayerViewController : UIViewController {
   }
   
   func locationFromMetadataGroup(group: AVTimedMetadataGroup) -> CLLocation? {
+    print("locationFromMetadataGroup")
     
     var location: CLLocation? = nil
     
@@ -343,15 +364,15 @@ class PlayerViewController : UIViewController {
     for item in group.items {
       // Check to see if the item's data type matches quick time metadata location data type
       
-      if let itemString = item.dataType {
-        if itemString == kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709 as String {
+      if let itemString = item.identifier {
+        if itemString == AVMetadataIdentifierQuickTimeMetadataLocationISO6709 {
           if let locationDescription = item.stringValue {
             // Extract from a string in iso6709 notation
             let latitude = (locationDescription as NSString).substringToIndex(8)
             let longitude = (locationDescription as NSString).substringWithRange(NSMakeRange(8, 9))
             location = CLLocation(latitude: (latitude as NSString).doubleValue, longitude: (longitude as NSString).doubleValue)
           }
-          break
+         break
         }
       }
     }
@@ -359,7 +380,54 @@ class PlayerViewController : UIViewController {
     return location
   }
   
+  func speedFromMetadataGroup(group: AVTimedMetadataGroup) -> String? {
+    print("speedFromMetadataGroup")
+    
+    var speed: String? = nil
+    
+    // Go through the timed metadata group to extract location value
+    for item in group.items {
+      // Check to see if the item's data type matches quick time metadata location data type
+      
+      if let itemString = item.identifier {
+        if itemString == FixdriveSpeedIdentifier {
+          if let speedDescription = item.stringValue {
+            speed = speedDescription
+            //print("Speed: \(speedDescription)")
+          }
+          break
+        }
+      }
+    }
+    return speed
+  }
+  
+  func timeFromMetadataGroup(group: AVTimedMetadataGroup) -> String? {
+    print("timeFromMetadataGroup")
+    
+    var time: String? = nil
+    
+    // Go through the timed metadata group to extract location value
+    for item in group.items {
+      // Check to see if the item's data type matches quick time metadata location data type
+      
+      if let itemString = item.identifier {
+        if itemString == FixdriveTimeIdentifier {
+          if let timeDescription = item.stringValue {
+            time = timeDescription
+            //print("Time: \(timeDescription)")
+          }
+          break
+        }
+      }
+    }
+    return time
+  }
+  
+  
+  
   func updateCurrentLocation(location: CLLocation) {
+    print("updateCurrentLocation")
     // Update current pin to the new location
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       if let currentPin = self.currentPin {
@@ -373,6 +441,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setCentered() {
+    print("setCentered")
     shouldCenterMapView = true
     centeredButton.setImage(UIImage(named: "CenteredHi"), forState: .Normal)
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
@@ -385,12 +454,14 @@ class PlayerViewController : UIViewController {
   }
   
   func setUncentered() {
+    print("setUncentered")
     shouldCenterMapView = false
     centeredButton.setImage(UIImage(named: "Centered"), forState: .Normal)
   }
   
   // MARK: - Navigation
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    print("prepareForSegue")
     if segue.identifier == "showMovie" {
       let playerVC = segue.destinationViewController as! AVPlayerViewController
       setupVariables()
@@ -406,10 +477,21 @@ class PlayerViewController : UIViewController {
 extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
   
   func metadataOutput(output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], fromPlayerItemTrack track: AVPlayerItemTrack) {
+    print("metadataOutput_didOutputTimedMetadataGroups")
     // Go through the list of timed metadata groups and update location
     for group in groups {
       if let newLocation = locationFromMetadataGroup(group) {
         updateCurrentLocation(newLocation)
+      }
+      var timeSpeedStr = ""
+      if let timeStr = timeFromMetadataGroup(group) {
+        timeSpeedStr += "\(timeStr)\n"
+      }
+      if let speedStr = speedFromMetadataGroup(group) {
+        timeSpeedStr += speedStr
+      }
+      dispatch_async(dispatch_get_main_queue()) {
+        self.trackStatusLabel.text = timeSpeedStr
       }
     }
   }
@@ -420,6 +502,7 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
 extension PlayerViewController: MKMapViewDelegate {
   
   func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    print("mapView_viewForAnnotation")
     
     var pin = mapView.dequeueReusableAnnotationViewWithIdentifier("currentPin")
     
@@ -433,6 +516,7 @@ extension PlayerViewController: MKMapViewDelegate {
   }
   
   func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+    print("mapView_rendererForOverlay")
     
     let polylineRenderer = MKPolylineRenderer(overlay: overlay)
     polylineRenderer.strokeColor = UIColor(red: 0.1, green: 0.5, blue: 0.98, alpha: 0.8)

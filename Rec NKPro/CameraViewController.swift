@@ -68,6 +68,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var controlView: UIView!
   @IBOutlet weak var timeLabel: UILabel!
   @IBOutlet weak var frameRateLabel: UILabel!
+  @IBOutlet weak var resolutionLabel: UILabel!
+  @IBOutlet weak var textLabel: UILabel!
   @IBOutlet weak var backButton: UIButton!
   @IBOutlet weak var fillDiskLabel: UILabel!
   @IBOutlet weak var batteryLabel: UILabel!
@@ -104,6 +106,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     batteryLabel.text = ""
     fillDiskLabel.text = ""
     frameRateLabel.text = ""
+    resolutionLabel.text = ""
+    textLabel.text = ""
     recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
     //controlView.hidden = true
     
@@ -138,6 +142,20 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     updateBatteryAndDiskLabels()
     timeLabelUpdate()
     controlViewConstraint.constant = 0
+    
+    if settings.textOnVideo {
+      textLabel.text = "Text"
+    } else {
+      textLabel.text = ""
+    }
+    
+    if settings.qualityMode == .High {
+      resolutionLabel.text = "720p"
+    } else if settings.qualityMode == .Medium {
+      resolutionLabel.text = "480p"
+    } else {
+      resolutionLabel.text = "288p"
+    }
     
     // Start update timers label
     updateTimeTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateTimeInterval, target: self, selector: Selector("timeLabelUpdate"), userInfo: nil, repeats: true)

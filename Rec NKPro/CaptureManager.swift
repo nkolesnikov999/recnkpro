@@ -20,6 +20,9 @@ import UIKit
 import AVFoundation
 import CoreLocation
 
+let FixdriveSpeedIdentifier = "mdta/net.nkpro.fixdrive.speed.field"
+let FixdriveTimeIdentifier = "mdta/net.nkpro.fixdrive.time.field"
+
 protocol CaptureManagerDelegate : class {
   func recordingWillStart()
   func recordingDidStart()
@@ -34,8 +37,6 @@ protocol CaptureManagerDelegate : class {
 class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   
   weak var delegate: CaptureManagerDelegate?
-  
-  let FixdriveSpeedIdentifier = "mdta/net.nkpro.fixdrive.speed.field"
   
   var typeCamera: TypeCamera! {
     didSet {
@@ -63,7 +64,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       if textOnVideo {
         imageFromText()
       }
-      //print("FPS: \(frc.frameRate)")
     }
   }
   
@@ -465,7 +465,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
     // All combinations of identifiers, data types and extended language tags that will be appended to the metadata adaptor must form the specifications dictionary
     var metadataFormatDescription : CMMetadataFormatDescription?
-    let specifications = [[kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String: AVMetadataIdentifierQuickTimeMetadataLocationISO6709, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String: kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709 as String], [kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String : FixdriveSpeedIdentifier, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String : kCMMetadataBaseDataType_UTF8 as String]]
+    let specifications = [[kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String: AVMetadataIdentifierQuickTimeMetadataLocationISO6709, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String: kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709 as String], [kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String : FixdriveSpeedIdentifier, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String : kCMMetadataBaseDataType_UTF8 as String], [kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String : FixdriveTimeIdentifier, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String : kCMMetadataBaseDataType_UTF8 as String]]
     
     // Create metadata format description with the above created specifications which will be used to configure asset writer input
     let err = CMMetadataFormatDescriptionCreateWithMetadataSpecifications(kCFAllocatorDefault, kCMMetadataFormatType_Boxed, specifications, &metadataFormatDescription)
@@ -968,9 +968,9 @@ extension CaptureManager : CLLocationManagerDelegate {
             
             metadataItem.value = iso6709Notation
             
-            // Annotation text item
+            // Annotation speed item
             let speedItem = AVMutableMetadataItem()
-            speedItem.identifier = self.FixdriveSpeedIdentifier
+            speedItem.identifier = FixdriveSpeedIdentifier
             speedItem.dataType = kCMMetadataBaseDataType_UTF8 as String
             
             var kSpeed: Double = 3.6
@@ -986,9 +986,16 @@ extension CaptureManager : CLLocationManagerDelegate {
             speedItem.value = speedStr
             self.speed = speedStr as String
             
+            // Annotation time item
+            let timeItem = AVMutableMetadataItem()
+            timeItem.identifier = FixdriveTimeIdentifier
+            timeItem.dataType = kCMMetadataBaseDataType_UTF8 as String
+            timeItem.value = self.time
+            
+            
             // Convert location time to movie time
             let locationMovieTime = CMTimeConvertScale(self.movieTimeForLocationTime(newLocation.timestamp), 1000, CMTimeRoundingMethod.Default)
-            let newGroup = AVTimedMetadataGroup(items: [metadataItem, speedItem], timeRange: CMTimeRangeMake(locationMovieTime, kCMTimeInvalid))
+            let newGroup = AVTimedMetadataGroup(items: [metadataItem, speedItem, timeItem], timeRange: CMTimeRangeMake(locationMovieTime, kCMTimeInvalid))
             
             if let assetWriterMetadataIn = self.assetWriterMetadataIn, let assetWriterMetadataAdaptor = self.assetWriterMetadataAdaptor {
               if assetWriterMetadataIn.readyForMoreMediaData {
