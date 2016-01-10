@@ -16,6 +16,12 @@ import CoreMedia
 
 class PlayerViewController : UIViewController {
   
+  enum MapMode : Int {
+    case None = 0
+    case Centered = 1
+    case Distance = 2
+  }
+  
   var url: NSURL!
   var player: AVPlayer!
   
@@ -29,24 +35,25 @@ class PlayerViewController : UIViewController {
   private var metadataOutput: AVPlayerItemMetadataOutput!
   
   // Location variables
-  private var locationPoints = [CLLocation]()
-  private var timeStamps = [CMTimeRange]()
+  private var metadatas = [Metadata]()
   private var currentPin: MKPointAnnotation!
-  private var shouldCenterMapView = false
+  private var playerMapMode: MapMode = .Centered
+  
   
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var playerStack: UIStackView!
   @IBOutlet weak var trackStatusLabel: UILabel!
   @IBOutlet weak var mapTypeButton: UIButton!
   @IBOutlet weak var centeredButton: UIButton!
+  @IBOutlet weak var distanceButton: UIButton!
   
   override func viewDidLoad() {
     super.viewDidLoad()
     mapTypeButton.layer.cornerRadius = 10
     mapTypeButton.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
     
-    trackStatusLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
-    trackStatusLabel.layer.cornerRadius = 10.0
+    //trackStatusLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    //trackStatusLabel.layer.cornerRadius = 10.0
     
     defineStackAxis()
     let notificationCenter = NSNotificationCenter.defaultCenter()
@@ -113,25 +120,14 @@ class PlayerViewController : UIViewController {
         //print("The input movie \(asset.URL) does not contain location metadata")
         self.trackStatusLabel.text = NSLocalizedString("No Data", comment: "PlayerVC: No Data")
         self.centeredButton.enabled = false
+        self.distanceButton.enabled = false
       }
       self.player.play()
     }
   }
   
   // MARK: - Actions
-  
-  @IBAction func draggedAction(sender: UIPanGestureRecognizer) {
-    // Stop centering the map since the user started dragging the map around.
-    // We do not center the map until the user seeks to some location
-    setUncentered()
-  }
-  
-  @IBAction func pinchAction(sender: UIPinchGestureRecognizer) {
-    // Stop centering the map since the user started dragging the map around.
-    // We do not center the map until the user seeks to some location
-    setUncentered()
-  }
-  
+    
   @IBAction func setPointOnMap(sender: UITapGestureRecognizer) {
     print("TAP: setPointOnMap")
     if sender.state == .Ended {
@@ -161,42 +157,64 @@ class PlayerViewController : UIViewController {
   }
   
   @IBAction func tapCenteredButton(sender: UIButton) {
-    
-    if shouldCenterMapView {
-      setUncentered()
-    } else {
+
+    switch playerMapMode {
+    case .None:
       setCentered()
+      playerMapMode = .Centered
+    case .Distance:
+      resetDistanceMode()
+      setCentered()
+      playerMapMode = .Centered
+    case .Centered:
+      setUncentered()
+      playerMapMode = .None
     }
     
   }
   
+  @IBAction func tapDistanceButton(sender: UIButton) {
+    switch playerMapMode {
+    case .None:
+      setDistanceMode()
+      playerMapMode = .Distance
+    case .Centered:
+      setUncentered()
+      setDistanceMode()
+      playerMapMode = .Distance
+    case .Distance:
+      resetDistanceMode()
+      playerMapMode = .None
+    }
+  }
   
   
   func userDidSeekToNewPosition(newLocation: CLLocation) {
     print("userDidSeekToNewPosition")
     
-    var updatedLocation: CLLocation? = nil
+    var updatedMetadata: Metadata? = nil
     var closestDistance: CLLocationDistance = DBL_MAX
     
     // Find the closest location on the path to which we can seek
-    for location in locationPoints {
-      let distance = newLocation.distanceFromLocation(location)
+    for metadata in metadatas {
+      let distance = newLocation.distanceFromLocation(metadata.location!)
       if distance < closestDistance {
-        updatedLocation = location
+        updatedMetadata = metadata
         closestDistance = distance
       }
     }
     
-    if let updatedLocation = updatedLocation {
+    if let updatedMetadata = updatedMetadata {
       dispatch_async(dispatch_get_main_queue(), { () -> Void in
         // Seek to timestamp of the updated location.
-        let updatedTimeRange = self.timeStamps[self.locationPoints.indexOf(updatedLocation)!]
+        let updatedTimeRange = updatedMetadata.timestamp!
+        
         self.player.seekToTime(updatedTimeRange.start, completionHandler: { (finished) -> Void in
           // Start centering the map at the current location
-          self.setCentered()
+          // self.setCentered()
           // Move the pin to updated location.
           if finished {
-            self.updateCurrentLocation(updatedLocation)
+            self.updateCurrentLocation(updatedMetadata.location!)
           }
         })
       })
@@ -230,7 +248,7 @@ class PlayerViewController : UIViewController {
         // Call completion handler with the appropriate BOOL indicating presence or absence of metadata
         var metadataAvailable = false
         if success {
-          metadataAvailable = self.locationPoints.count > 0
+          metadataAvailable = self.metadatas.count > 0
         } else {
           self.reader.cancelReading()
         }
@@ -307,8 +325,16 @@ class PlayerViewController : UIViewController {
       while group != nil {
         let location = locationFromMetadataGroup(group!)
         if let location = location {
-          locationPoints.append(location)
-          timeStamps.append(group!.timeRange)
+          let metadata = Metadata()
+          metadata.location = location
+          metadata.timestamp = group!.timeRange
+          if let speed = speedFromMetadataGroup(group!) {
+            metadata.speed = speed
+          }
+          if let time = timeFromMetadataGroup(group!) {
+            metadata.time = time
+          }
+          metadatas.append(metadata)
         }
         group = metadataAdaptor.nextTimedMetadataGroup()
       }
@@ -324,13 +350,13 @@ class PlayerViewController : UIViewController {
   func drawPathOnMap() {
     print("drawPathOnMap")
     
-    let numberOfPoints = locationPoints.count
+    let numberOfPoints = metadatas.count
     var pointsToUse = [CLLocationCoordinate2D](count: numberOfPoints, repeatedValue: CLLocationCoordinate2D())
     
     // Extract all the coordinates to draw from the locationPoints array
     for var i = 0; i < numberOfPoints; i++ {
-      let location = locationPoints[i]
-      pointsToUse[i] = location.coordinate
+      let metadata = metadatas[i]
+      pointsToUse[i] = metadata.location!.coordinate
     }
     
     // Draw the extracted path as an overlay on the map view
@@ -338,12 +364,12 @@ class PlayerViewController : UIViewController {
     mapView.addOverlay(polyline, level: .AboveRoads)
     
     // Set initial coordinate to the starting coordinate of the path
-    mapView.centerCoordinate = locationPoints.first!.coordinate
+    mapView.centerCoordinate = metadatas.first!.location!.coordinate
     
     var distance: Double = 0.0
     
     if numberOfPoints > 0 {
-      distance = max(locationPoints.first!.distanceFromLocation(locationPoints.last!) * 1.5, 800.0)
+      distance = max(metadatas.first!.location!.distanceFromLocation(metadatas.last!.location!) * 1.5, 800.0)
     }
     
     // Set initial region to some region around the starting coordinate
@@ -432,7 +458,7 @@ class PlayerViewController : UIViewController {
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       if let currentPin = self.currentPin {
         currentPin.coordinate = location.coordinate
-        if self.shouldCenterMapView {
+        if self.playerMapMode == .Centered {
           self.mapView.setCenterCoordinate(currentPin.coordinate, animated: true)
           self.mapView.addAnnotation(currentPin)
         }
@@ -442,22 +468,126 @@ class PlayerViewController : UIViewController {
   
   func setCentered() {
     print("setCentered")
-    shouldCenterMapView = true
     centeredButton.setImage(UIImage(named: "CenteredHi"), forState: .Normal)
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       if let currentPin = self.currentPin {
-        if self.shouldCenterMapView {
-          self.mapView.setCenterCoordinate(currentPin.coordinate, animated: true)
-        }
+        self.mapView.setCenterCoordinate(currentPin.coordinate, animated: true)
       }
     }
   }
   
   func setUncentered() {
     print("setUncentered")
-    shouldCenterMapView = false
+
     centeredButton.setImage(UIImage(named: "Centered"), forState: .Normal)
   }
+  
+  func setDistanceMode() {
+    distanceButton.setImage(UIImage(named: "DistanceHi"), forState: .Normal)
+    dataFromPointsWithIndexes(startIndex: 0, endIndex: metadatas.count - 1)
+  }
+  
+  func resetDistanceMode() {
+    distanceButton.setImage(UIImage(named: "Distance"), forState: .Normal)
+    trackStatusLabel.text = ""
+  }
+  
+  func digitSpeedFromString(speedFull: NSString) -> Int32 {
+    var speedStr: String = ""
+    var speed: Int32 = 0
+    
+    let firstChar = speedFull.substringWithRange(NSMakeRange(0, 1))
+    //print("FIRST: \(firstChar)")
+    let secondChar = speedFull.substringWithRange(NSMakeRange(1, 1))
+    //print("SECOND: \(secondChar)")
+    let thirdChar = speedFull.substringWithRange(NSMakeRange(2, 1))
+    //print("THIRD: \(thirdChar)")
+    
+    if firstChar != " " {
+      speedStr += firstChar
+    }
+    if secondChar != " " {
+      speedStr += secondChar
+    }
+    if thirdChar != " " {
+      speedStr += thirdChar
+    }
+    
+    if let digit = Int32(speedStr) {
+      speed = digit
+    }
+
+    return speed
+  }
+  
+  func dataFromPointsWithIndexes(startIndex startIndex: Int, endIndex: Int) {
+    var distance: Double = 0
+    var index = startIndex
+    var metadata = metadatas[index]
+    
+    var time: Int64 = 0
+    
+    if let startTime = metadatas[startIndex].timestamp?.start {
+      if let endTime = metadatas[endIndex].timestamp?.start {
+        time = endTime.value / Int64(endTime.timescale) - startTime.value / Int64(startTime.timescale)
+      }
+    }
+    
+    let seconds = Int(time % 60)
+    let minutes = Int(((time - seconds) / 60) % 60)
+    let hours = Int(((time - seconds) / 60 - minutes) / 60)
+    
+    let timeString = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    
+    
+    print("TIME: \(timeString), time: \(time), seconds: \(seconds), minutes: \(minutes), hours: \(hours)")
+    
+    var unitSpeedStr = ""
+    
+    var minSpeed = INT8_MAX
+    var maxSpeed = INT8_MIN
+    
+    var kSpeed: Float = 0
+    
+    if metadata.speed.hasSuffix("km/h") || metadata.speed.hasSuffix("км/ч") {
+      //print("km/h")
+      kSpeed = 3.6
+      unitSpeedStr = "km/h"
+    }
+    
+    if metadata.speed.hasSuffix("mph") || metadata.speed.hasSuffix("миль/ч") {
+      //print("mph")
+      kSpeed = 2.24
+      unitSpeedStr = "mph"
+    }
+    
+    while index < endIndex {
+      
+      let speedFull = metadata.speed as NSString
+      let speed = digitSpeedFromString(speedFull)
+      
+      minSpeed = min(minSpeed, speed)
+      maxSpeed = max(maxSpeed, speed)
+    
+      //print("+++\(speed)+++")
+      index++
+      let delta = metadata.location!.distanceFromLocation(metadatas[index].location!)
+      if delta > 20 {
+        distance += delta
+        metadata = metadatas[index]
+      }
+    }
+    
+    var avgSpeed: Int = 0
+    if time != 0 {
+      avgSpeed = Int(Float(distance) / Float(time) * kSpeed)
+    }
+    
+    
+    trackStatusLabel.text = "\(Int(distance)) m, \(timeString)\nmin: \(minSpeed), max: \(maxSpeed), avg: \(avgSpeed) \(unitSpeedStr) "
+    
+  }
+
   
   // MARK: - Navigation
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -470,6 +600,7 @@ class PlayerViewController : UIViewController {
       playerVC.showsPlaybackControls = true
     }
   }
+  
 }
 
 // MARK: - AVPlayerItemMetadataOutputPushDelegate
@@ -478,20 +609,22 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
   
   func metadataOutput(output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], fromPlayerItemTrack track: AVPlayerItemTrack) {
     print("metadataOutput_didOutputTimedMetadataGroups")
-    // Go through the list of timed metadata groups and update location
-    for group in groups {
-      if let newLocation = locationFromMetadataGroup(group) {
-        updateCurrentLocation(newLocation)
-      }
-      var timeSpeedStr = ""
-      if let timeStr = timeFromMetadataGroup(group) {
-        timeSpeedStr += "\(timeStr)\n"
-      }
-      if let speedStr = speedFromMetadataGroup(group) {
-        timeSpeedStr += speedStr
-      }
-      dispatch_async(dispatch_get_main_queue()) {
-        self.trackStatusLabel.text = timeSpeedStr
+    if playerMapMode != .Distance {
+      // Go through the list of timed metadata groups and update location
+      for group in groups {
+        if let newLocation = locationFromMetadataGroup(group) {
+          updateCurrentLocation(newLocation)
+        }
+        var timeSpeedStr = ""
+        if let timeStr = timeFromMetadataGroup(group) {
+          timeSpeedStr += "\(timeStr)\n"
+        }
+        if let speedStr = speedFromMetadataGroup(group) {
+          timeSpeedStr += speedStr
+        }
+        dispatch_async(dispatch_get_main_queue()) {
+          self.trackStatusLabel.text = timeSpeedStr
+        }
       }
     }
   }
