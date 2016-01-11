@@ -559,7 +559,7 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func speedLabelNoData() {
     //print("CameraVC.speedUpdate")
-    let strNoData = NSLocalizedString("No data", comment: "CameraVC: No data")
+    let strNoData = NSLocalizedString("NoData", comment: "CameraVC: No data")
     speedLabel.text = strNoData
     captureManager?.speed = strNoData
   }

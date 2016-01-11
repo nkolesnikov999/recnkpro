@@ -38,7 +38,9 @@ class PlayerViewController : UIViewController {
   private var metadatas = [Metadata]()
   private var currentPin: MKPointAnnotation!
   private var playerMapMode: MapMode = .Centered
-  
+  private var startPoint: Metadata!
+  private var endPoint: Metadata!
+  private var distancePolyline: MKPolyline?
   
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var playerStack: UIStackView!
@@ -54,6 +56,9 @@ class PlayerViewController : UIViewController {
     
     //trackStatusLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
     //trackStatusLabel.layer.cornerRadius = 10.0
+    
+    self.centeredButton.enabled = false
+    self.distanceButton.enabled = false
     
     defineStackAxis()
     let notificationCenter = NSNotificationCenter.defaultCenter()
@@ -116,11 +121,11 @@ class PlayerViewController : UIViewController {
       if metadataAvailable {
         self.drawPathOnMap()
         self.trackStatusLabel.text = ""
+        self.centeredButton.enabled = true
+        self.distanceButton.enabled = true
       } else {
         //print("The input movie \(asset.URL) does not contain location metadata")
         self.trackStatusLabel.text = NSLocalizedString("No Data", comment: "PlayerVC: No Data")
-        self.centeredButton.enabled = false
-        self.distanceButton.enabled = false
       }
       self.player.play()
     }
@@ -134,7 +139,11 @@ class PlayerViewController : UIViewController {
       let point = sender.locationInView(mapView)
       let locCoord = mapView.convertPoint(point, toCoordinateFromView: mapView)
       let newLocation = CLLocation(latitude: locCoord.latitude, longitude: locCoord.longitude)
-      userDidSeekToNewPosition(newLocation)
+      if playerMapMode == .Distance {
+        setDistancePoint(newLocation)
+      } else {
+        userDidSeekToNewPosition(newLocation)
+      }
     }
   }
   
@@ -160,15 +169,15 @@ class PlayerViewController : UIViewController {
 
     switch playerMapMode {
     case .None:
-      setCentered()
       playerMapMode = .Centered
+      setCentered()
     case .Distance:
+      playerMapMode = .Centered
       resetDistanceMode()
       setCentered()
-      playerMapMode = .Centered
     case .Centered:
-      setUncentered()
       playerMapMode = .None
+      setUncentered()
     }
     
   }
@@ -176,16 +185,65 @@ class PlayerViewController : UIViewController {
   @IBAction func tapDistanceButton(sender: UIButton) {
     switch playerMapMode {
     case .None:
-      setDistanceMode()
       playerMapMode = .Distance
+      setDistanceMode()
     case .Centered:
+      playerMapMode = .Distance
       setUncentered()
       setDistanceMode()
-      playerMapMode = .Distance
     case .Distance:
-      resetDistanceMode()
       playerMapMode = .None
+      resetDistanceMode()
     }
+  }
+  
+  func setDistancePoint(newLocation: CLLocation) {
+    var updatedMetadata: Metadata? = nil
+    var closestDistance: CLLocationDistance = DBL_MAX
+    
+    // Find the closest location on the path to which we can seek
+    for metadata in metadatas {
+      let distance = newLocation.distanceFromLocation(metadata.location!)
+      if distance < closestDistance {
+        updatedMetadata = metadata
+        closestDistance = distance
+      }
+    }
+    
+    let distanceToStart = updatedMetadata?.location?.distanceFromLocation(startPoint.location!)
+    let distanceToEnd = updatedMetadata?.location?.distanceFromLocation(endPoint.location!)
+    
+    if distanceToStart < distanceToEnd {
+      mapView.removeAnnotation(startPoint)
+      startPoint = updatedMetadata
+      mapView.addAnnotation(startPoint)
+    } else {
+      mapView.removeAnnotation(endPoint)
+      endPoint = updatedMetadata
+      mapView.addAnnotation(endPoint)
+    }
+    
+    mapView.removeOverlay(distancePolyline!)
+    
+    if let startIndex = metadatas.indexOf(startPoint) {
+      if let endIndex = metadatas.indexOf(endPoint) {
+        dataFromPointsWithIndexes(startIndex: startIndex, endIndex: endIndex)
+        
+        var pointsToUse = [CLLocationCoordinate2D]()
+        
+        // Extract all the coordinates to draw from the locationPoints array
+        for var i = startIndex; i <= endIndex; i++ {
+          let metadata = metadatas[i]
+          pointsToUse.append(metadata.coordinate)
+        }
+        
+        // Draw the extracted path as an overlay on the map view
+        distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
+        mapView.addOverlay(distancePolyline!, level: .AboveRoads)
+        
+      }
+    }
+    
   }
   
   
@@ -338,6 +396,8 @@ class PlayerViewController : UIViewController {
         }
         group = metadataAdaptor.nextTimedMetadataGroup()
       }
+      startPoint = metadatas.first
+      endPoint = metadatas.last
     } else {
       print("ERROR: startReadingLocationMetadata - \(player.error?.userInfo)")
     }
@@ -379,6 +439,38 @@ class PlayerViewController : UIViewController {
     currentPin.coordinate = mapView.centerCoordinate
     mapView.addAnnotation(currentPin)
     
+  }
+  
+  func drawDistancePath() {
+    mapView.removeAnnotation(currentPin)
+    mapView.addAnnotations([startPoint, endPoint])
+    
+    if let startIndex = metadatas.indexOf(startPoint) {
+      if let endIndex = metadatas.indexOf(endPoint) {
+        dataFromPointsWithIndexes(startIndex: startIndex, endIndex: endIndex)
+        
+        var pointsToUse = [CLLocationCoordinate2D]()
+        
+        // Extract all the coordinates to draw from the locationPoints array
+        for var i = startIndex; i < endIndex; i++ {
+          let metadata = metadatas[i]
+          pointsToUse.append(metadata.coordinate)
+        }
+        
+        // Draw the extracted path as an overlay on the map view
+        distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
+        mapView.addOverlay(distancePolyline!, level: .AboveRoads)
+    
+      }
+    }
+    
+  }
+  
+  
+  func removeDistancePath() {
+    mapView.removeOverlay(distancePolyline!)
+    mapView.removeAnnotations([startPoint, endPoint])
+    mapView.addAnnotation(currentPin)
   }
   
   func locationFromMetadataGroup(group: AVTimedMetadataGroup) -> CLLocation? {
@@ -484,12 +576,14 @@ class PlayerViewController : UIViewController {
   
   func setDistanceMode() {
     distanceButton.setImage(UIImage(named: "DistanceHi"), forState: .Normal)
-    dataFromPointsWithIndexes(startIndex: 0, endIndex: metadatas.count - 1)
+    
+    drawDistancePath()
   }
   
   func resetDistanceMode() {
     distanceButton.setImage(UIImage(named: "Distance"), forState: .Normal)
     trackStatusLabel.text = ""
+    removeDistancePath()
   }
   
   func digitSpeedFromString(speedFull: NSString) -> Int32 {
@@ -544,8 +638,8 @@ class PlayerViewController : UIViewController {
     
     var unitSpeedStr = ""
     
-    var minSpeed = INT8_MAX
-    var maxSpeed = INT8_MIN
+    var minSpeed: Int32 = 10000
+    var maxSpeed: Int32 = 0
     
     var kSpeed: Float = 0
     
@@ -581,6 +675,10 @@ class PlayerViewController : UIViewController {
     var avgSpeed: Int = 0
     if time != 0 {
       avgSpeed = Int(Float(distance) / Float(time) * kSpeed)
+    }
+    
+    if minSpeed == 10000 {
+      minSpeed = 0
     }
     
     
@@ -643,6 +741,7 @@ extension PlayerViewController: MKMapViewDelegate {
       pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "currentPin")
     } else {
       pin?.annotation = annotation
+      pin?.canShowCallout = true
     }
     
     return pin
@@ -652,8 +751,16 @@ extension PlayerViewController: MKMapViewDelegate {
     print("mapView_rendererForOverlay")
     
     let polylineRenderer = MKPolylineRenderer(overlay: overlay)
-    polylineRenderer.strokeColor = UIColor(red: 0.1, green: 0.5, blue: 0.98, alpha: 0.8)
     polylineRenderer.lineWidth = 5.0
+    if playerMapMode == .Distance {
+      polylineRenderer.strokeColor = UIColor(red: 0.1, green: 0.98, blue: 0.5, alpha: 0.8)
+    } else {
+      polylineRenderer.strokeColor = UIColor(red: 0.1, green: 0.5, blue: 0.98, alpha: 0.8)
+    }
+    
+    
+    
+    
     
     return polylineRenderer
   }

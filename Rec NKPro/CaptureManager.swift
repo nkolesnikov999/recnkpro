@@ -1002,6 +1002,7 @@ extension CaptureManager : CLLocationManagerDelegate {
                 if assetWriterMetadataAdaptor.appendTimedMetadataGroup(newGroup) {
                   dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     self.delegate?.newLocationUpdate(speedStr as String)
+                    // print("LOC_UPDATE")
                   })
                 } else {
                   if let error = assetWriter.error {

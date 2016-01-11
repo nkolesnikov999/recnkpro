@@ -7,12 +7,25 @@
 //
 
 import UIKit
+import MapKit
 import CoreMedia
 import CoreLocation
 
-class Metadata {
+class Metadata: NSObject, MKAnnotation {
   var timestamp: CMTimeRange?
   var location: CLLocation?
   var speed: String = ""
   var time: String = ""
+  
+  var coordinate: CLLocationCoordinate2D {
+    return location!.coordinate
+  }
+  
+  var title: String? {
+    return time
+  }
+  
+  var subtitle: String? {
+    return speed
+  }
 }
