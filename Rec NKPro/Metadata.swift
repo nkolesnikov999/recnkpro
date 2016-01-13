@@ -25,7 +25,4 @@ class Metadata: NSObject, MKAnnotation {
     return time
   }
   
-  var subtitle: String? {
-    return speed
-  }
 }

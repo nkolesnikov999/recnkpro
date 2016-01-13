@@ -587,6 +587,27 @@ class PlayerViewController : UIViewController {
     removeDistancePath()
   }
   
+  func distanceString(distance: String) -> String {
+    var unitSpeedStr = ""
+    var kSpeed: Float = 0
+    
+    let mphStr = NSLocalizedString("mph", comment: "PlayerVC: mph")
+    let kmhStr = NSLocalizedString("km/h", comment: "PlayerVC: km/h")
+    
+    if typeSpeed == .Mi {
+      //print("mph")
+      kSpeed = 2.236936
+      unitSpeedStr = mphStr
+    } else {
+      //print("km/h")
+      kSpeed = 3.6
+      unitSpeedStr = kmhStr
+    }
+    
+    let floatSpeed = (distance as NSString).floatValue * kSpeed
+    return "\(Int(floatSpeed)) \(unitSpeedStr)"
+  }
+  
   func dataFromPointsWithIndexes(startIndex startIndex: Int, endIndex: Int) {
     var distance: Double = 0
     var index = startIndex
@@ -608,21 +629,23 @@ class PlayerViewController : UIViewController {
     
     //print("TIME: \(timeString), time: \(time), seconds: \(seconds), minutes: \(minutes), hours: \(hours)")
     
-    var unitSpeedStr = ""
-    
     var minSpeed: Float = 10000
     var maxSpeed: Float = 0
     
+    var unitSpeedStr = ""
     var kSpeed: Float = 0
+    
+    let mphStr = NSLocalizedString("mph", comment: "PlayerVC: mph")
+    let kmhStr = NSLocalizedString("km/h", comment: "PlayerVC: km/h")
     
     if typeSpeed == .Mi {
       //print("mph")
       kSpeed = 2.236936
-      unitSpeedStr = "mph"
+      unitSpeedStr = mphStr
     } else {
       //print("km/h")
       kSpeed = 3.6
-      unitSpeedStr = "km/h"
+      unitSpeedStr = kmhStr
     }
     
     while index < endIndex {
@@ -655,8 +678,13 @@ class PlayerViewController : UIViewController {
       minSpeed = 0
     }
     
+    let mStr = NSLocalizedString("m", comment: "PlayerVC: m")
+    let minStr = NSLocalizedString("min:", comment: "PlayerVC: min:")
+    let maxStr = NSLocalizedString("max:", comment: "PlayerVC: max:")
+    let avgStr = NSLocalizedString("avg:", comment: "PlayerVC: avg:")
     
-    trackStatusLabel.text = "\(Int(distance)) m, \(timeString)\nmin: \(Int(minSpeed)), max: \(Int(maxSpeed)), avg: \(avgSpeed) \(unitSpeedStr)"
+    
+    trackStatusLabel.text = "\(Int(distance)) \(mStr), \(timeString)\n\(minStr) \(Int(minSpeed)), \(maxStr) \(Int(maxSpeed)), \(avgStr) \(avgSpeed) \(unitSpeedStr)"
     
   }
 
@@ -696,21 +724,7 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
           if speedStr.hasSuffix("mph") || speedStr.hasSuffix("km/h") || speedStr.hasSuffix("км/ч") {
             print("OLD DATA")
           } else {
-            var unitSpeedStr = ""
-            var kSpeed: Float = 0
-            
-            if typeSpeed == .Mi {
-              //print("mph")
-              kSpeed = 2.236936
-              unitSpeedStr = "mph"
-            } else {
-              //print("km/h")
-              kSpeed = 3.6
-              unitSpeedStr = "km/h"
-            }
-            
-            let floatSpeed = (speedStr as NSString).floatValue * kSpeed
-            timeSpeedStr += "\(Int(floatSpeed)) \(unitSpeedStr)"
+            timeSpeedStr += distanceString(speedStr)
           }
         }
         dispatch_async(dispatch_get_main_queue()) {
@@ -729,7 +743,7 @@ extension PlayerViewController: MKMapViewDelegate {
     print("mapView_viewForAnnotation")
     
     var pin = mapView.dequeueReusableAnnotationViewWithIdentifier("currentPin")
-    
+
     if pin == nil {
       pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "currentPin")
     } else {

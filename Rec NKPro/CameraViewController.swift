@@ -536,7 +536,7 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func setResolutionAndTextLabels() {
     if settings.textOnVideo {
-      textLabel.text = "Text"
+      textLabel.text = NSLocalizedString("Text", comment: "CameraVC textLabel: Text")
       textLabel.hidden = false
     } else {
       textLabel.text = ""
