@@ -24,6 +24,7 @@ class AssetsViewController : UIViewController {
   var assetItemsList: [AssetItem]!
   var movieURL: NSURL!
   var freeSpace: Float!
+  var typeSpeed: TypeSpeed!
   
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -61,6 +62,7 @@ class AssetsViewController : UIViewController {
       let playerVC = segue.destinationViewController as! PlayerViewController
       if let url = movieURL {
         playerVC.url = url
+        playerVC.typeSpeed = typeSpeed
       }
     }
   }

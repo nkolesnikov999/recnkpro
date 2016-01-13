@@ -24,6 +24,7 @@ class PlayerViewController : UIViewController {
   
   var url: NSURL!
   var player: AVPlayer!
+  var typeSpeed: TypeSpeed!
   
   // Reader variables
   private var reader: AVAssetReader!
@@ -586,34 +587,6 @@ class PlayerViewController : UIViewController {
     removeDistancePath()
   }
   
-  func digitSpeedFromString(speedFull: NSString) -> Int32 {
-    var speedStr: String = ""
-    var speed: Int32 = 0
-    
-    let firstChar = speedFull.substringWithRange(NSMakeRange(0, 1))
-    //print("FIRST: \(firstChar)")
-    let secondChar = speedFull.substringWithRange(NSMakeRange(1, 1))
-    //print("SECOND: \(secondChar)")
-    let thirdChar = speedFull.substringWithRange(NSMakeRange(2, 1))
-    //print("THIRD: \(thirdChar)")
-    
-    if firstChar != " " {
-      speedStr += firstChar
-    }
-    if secondChar != " " {
-      speedStr += secondChar
-    }
-    if thirdChar != " " {
-      speedStr += thirdChar
-    }
-    
-    if let digit = Int32(speedStr) {
-      speed = digit
-    }
-
-    return speed
-  }
-  
   func dataFromPointsWithIndexes(startIndex startIndex: Int, endIndex: Int) {
     var distance: Double = 0
     var index = startIndex
@@ -633,35 +606,36 @@ class PlayerViewController : UIViewController {
     
     let timeString = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     
-    
-    print("TIME: \(timeString), time: \(time), seconds: \(seconds), minutes: \(minutes), hours: \(hours)")
+    //print("TIME: \(timeString), time: \(time), seconds: \(seconds), minutes: \(minutes), hours: \(hours)")
     
     var unitSpeedStr = ""
     
-    var minSpeed: Int32 = 10000
-    var maxSpeed: Int32 = 0
+    var minSpeed: Float = 10000
+    var maxSpeed: Float = 0
     
     var kSpeed: Float = 0
     
-    if metadata.speed.hasSuffix("km/h") || metadata.speed.hasSuffix("км/ч") {
+    if typeSpeed == .Mi {
+      //print("mph")
+      kSpeed = 2.236936
+      unitSpeedStr = "mph"
+    } else {
       //print("km/h")
       kSpeed = 3.6
       unitSpeedStr = "km/h"
     }
     
-    if metadata.speed.hasSuffix("mph") || metadata.speed.hasSuffix("миль/ч") {
-      //print("mph")
-      kSpeed = 2.24
-      unitSpeedStr = "mph"
-    }
-    
     while index < endIndex {
       
-      let speedFull = metadata.speed as NSString
-      let speed = digitSpeedFromString(speedFull)
-      
-      minSpeed = min(minSpeed, speed)
-      maxSpeed = max(maxSpeed, speed)
+      if metadata.speed.hasSuffix("mph") || metadata.speed.hasSuffix("km/h") || metadata.speed.hasSuffix("км/ч") {
+        print("OLD DATA")
+      } else {
+        let speedFull = metadata.speed as NSString
+        let speed = speedFull.floatValue * kSpeed
+        
+        minSpeed = min(minSpeed, speed)
+        maxSpeed = max(maxSpeed, speed)
+      }
     
       //print("+++\(speed)+++")
       index++
@@ -682,7 +656,7 @@ class PlayerViewController : UIViewController {
     }
     
     
-    trackStatusLabel.text = "\(Int(distance)) m, \(timeString)\nmin: \(minSpeed), max: \(maxSpeed), avg: \(avgSpeed) \(unitSpeedStr) "
+    trackStatusLabel.text = "\(Int(distance)) m, \(timeString)\nmin: \(Int(minSpeed)), max: \(Int(maxSpeed)), avg: \(avgSpeed) \(unitSpeedStr)"
     
   }
 
@@ -718,7 +692,26 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
           timeSpeedStr += "\(timeStr)\n"
         }
         if let speedStr = speedFromMetadataGroup(group) {
-          timeSpeedStr += speedStr
+          
+          if speedStr.hasSuffix("mph") || speedStr.hasSuffix("km/h") || speedStr.hasSuffix("км/ч") {
+            print("OLD DATA")
+          } else {
+            var unitSpeedStr = ""
+            var kSpeed: Float = 0
+            
+            if typeSpeed == .Mi {
+              //print("mph")
+              kSpeed = 2.236936
+              unitSpeedStr = "mph"
+            } else {
+              //print("km/h")
+              kSpeed = 3.6
+              unitSpeedStr = "km/h"
+            }
+            
+            let floatSpeed = (speedStr as NSString).floatValue * kSpeed
+            timeSpeedStr += "\(Int(floatSpeed)) \(unitSpeedStr)"
+          }
         }
         dispatch_async(dispatch_get_main_queue()) {
           self.trackStatusLabel.text = timeSpeedStr
@@ -753,14 +746,10 @@ extension PlayerViewController: MKMapViewDelegate {
     let polylineRenderer = MKPolylineRenderer(overlay: overlay)
     polylineRenderer.lineWidth = 5.0
     if playerMapMode == .Distance {
-      polylineRenderer.strokeColor = UIColor(red: 0.1, green: 0.98, blue: 0.5, alpha: 0.8)
+      polylineRenderer.strokeColor = UIColor(red: 0.2, green: 0.98, blue: 0.5, alpha: 0.8)
     } else {
-      polylineRenderer.strokeColor = UIColor(red: 0.1, green: 0.5, blue: 0.98, alpha: 0.8)
+      polylineRenderer.strokeColor = UIColor(red: 0.2, green: 0.5, blue: 0.98, alpha: 0.8)
     }
-    
-    
-    
-    
     
     return polylineRenderer
   }

@@ -60,8 +60,11 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   
   @IBOutlet weak var previewView: UIView!
+  @IBOutlet weak var speedView: UIView!
   @IBOutlet weak var speedLabel: UILabel!
+  @IBOutlet weak var unitsSpeedLabel: UILabel!
   @IBOutlet weak var odometerLabel: UILabel!
+  @IBOutlet weak var unitDistanceLabel: UILabel!
   @IBOutlet weak var settingsButton: UIButton!
   @IBOutlet weak var recordButton: UIButton!
   @IBOutlet weak var layerOpacitySlider: UISlider!
@@ -73,8 +76,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var backButton: UIButton!
   @IBOutlet weak var fillDiskLabel: UILabel!
   @IBOutlet weak var batteryLabel: UILabel!
-  @IBOutlet weak var batteryTitle: UILabel!
-  @IBOutlet weak var freeSpaceTitle: UILabel!
   @IBOutlet weak var controlViewConstraint: NSLayoutConstraint!
   
 
@@ -83,6 +84,22 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   override func viewDidLoad() {
     //print("CameraVC.viewDidLoad")
     super.viewDidLoad()
+    
+    resolutionLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    resolutionLabel.layer.cornerRadius = 10.0
+    
+    textLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    textLabel.layer.cornerRadius = 10.0
+    
+    timeLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    timeLabel.layer.cornerRadius = 13.0
+    
+    odometerLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    odometerLabel.layer.cornerRadius = 18.0
+    
+    unitDistanceLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    unitDistanceLabel.layer.cornerRadius = 10.0
+
     
     // Keep track of changes to the device orientation so we can update the capture manager
     let notificationCenter = NSNotificationCenter.defaultCenter()
@@ -100,14 +117,16 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       self.treatPhoneCall(call)
     }
     
-    odometerLabel.text = ""
     speedLabel.text = ""
-    timeLabel.text = ""
-    batteryLabel.text = ""
-    fillDiskLabel.text = ""
-    frameRateLabel.text = ""
-    resolutionLabel.text = ""
-    textLabel.text = ""
+    speedView.hidden = true
+    
+    timeLabel.text = "2016/01/01 00:00:00"
+    batteryLabel.text = "80"
+    fillDiskLabel.text = "0.0"
+    
+    frameRateLabel.text = "0.0"
+    frameRateLabel.textColor = UIColor.redColor()
+
     recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
     //controlView.hidden = true
     
@@ -125,6 +144,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     captureManager?.setupAndStartCaptureSession()
     
     odometer = Odometer(distance: settings.odometerMeters)
+    createOdometerLabel(settings.odometerMeters)
+    
+    setResolutionAndTextLabels()
   }
   
   
@@ -143,19 +165,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     timeLabelUpdate()
     controlViewConstraint.constant = 0
     
-    if settings.textOnVideo {
-      textLabel.text = "Text"
-    } else {
-      textLabel.text = ""
-    }
-    
-    if settings.qualityMode == .High {
-      resolutionLabel.text = "720p"
-    } else if settings.qualityMode == .Medium {
-      resolutionLabel.text = "480p"
-    } else {
-      resolutionLabel.text = "288p"
-    }
+    setResolutionAndTextLabels()
     
     // Start update timers label
     updateTimeTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateTimeInterval, target: self, selector: Selector("timeLabelUpdate"), userInfo: nil, repeats: true)
@@ -163,8 +173,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     removeControlViewTimer = nil
     
     controlView.hidden = false
-    batteryTitle.hidden = false
-    freeSpaceTitle.hidden = false
     
     createMovieContents()
   }
@@ -422,6 +430,8 @@ extension CameraViewController : CaptureManagerDelegate {
       self.recordButton.enabled = true
       self.recordButton.setImage(UIImage(named: "StopNormal"), forState: .Normal)
       self.resetControlViewTimer()
+      self.speedView.hidden = false
+      self.speedLabelNoData()
     }
   }
   
@@ -432,6 +442,7 @@ extension CameraViewController : CaptureManagerDelegate {
       
       self.recordButton.enabled = false
       self.recordButton.setImage(UIImage(named: "StopHighlight"), forState: .Normal)
+      self.unitsSpeedLabel.text = ""
       self.speedLabel.text = NSLocalizedString("Stop", comment: "CameraVC: Stop")
       // Pause the capture session so that saving will be as fast as possible.
       // We resume the sesssion in recordingDidStop:
@@ -455,6 +466,7 @@ extension CameraViewController : CaptureManagerDelegate {
         self.backButton.enabled = true
         
         self.speedLabel.text = ""
+        self.speedView.hidden = true
         
         UIApplication.sharedApplication().idleTimerDisabled = false
         // for previewLayer
@@ -480,21 +492,31 @@ extension CameraViewController : CaptureManagerDelegate {
   func newLocationUpdate(speed: String) {
     //print("CameraVC.newLocationUpdate")
     // Use this method to update the label which indicates the current speed
-    speedLabel.text = speed
+    
+    let words = speed.componentsSeparatedByString(" ")
+    if words.count == 2 {
+      speedLabel.text = words[0]
+      unitsSpeedLabel.text = words[1]
+    }
+    
     resetLocationTimer()
   }
   
   func distanceUpdate(location: CLLocation) {
     if let distance = odometer.distanceUpdate(location) {
       createOdometerLabel(distance)
+      settings.odometerMeters = distance
     }
   }
   
   func createOdometerLabel(distance: Int) {
     if settings.typeSpeed == .Km {
-      odometerLabel.text = String(format: "%.1f %@", Float(distance)/1000.0, NSLocalizedString("km", comment: "CameraVC distance: km"))
+      odometerLabel.text = String(format: "%06.1f", Float(distance)/1000.0)
+      unitDistanceLabel.text = NSLocalizedString("km", comment: "CameraVC distance: km")
+      
     } else {
-      odometerLabel.text = String(format: "%.1f %@", Float(distance)/1609.344, NSLocalizedString("mi", comment: "CameraVC distance: mi"))
+      odometerLabel.text = String(format: "%06.1f", Float(distance)/1609.344)
+      unitDistanceLabel.text = NSLocalizedString("mi", comment: "CameraVC distance: mi")
     }
   }
   
@@ -511,6 +533,24 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   //MARK: - Utilites
+  
+  func setResolutionAndTextLabels() {
+    if settings.textOnVideo {
+      textLabel.text = "Text"
+      textLabel.hidden = false
+    } else {
+      textLabel.text = ""
+      textLabel.hidden = true
+    }
+    
+    if settings.qualityMode == .High {
+      resolutionLabel.text = "720p"
+    } else if settings.qualityMode == .Medium {
+      resolutionLabel.text = "480p"
+    } else {
+      resolutionLabel.text = "288p"
+    }
+  }
   
   func timeLabelUpdate() {
     //print("CameraVC.timeUpdate")
@@ -561,6 +601,7 @@ extension CameraViewController : CaptureManagerDelegate {
     //print("CameraVC.speedUpdate")
     let strNoData = NSLocalizedString("NoData", comment: "CameraVC: No data")
     speedLabel.text = strNoData
+    unitsSpeedLabel.text = ""
     captureManager?.speed = strNoData
   }
   
@@ -571,7 +612,7 @@ extension CameraViewController : CaptureManagerDelegate {
     let barLeft = device.batteryLevel
     device.batteryMonitoringEnabled = false
     let batteryLevel = Int(barLeft*100)
-    batteryLabel.text = "\(batteryLevel)%"
+    batteryLabel.text = "\(batteryLevel)"
     if batteryLevel > 80 {
       batteryLabel.textColor = UIColor.greenColor()
     } else if batteryLevel > 20 {
@@ -583,7 +624,7 @@ extension CameraViewController : CaptureManagerDelegate {
     if let bytes = deviceRemainingFreeSpaceInBytes() {
       let hMBytes = Int(bytes/10_0000_000)
       freeSpace = Float(hMBytes)/10
-      fillDiskLabel.text = "\(freeSpace)G"
+      fillDiskLabel.text = "\(freeSpace)"
       if freeSpace < 1 {
         fillDiskLabel.textColor = UIColor.redColor()
       } else if freeSpace < 5 {
@@ -866,6 +907,7 @@ extension CameraViewController : CaptureManagerDelegate {
       if let destVC = segue.destinationViewController as? AssetsViewController {
         destVC.assetItemsList = assetItemsList
         destVC.freeSpace = freeSpace
+        destVC.typeSpeed = settings.typeSpeed
       }
     }
   }

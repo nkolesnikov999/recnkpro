@@ -928,8 +928,9 @@ extension CaptureManager : CLLocationManagerDelegate {
       
       //print("Distance: \(locationManager.distanceFilter)")
       
-      // Disregard location updates that aren't accurate to within 1000 meters.
-      if newLocation.horizontalAccuracy > 1000.0 { continue }
+      // Disregard location updates that aren't accurate to within 50 meters.
+      
+      if newLocation.horizontalAccuracy > 50.0 { continue } // set 50
       
       // Test the age of the location measurement to determine if the measurement is cached
       if -(newLocation.timestamp.timeIntervalSinceNow) > 5.0 { continue }
@@ -973,18 +974,25 @@ extension CaptureManager : CLLocationManagerDelegate {
             speedItem.identifier = FixdriveSpeedIdentifier
             speedItem.dataType = kCMMetadataBaseDataType_UTF8 as String
             
-            var kSpeed: Double = 3.6
+            var kSpeed: Float = 3.6
             var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")
             if self.typeSpeed == .Mi {
               kSpeed = 2.236936
               strSpeed = NSLocalizedString("mph", comment: "CaptureManager: mph")
             }
             
-            let speed = Int(newLocation.speed*kSpeed)
-            let speedStr = NSString(format: "%3d %@", speed > 0 ? speed : 0, strSpeed)
+            var locationSpeed = Float(newLocation.speed)
             
-            speedItem.value = speedStr
+            if locationSpeed < 0 || locationSpeed > 1000 {
+              locationSpeed = 0
+            }
+            
+            let speed = Int(locationSpeed*kSpeed)
+            let speedStr = NSString(format: "%d %@", speed, strSpeed)
+            
             self.speed = speedStr as String
+            
+            speedItem.value = String(format: "%07.2f", locationSpeed)
             
             // Annotation time item
             let timeItem = AVMutableMetadataItem()
