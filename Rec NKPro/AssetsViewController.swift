@@ -14,6 +14,7 @@
 *
 */
 
+import iAd
 import UIKit
 import Photos
 import AVFoundation
@@ -34,6 +35,7 @@ class AssetsViewController : UIViewController {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     
+    canDisplayBannerAds = true
   }
   
   deinit {
@@ -63,12 +65,14 @@ class AssetsViewController : UIViewController {
       if let url = movieURL {
         playerVC.url = url
         playerVC.typeSpeed = typeSpeed
+        playerVC.interstitialPresentationPolicy = .Automatic
       }
     }
   }
   
   func moveMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
+    requestInterstitialAdPresentation()
     self.activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
@@ -90,6 +94,7 @@ class AssetsViewController : UIViewController {
   
   func copyMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
+    requestInterstitialAdPresentation()
     self.activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     

@@ -13,6 +13,7 @@ import AVKit
 import MapKit
 import AVFoundation
 import CoreMedia
+import iAd
 
 class PlayerViewController : UIViewController {
   
@@ -65,6 +66,8 @@ class PlayerViewController : UIViewController {
     let notificationCenter = NSNotificationCenter.defaultCenter()
     notificationCenter.addObserver(self, selector: "defineStackAxis", name: UIDeviceOrientationDidChangeNotification, object: nil)
     //notificationCenter.addObserver(self, selector: "didPlayToEndTime", name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
+    
+    canDisplayBannerAds = true
   }
   
   func didPlayToEndTime(){

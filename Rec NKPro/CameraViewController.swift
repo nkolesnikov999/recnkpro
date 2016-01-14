@@ -908,6 +908,7 @@ extension CameraViewController : CaptureManagerDelegate {
         destVC.assetItemsList = assetItemsList
         destVC.freeSpace = freeSpace
         destVC.typeSpeed = settings.typeSpeed
+        destVC.interstitialPresentationPolicy = .Manual
       }
     }
   }

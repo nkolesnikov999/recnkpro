@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import iAd
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,6 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       .resizableImageWithCapInsets(UIEdgeInsets(top: 0, left: 6.0, bottom: 0, right: 6.0)), forState: .Normal)
     
     UINavigationBar.appearance().barStyle = .Default
+    
+    UIViewController.prepareInterstitialAds()
     
     return true
   }
