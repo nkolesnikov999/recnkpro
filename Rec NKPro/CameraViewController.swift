@@ -64,7 +64,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var speedLabel: UILabel!
   @IBOutlet weak var unitsSpeedLabel: UILabel!
   @IBOutlet weak var odometerLabel: UILabel!
-  @IBOutlet weak var unitDistanceLabel: UILabel!
   @IBOutlet weak var settingsButton: UIButton!
   @IBOutlet weak var recordButton: UIButton!
   @IBOutlet weak var layerOpacitySlider: UISlider!
@@ -96,10 +95,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     odometerLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
     odometerLabel.layer.cornerRadius = 18.0
-    
-    unitDistanceLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
-    unitDistanceLabel.layer.cornerRadius = 10.0
-
     
     // Keep track of changes to the device orientation so we can update the capture manager
     let notificationCenter = NSNotificationCenter.defaultCenter()
@@ -512,11 +507,8 @@ extension CameraViewController : CaptureManagerDelegate {
   func createOdometerLabel(distance: Int) {
     if settings.typeSpeed == .Km {
       odometerLabel.text = String(format: "%06.1f", Float(distance)/1000.0)
-      unitDistanceLabel.text = NSLocalizedString("km", comment: "CameraVC distance: km")
-      
     } else {
       odometerLabel.text = String(format: "%06.1f", Float(distance)/1609.344)
-      unitDistanceLabel.text = NSLocalizedString("mi", comment: "CameraVC distance: mi")
     }
   }
   
