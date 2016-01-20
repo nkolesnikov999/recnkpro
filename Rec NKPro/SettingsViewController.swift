@@ -15,6 +15,7 @@
 */
 
 import UIKit
+import StoreKit
 
 protocol SettingsControllerDelegate: class {
   
@@ -24,8 +25,17 @@ protocol SettingsControllerDelegate: class {
 
 class SettingsViewController: UITableViewController {
   
+  let logo5000distance: Int = 5_000_000
+  let logo1000distance: Int = 1_000_000
+  
+  private var removeAdProduct: SKProduct?
+  private var changeLogoProduct: SKProduct?
+  
   weak var delegate: SettingsControllerDelegate?
   var settings: Settings!
+  
+  var numberAssetFiles = 0
+  var oldSettingNumberFiles = 0
   
   @IBOutlet weak var qualityModeSegment: UISegmentedControl!
   @IBOutlet weak var typeCameraSegment: UISegmentedControl!
@@ -39,6 +49,9 @@ class SettingsViewController: UITableViewController {
   @IBOutlet weak var maxNumberFilesLabel: UILabel!
   @IBOutlet weak var maxNumberFilesSlider: UISlider!
   @IBOutlet weak var logotypeTextField: UITextField!
+  @IBOutlet weak var changeLogoButton: UIButton!
+  @IBOutlet weak var removeAdsButton: UIButton!
+  @IBOutlet weak var restorePurchasesButton: UIButton!
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -49,9 +62,21 @@ class SettingsViewController: UITableViewController {
       //qualityModeSegment.removeSegmentAtIndex(2, animated: false)
     }
     
+    changeLogoButton.enabled = false
+    removeAdsButton.enabled = false
+    
     logotypeTextField.delegate = self
     
     setAllControls()
+    
+    print("Distance: \(settings.odometerMeters)")
+    //settings.odometerMeters = 1_000_000
+    
+    requestIAPProducts()
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "handlePurchaseNotification:", name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
+    checkStateRestoreButton()
+    
+    oldSettingNumberFiles = settings.maxNumberFiles
   }
   
   override func didReceiveMemoryWarning() {
@@ -67,8 +92,33 @@ class SettingsViewController: UITableViewController {
   // MARK: - Actions
   
   @IBAction func tapBackButton(sender: UIBarButtonItem) {
-    delegate?.saveSettings()
-    dismissViewControllerAnimated(true, completion: nil)
+    
+    if settings.maxNumberFiles < numberAssetFiles {
+      
+      let alert = UIAlertController(title: "Warning!", message: "Existing files will be deleted. Do you want to continue?", preferredStyle: .Alert)
+      let agreeAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
+        print("OK")
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+          self.delegate?.saveSettings()
+          self.dismissViewControllerAnimated(false, completion: nil)
+        })
+      }
+      let cancelAction = UIAlertAction(title: "NO", style: .Default) { (action: UIAlertAction!) -> Void in
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+          self.settings.maxNumberFiles = self.oldSettingNumberFiles
+          self.maxNumberFilesLabel.text = "\(self.oldSettingNumberFiles)"
+          self.maxNumberFilesSlider.value = Float(self.oldSettingNumberFiles)
+        })        
+      }
+      
+      alert.addAction(agreeAction)
+      alert.addAction(cancelAction)
+      presentViewController(alert, animated: true, completion: nil)
+    } else {
+      self.delegate?.saveSettings()
+      self.dismissViewControllerAnimated(true, completion: nil)
+    }
+
   }
 
   @IBAction func selectQualityMode(sender: UISegmentedControl) {
@@ -114,10 +164,28 @@ class SettingsViewController: UITableViewController {
     sender.value = Float(value)
     maxNumberFilesLabel.text = "\(value)"
     settings.maxNumberFiles = value
+    
   }
   
   @IBAction func resetOdometer(sender: AnyObject) {
     settings.odometerMeters = 0
+  }
+  
+  @IBAction func changeLogo(sender: UIButton) {
+    print("Logo")
+    guard let changeLogoProduct = changeLogoProduct else { return }
+    IAPHelper.iapHelper.buyProduct(changeLogoProduct)
+  }
+  
+  @IBAction func removeAds(sender: UIButton) {
+    print("Ads")
+    guard let removeAdProduct = removeAdProduct else { return }
+    IAPHelper.iapHelper.buyProduct(removeAdProduct)
+  }
+  
+  @IBAction func restorePurchases(sender: UIButton) {
+    print("Restore")
+    IAPHelper.iapHelper.restorePurchases()
   }
   
   @IBAction func setDefaultSettings(sender: AnyObject) {
@@ -151,6 +219,73 @@ class SettingsViewController: UITableViewController {
     maxNumberFilesLabel.text = "\(settings.maxNumberFiles)"
   }
   
+  func requestIAPProducts() {
+    
+    IAPHelper.iapHelper.requestProducts {
+      products in
+      guard let products = products else { return }
+      
+      if !IAPHelper.iapHelper.setRemoveAd {
+        self.removeAdProduct = products.filter {
+          $0.productIdentifier == RecPurchase.RemoveAds.productId
+        }.first
+      }
+      
+      if self.removeAdProduct != .None {
+        self.removeAdsButton.enabled = true
+      }
+      
+      var changeLogoId = ""
+      
+      if self.settings.odometerMeters >= self.logo5000distance {
+        changeLogoId = RecPurchase.ChangeLogo5000.productId
+      } else if self.settings.odometerMeters >= self.logo1000distance {
+        changeLogoId = RecPurchase.ChangeLogo1000.productId
+      } else {
+        changeLogoId = RecPurchase.ChangeLogo.productId
+      }
+      
+      if !IAPHelper.iapHelper.setChangeLogo {
+        self.changeLogoProduct = products.filter {
+          $0.productIdentifier == changeLogoId
+          }.first
+      }
+      
+      if self.changeLogoProduct != .None {
+        self.changeLogoButton.enabled = true
+      }
+      
+      print("AdRemoval Product: \(self.removeAdProduct?.productIdentifier) \n ChangeLogo Product: \(self.changeLogoProduct?.productIdentifier)")
+    }
+    
+  }
+  
+  func handlePurchaseNotification(notification: NSNotification) {
+    print("handlePurchaseNotification")
+    if let productID = notification.object as? String {
+      if productID == removeAdProduct?.productIdentifier {
+        print("Bought: \(productID)")
+        IAPHelper.iapHelper.setRemoveAd = true
+        IAPHelper.iapHelper.saveSettings(IAPHelper.RemoveAdKey)
+        removeAdsButton.enabled = false
+      } else if productID == changeLogoProduct?.productIdentifier {
+        print("Bought: \(productID)")
+        IAPHelper.iapHelper.setChangeLogo = true
+        IAPHelper.iapHelper.saveSettings(IAPHelper.ChangeLogoKey)
+        changeLogoButton.enabled = false
+      } else {
+        print("No such product")
+      }
+      checkStateRestoreButton()
+    }
+  }
+  
+  func checkStateRestoreButton() {
+    
+    restorePurchasesButton.enabled = !(IAPHelper.iapHelper.setChangeLogo && IAPHelper.iapHelper.setRemoveAd)
+  
+  }
+  
   
   override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     if section == 0 {
@@ -159,8 +294,16 @@ class SettingsViewController: UITableViewController {
       } else {
         return 4
       }
-    } else {
+    } else if section == 1 {
+      return 3
+    } else if section == 2 {
       return 2
+    } else if section == 3 {
+      return 3
+    } else if section == 4 {
+      return 1
+    } else {
+      return 0
     }
   }
   
@@ -171,6 +314,15 @@ extension SettingsViewController: UITextFieldDelegate {
     settings.logotype = textField.text!
     textField.resignFirstResponder()
     return true
+  }
+  
+  func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+    if !IAPHelper.iapHelper.setChangeLogo {
+      guard let changeLogoProduct = changeLogoProduct else { return false }
+      IAPHelper.iapHelper.buyProduct(changeLogoProduct)
+    }
+    
+    return IAPHelper.iapHelper.setChangeLogo
   }
 }
 

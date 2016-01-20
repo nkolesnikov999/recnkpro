@@ -8,7 +8,7 @@
 "3vp-Mc-V76.title" = "Врм Записи";
 
 /* Class = "UIButton"; normalTitle = "Default Settings"; ObjectID = "5MK-5u-Y4E"; */
-"5MK-5u-Y4E.normalTitle" = "Сброс настроек";
+"5MK-5u-Y4E.normalTitle" = "Сброс";
 
 /* Class = "UIButton"; normalTitle = "Reset Odometer"; ObjectID = "661-Fx-7Ty"; */
 "661-Fx-7Ty.normalTitle" = "Сброс одометра";

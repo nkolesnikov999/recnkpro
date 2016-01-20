@@ -388,7 +388,7 @@
             <objects>
                 <tableViewController id="u8v-CQ-GHX" customClass="SettingsViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="jrc-w6-bu4">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="900"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <sections>
@@ -637,12 +637,35 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="8RI-Au-jIm">
+                                        <rect key="frame" x="0.0" y="428" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8RI-Au-jIm" id="div-9G-FWb">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="661-Fx-7Ty">
+                                                    <rect key="frame" x="10" y="7" width="580" height="30"/>
+                                                    <state key="normal" title="Reset Odometer"/>
+                                                    <connections>
+                                                        <action selector="resetOdometer:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="02a-I8-fd8"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="centerY" secondItem="div-9G-FWb" secondAttribute="centerY" id="7mb-t4-7IG"/>
+                                                <constraint firstAttribute="trailing" secondItem="661-Fx-7Ty" secondAttribute="trailing" constant="10" id="PAx-qu-zAW"/>
+                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="leading" secondItem="div-9G-FWb" secondAttribute="leading" constant="10" id="VCY-l9-xhW"/>
+                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="centerX" secondItem="div-9G-FWb" secondAttribute="centerX" id="bIf-Q5-N4D"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Saving" id="T8a-ea-399">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="nFW-VD-Qf6">
-                                        <rect key="frame" x="0.0" y="456" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="500" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="nFW-VD-Qf6" id="ZgS-Vv-TlQ">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -685,7 +708,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="rg8-oK-uP3">
-                                        <rect key="frame" x="0.0" y="500" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="544" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rg8-oK-uP3" id="aYB-jc-7kj">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -729,45 +752,91 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection id="j5t-el-dSn">
+                            <tableViewSection headerTitle=" Purchases" id="j5t-el-dSn">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="8RI-Au-jIm">
-                                        <rect key="frame" x="0.0" y="544" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="iZY-6H-x6l">
+                                        <rect key="frame" x="0.0" y="616" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8RI-Au-jIm" id="div-9G-FWb">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iZY-6H-x6l" id="Tpg-Cx-PU4">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="661-Fx-7Ty">
-                                                    <rect key="frame" x="200" y="7" width="200" height="30"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="200" id="Koh-MI-xyJ"/>
-                                                    </constraints>
-                                                    <state key="normal" title="Reset Odometer"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lfx-fa-y6i">
+                                                    <rect key="frame" x="10" y="7" width="580" height="30"/>
+                                                    <state key="normal" title="Change Logo On Video"/>
                                                     <connections>
-                                                        <action selector="resetOdometer:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="02a-I8-fd8"/>
+                                                        <action selector="changeLogo:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="elT-UU-mNq"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="centerY" secondItem="div-9G-FWb" secondAttribute="centerY" id="7mb-t4-7IG"/>
-                                                <constraint firstItem="661-Fx-7Ty" firstAttribute="centerX" secondItem="div-9G-FWb" secondAttribute="centerX" id="bIf-Q5-N4D"/>
+                                                <constraint firstItem="lfx-fa-y6i" firstAttribute="centerX" secondItem="Tpg-Cx-PU4" secondAttribute="centerX" id="GnP-c0-eJw"/>
+                                                <constraint firstItem="lfx-fa-y6i" firstAttribute="leading" secondItem="Tpg-Cx-PU4" secondAttribute="leading" constant="10" id="jvy-vI-zZF"/>
+                                                <constraint firstAttribute="trailing" secondItem="lfx-fa-y6i" secondAttribute="trailing" constant="10" id="mKf-bn-V2E"/>
+                                                <constraint firstItem="lfx-fa-y6i" firstAttribute="centerY" secondItem="Tpg-Cx-PU4" secondAttribute="centerY" id="z5c-ns-WMC"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="0Ih-l2-v0r">
+                                        <rect key="frame" x="0.0" y="660" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0Ih-l2-v0r" id="4ne-YX-Hiz">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yi6-0Y-H3r">
+                                                    <rect key="frame" x="10" y="7" width="580" height="30"/>
+                                                    <state key="normal" title="Remove Ads"/>
+                                                    <connections>
+                                                        <action selector="removeAds:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="MLO-dh-NU7"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="Yi6-0Y-H3r" secondAttribute="trailing" constant="10" id="DH3-Ug-O3A"/>
+                                                <constraint firstItem="Yi6-0Y-H3r" firstAttribute="leading" secondItem="4ne-YX-Hiz" secondAttribute="leading" constant="10" id="XOw-4s-Bhj"/>
+                                                <constraint firstItem="Yi6-0Y-H3r" firstAttribute="centerY" secondItem="4ne-YX-Hiz" secondAttribute="centerY" id="fLM-zJ-0og"/>
+                                                <constraint firstItem="Yi6-0Y-H3r" firstAttribute="centerX" secondItem="4ne-YX-Hiz" secondAttribute="centerX" id="xmK-mh-ava"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="2s8-iu-F8s">
+                                        <rect key="frame" x="0.0" y="704" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2s8-iu-F8s" id="jVU-fI-hUt">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WuV-Qu-9dC">
+                                                    <rect key="frame" x="10" y="7" width="580" height="30"/>
+                                                    <state key="normal" title="Restore Purchases"/>
+                                                    <connections>
+                                                        <action selector="restorePurchases:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="yqD-rW-YMi"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="WuV-Qu-9dC" secondAttribute="trailing" constant="10" id="6iZ-tY-jhI"/>
+                                                <constraint firstItem="WuV-Qu-9dC" firstAttribute="centerX" secondItem="jVU-fI-hUt" secondAttribute="centerX" id="PGa-cm-eIi"/>
+                                                <constraint firstItem="WuV-Qu-9dC" firstAttribute="centerY" secondItem="jVU-fI-hUt" secondAttribute="centerY" id="dTG-eD-Gvg"/>
+                                                <constraint firstItem="WuV-Qu-9dC" firstAttribute="leading" secondItem="jVU-fI-hUt" secondAttribute="leading" constant="10" id="ikq-Mx-z3h"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle=" Default Settings" id="Y9u-hl-drQ">
+                                <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="uh1-1j-nFB">
-                                        <rect key="frame" x="0.0" y="588" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="776" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uh1-1j-nFB" id="uog-g5-RIb">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5MK-5u-Y4E">
-                                                    <rect key="frame" x="200" y="7" width="200" height="30"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="200" id="auT-ib-0dW"/>
-                                                    </constraints>
-                                                    <state key="normal" title="Default Settings"/>
+                                                    <rect key="frame" x="10" y="7" width="580" height="30"/>
+                                                    <state key="normal" title="Reset"/>
                                                     <connections>
                                                         <action selector="setDefaultSettings:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="sOs-TR-rV4"/>
                                                     </connections>
@@ -775,6 +844,8 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="5MK-5u-Y4E" firstAttribute="centerX" secondItem="uog-g5-RIb" secondAttribute="centerX" id="MGP-nF-xXM"/>
+                                                <constraint firstItem="5MK-5u-Y4E" firstAttribute="leading" secondItem="uog-g5-RIb" secondAttribute="leading" constant="10" id="QUC-90-Dcg"/>
+                                                <constraint firstAttribute="trailing" secondItem="5MK-5u-Y4E" secondAttribute="trailing" constant="10" id="e9t-lD-lOA"/>
                                                 <constraint firstItem="5MK-5u-Y4E" firstAttribute="centerY" secondItem="uog-g5-RIb" secondAttribute="centerY" id="z0B-oZ-nyb"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -794,8 +865,11 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="600" height="900"/>
                     <connections>
                         <outlet property="autofocusingSwitch" destination="6cs-l8-tei" id="q6V-hu-ay7"/>
+                        <outlet property="changeLogoButton" destination="lfx-fa-y6i" id="BN8-4A-6H9"/>
                         <outlet property="logotypeTextField" destination="48t-J9-FsH" id="czP-nr-5up"/>
                         <outlet property="maxNumberFilesLabel" destination="ucM-IH-wQ6" id="5cB-n5-zZn"/>
                         <outlet property="maxNumberFilesSlider" destination="pAN-MJ-QSP" id="lHK-0d-atk"/>
@@ -804,6 +878,8 @@
                         <outlet property="minIntervalLabel" destination="LZB-Xi-JNG" id="ZZa-gM-mnK"/>
                         <outlet property="minIntervalSlider" destination="qAm-mN-JPn" id="mwx-vP-wz3"/>
                         <outlet property="qualityModeSegment" destination="GYt-8r-HXd" id="Voq-g9-xag"/>
+                        <outlet property="removeAdsButton" destination="Yi6-0Y-H3r" id="VhF-pe-JDo"/>
+                        <outlet property="restorePurchasesButton" destination="WuV-Qu-9dC" id="pT5-4m-I4g"/>
                         <outlet property="textOnVideoSwitch" destination="2Fi-if-e0e" id="3gw-8X-Hbn"/>
                         <outlet property="typeCameraSegment" destination="ydl-cg-1hO" id="SKV-fY-FOR"/>
                         <outlet property="typeSpeedSegment" destination="mOX-GY-Lwt" id="oW6-IB-aBD"/>

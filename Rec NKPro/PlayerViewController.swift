@@ -67,7 +67,7 @@ class PlayerViewController : UIViewController {
     notificationCenter.addObserver(self, selector: "defineStackAxis", name: UIDeviceOrientationDidChangeNotification, object: nil)
     //notificationCenter.addObserver(self, selector: "didPlayToEndTime", name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
     
-    canDisplayBannerAds = true
+    canDisplayBannerAds = !IAPHelper.iapHelper.setRemoveAd
   }
   
   func didPlayToEndTime(){

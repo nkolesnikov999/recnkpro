@@ -170,6 +170,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     controlView.hidden = false
     
     createMovieContents()
+    
+    if !IAPHelper.iapHelper.setRemoveAd {
+      UIViewController.prepareInterstitialAds()
+    }
   }
   
   override func viewWillDisappear(animated: Bool) {
@@ -890,6 +894,7 @@ extension CameraViewController : CaptureManagerDelegate {
       if let destVC = segue.destinationViewController as? UINavigationController {
         if let settingsVC = destVC.viewControllers.first as? SettingsViewController {
           settingsVC.settings = settings
+          settingsVC.numberAssetFiles = assetItemsList.count
           settingsVC.delegate = self
         }
       }
@@ -900,7 +905,9 @@ extension CameraViewController : CaptureManagerDelegate {
         destVC.assetItemsList = assetItemsList
         destVC.freeSpace = freeSpace
         destVC.typeSpeed = settings.typeSpeed
-        destVC.interstitialPresentationPolicy = .Manual
+        if !IAPHelper.iapHelper.setRemoveAd {
+          destVC.interstitialPresentationPolicy = .Manual
+        }
       }
     }
   }
