@@ -86,6 +86,20 @@ extension IAPHelper {
     SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
   }
   
+  private func loadSettings() {
+    if let setRemoveAd = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.RemoveAdKey)?.boolValue {
+      self.setRemoveAd = setRemoveAd
+    }
+    if let setChangeLogo = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.ChangeLogoKey)?.boolValue {
+      self.setChangeLogo = setChangeLogo
+    }
+  }
+  
+  func saveSettings(key: String) {
+    NSUserDefaults.standardUserDefaults().setValue(true, forKey: key)
+    NSUserDefaults.standardUserDefaults().synchronize()
+  }
+  
 }
 
 extension IAPHelper: SKProductsRequestDelegate {
@@ -121,10 +135,6 @@ extension IAPHelper: SKPaymentTransactionObserver {
     }
   }
   
-//  func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
-//    <#code#>
-//  }
-  
   private func completeTransaction(transaction: SKPaymentTransaction) {
     deliverPurchaseNotificationForIdentifier(transaction.payment.productIdentifier)
     SKPaymentQueue.defaultQueue().finishTransaction(transaction)
@@ -145,20 +155,6 @@ extension IAPHelper: SKPaymentTransactionObserver {
   private func deliverPurchaseNotificationForIdentifier(identifier: String?) {
     guard let identifier = identifier else { return }
     NSNotificationCenter.defaultCenter().postNotificationName(self.dynamicType.IAPHelperPurchaseNotification, object: identifier)
-  }
-  
-  private func loadSettings() {
-    if let setRemoveAd = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.RemoveAdKey)?.boolValue {
-      self.setRemoveAd = setRemoveAd
-    }
-    if let setChangeLogo = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.ChangeLogoKey)?.boolValue {
-      self.setChangeLogo = setChangeLogo
-    }
-  }
-  
-  func saveSettings(key: String) {
-    NSUserDefaults.standardUserDefaults().setValue(true, forKey: key)
-    NSUserDefaults.standardUserDefaults().synchronize()
   }
   
 }

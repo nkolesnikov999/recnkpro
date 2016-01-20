@@ -69,8 +69,8 @@ class SettingsViewController: UITableViewController {
     
     setAllControls()
     
-    print("Distance: \(settings.odometerMeters)")
-    //settings.odometerMeters = 1_000_000
+    //print("Distance: \(settings.odometerMeters)")
+    //settings.odometerMeters = 1_000_001
     
     requestIAPProducts()
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "handlePurchaseNotification:", name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
@@ -87,6 +87,10 @@ class SettingsViewController: UITableViewController {
   override func prefersStatusBarHidden() -> Bool {
     
     return true
+  }
+  
+  deinit {
+    NSNotificationCenter.defaultCenter().removeObserver(self, name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
   }
   
   // MARK: - Actions
@@ -263,13 +267,23 @@ class SettingsViewController: UITableViewController {
   func handlePurchaseNotification(notification: NSNotification) {
     print("handlePurchaseNotification")
     if let productID = notification.object as? String {
-      if productID == removeAdProduct?.productIdentifier {
-        print("Bought: \(productID)")
+      
+//      if productID == RecPurchase.RemoveAds.productId {
+//        print("Bought: \(productID)")
+//      } else if productID == RecPurchase.ChangeLogo.productId {
+//        print("Bought: \(productID)")
+//      } else if productID == RecPurchase.ChangeLogo1000.productId {
+//        print("Bought: \(productID)")
+//      } else if productID == RecPurchase.ChangeLogo5000.productId {
+//        print("Bought: \(productID)")
+//      }
+      
+      
+      if productID == RecPurchase.RemoveAds.productId {
         IAPHelper.iapHelper.setRemoveAd = true
         IAPHelper.iapHelper.saveSettings(IAPHelper.RemoveAdKey)
         removeAdsButton.enabled = false
-      } else if productID == changeLogoProduct?.productIdentifier {
-        print("Bought: \(productID)")
+      } else if productID == RecPurchase.ChangeLogo.productId || productID == RecPurchase.ChangeLogo1000.productId || productID == RecPurchase.ChangeLogo5000.productId {
         IAPHelper.iapHelper.setChangeLogo = true
         IAPHelper.iapHelper.saveSettings(IAPHelper.ChangeLogoKey)
         changeLogoButton.enabled = false
