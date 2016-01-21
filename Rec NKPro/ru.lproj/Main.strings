@@ -1,3 +1,4 @@
+
 /* Class = "UITableViewSection"; headerTitle = "Video"; ObjectID = "0o7-NC-rbN"; */
 "0o7-NC-rbN.headerTitle" = "Видео";
 
@@ -7,7 +8,7 @@
 /* Class = "UINavigationItem"; title = "TMP"; ObjectID = "3vp-Mc-V76"; */
 "3vp-Mc-V76.title" = "Врм Записи";
 
-/* Class = "UIButton"; normalTitle = "Default Settings"; ObjectID = "5MK-5u-Y4E"; */
+/* Class = "UIButton"; normalTitle = "Reset"; ObjectID = "5MK-5u-Y4E"; */
 "5MK-5u-Y4E.normalTitle" = "Сброс";
 
 /* Class = "UIButton"; normalTitle = "Reset Odometer"; ObjectID = "661-Fx-7Ty"; */
@@ -70,7 +71,7 @@
 /* Class = "UILabel"; text = "9999/99/99 99:99:99"; ObjectID = "PtV-hu-ps3"; */
 "PtV-hu-ps3.text" = "9999/99/99 99:99:99";
 
-/* Class = "UILabel"; text = "G"; ObjectID = "ScI-ZB-0sO"; */
+/* Class = "UILabel"; text = "Gb"; ObjectID = "ScI-ZB-0sO"; */
 "ScI-ZB-0sO.text" = "Гб";
 
 /* Class = "UIBarButtonItem"; title = "Back"; ObjectID = "Sgp-jk-foc"; */
@@ -84,6 +85,15 @@
 
 /* Class = "UITabBarItem"; title = "Camera"; ObjectID = "Vbd-jF-gBE"; */
 "Vbd-jF-gBE.title" = "Камера";
+
+/* Class = "UIButton"; normalTitle = "Restore Purchases"; ObjectID = "WuV-Qu-9dC"; */
+"WuV-Qu-9dC.normalTitle" = "Восстановить покупки";
+
+/* Class = "UITableViewSection"; headerTitle = " Default Settings"; ObjectID = "Y9u-hl-drQ"; */
+"Y9u-hl-drQ.headerTitle" = " Начальные настройки";
+
+/* Class = "UIButton"; normalTitle = "Remove Ads"; ObjectID = "Yi6-0Y-H3r"; */
+"Yi6-0Y-H3r.normalTitle" = "Удалить рекламу";
 
 /* Class = "UILabel"; text = "720p"; ObjectID = "Z2F-Gt-3KC"; */
 "Z2F-Gt-3KC.text" = "720p";
@@ -109,14 +119,17 @@
 /* Class = "UILabel"; text = "Units:"; ObjectID = "gkR-4V-vtd"; */
 "gkR-4V-vtd.text" = "Ед измерения:";
 
-/* Class = "UILabel"; text = "миль"; ObjectID = "mDh-Cm-UzH"; */
-"mDh-Cm-UzH.text" = "миль";
+/* Class = "UITableViewSection"; headerTitle = " Purchases"; ObjectID = "j5t-el-dSn"; */
+"j5t-el-dSn.headerTitle" = " Покупки";
+
+/* Class = "UIButton"; normalTitle = "Change Logo On Video"; ObjectID = "lfx-fa-y6i"; */
+"lfx-fa-y6i.normalTitle" = "Изменить логотип на видео";
 
 /* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[0] = "km"; ObjectID = "mOX-GY-Lwt"; */
 "mOX-GY-Lwt.segmentTitles[0]" = "км";
 
 /* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[1] = "mi"; ObjectID = "mOX-GY-Lwt"; */
-"mOX-GY-Lwt.segmentTitles[1]" = "миля";
+"mOX-GY-Lwt.segmentTitles[1]" = "мили";
 
 /* Class = "UILabel"; text = "8000.0"; ObjectID = "mRS-bt-HHr"; */
 "mRS-bt-HHr.text" = "8000.0";

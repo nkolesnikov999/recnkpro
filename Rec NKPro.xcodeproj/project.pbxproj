@@ -50,8 +50,8 @@
 		4CB6F3B71C371E05009BF45B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
+		4CBF263C1C50F599000B79C7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 		4CEA60641C46BF4F000EC854 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4CEA60671C46C306000EC854 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,18 +89,8 @@
 			isa = PBXGroup;
 			children = (
 				4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */,
-				4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */,
-				4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */,
-				4C3EECA41BF8FA9300FE0C4C /* Settings.swift */,
-				4C22792F1C425A7C0021F3F9 /* Metadata.swift */,
-				4C0D2D691C38292600B14E22 /* Odometer.swift */,
-				4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */,
-				4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */,
-				4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */,
-				4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */,
-				4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */,
-				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
-				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
+				4CBF263D1C51099C000B79C7 /* Models */,
+				4CBF263E1C5109BF000B79C7 /* Controllers */,
 				4CB6F3B81C371E05009BF45B /* Main.storyboard */,
 				4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */,
 				4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */,
@@ -108,6 +98,32 @@
 				4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */,
 			);
 			path = "Rec NKPro";
+			sourceTree = "<group>";
+		};
+		4CBF263D1C51099C000B79C7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */,
+				4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */,
+				4C3EECA41BF8FA9300FE0C4C /* Settings.swift */,
+				4C22792F1C425A7C0021F3F9 /* Metadata.swift */,
+				4C0D2D691C38292600B14E22 /* Odometer.swift */,
+				4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */,
+				4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		4CBF263E1C5109BF000B79C7 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */,
+				4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */,
+				4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */,
+				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
+				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -224,7 +240,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				4CB6F3B71C371E05009BF45B /* Base */,
-				4CEA60671C46C306000EC854 /* ru */,
+				4CBF263C1C50F599000B79C7 /* ru */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";

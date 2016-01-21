@@ -99,15 +99,15 @@ class SettingsViewController: UITableViewController {
     
     if settings.maxNumberFiles < numberAssetFiles {
       
-      let alert = UIAlertController(title: "Warning!", message: "Existing files will be deleted. Do you want to continue?", preferredStyle: .Alert)
-      let agreeAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
-        print("OK")
+      let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing files will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+      let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+        //print("OK")
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
           self.delegate?.saveSettings()
           self.dismissViewControllerAnimated(false, completion: nil)
         })
       }
-      let cancelAction = UIAlertAction(title: "NO", style: .Default) { (action: UIAlertAction!) -> Void in
+      let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .Default) { (action: UIAlertAction!) -> Void in
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
           self.settings.maxNumberFiles = self.oldSettingNumberFiles
           self.maxNumberFilesLabel.text = "\(self.oldSettingNumberFiles)"
@@ -176,19 +176,19 @@ class SettingsViewController: UITableViewController {
   }
   
   @IBAction func changeLogo(sender: UIButton) {
-    print("Logo")
+    // print("Logo")
     guard let changeLogoProduct = changeLogoProduct else { return }
     IAPHelper.iapHelper.buyProduct(changeLogoProduct)
   }
   
   @IBAction func removeAds(sender: UIButton) {
-    print("Ads")
+    // print("Ads")
     guard let removeAdProduct = removeAdProduct else { return }
     IAPHelper.iapHelper.buyProduct(removeAdProduct)
   }
   
   @IBAction func restorePurchases(sender: UIButton) {
-    print("Restore")
+    // print("Restore")
     IAPHelper.iapHelper.restorePurchases()
   }
   
@@ -259,13 +259,13 @@ class SettingsViewController: UITableViewController {
         self.changeLogoButton.enabled = true
       }
       
-      print("AdRemoval Product: \(self.removeAdProduct?.productIdentifier) \n ChangeLogo Product: \(self.changeLogoProduct?.productIdentifier)")
+      // print("AdRemoval Product: \(self.removeAdProduct?.productIdentifier) \n ChangeLogo Product: \(self.changeLogoProduct?.productIdentifier)")
     }
     
   }
   
   func handlePurchaseNotification(notification: NSNotification) {
-    print("handlePurchaseNotification")
+    // print("handlePurchaseNotification")
     if let productID = notification.object as? String {
       
 //      if productID == RecPurchase.RemoveAds.productId {

@@ -71,7 +71,7 @@ class PlayerViewController : UIViewController {
   }
   
   func didPlayToEndTime(){
-    print("didPlayToEndTime")
+    // print("didPlayToEndTime")
   }
   
   func defineStackAxis() {
@@ -96,7 +96,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setupVariables() {
-    print("setupVariables")
+    // print("setupVariables")
     
     // Initialize reader queue to perform all reading related operations on a background queue
     readerQueue = dispatch_queue_create("net.nkpro.fixdrive.reader.queue", DISPATCH_QUEUE_SERIAL)
@@ -138,7 +138,7 @@ class PlayerViewController : UIViewController {
   // MARK: - Actions
     
   @IBAction func setPointOnMap(sender: UITapGestureRecognizer) {
-    print("TAP: setPointOnMap")
+    // print("TAP: setPointOnMap")
     if sender.state == .Ended {
       let point = sender.locationInView(mapView)
       let locCoord = mapView.convertPoint(point, toCoordinateFromView: mapView)
@@ -252,7 +252,7 @@ class PlayerViewController : UIViewController {
   
   
   func userDidSeekToNewPosition(newLocation: CLLocation) {
-    print("userDidSeekToNewPosition")
+    // print("userDidSeekToNewPosition")
     
     var updatedMetadata: Metadata? = nil
     var closestDistance: CLLocationDistance = DBL_MAX
@@ -286,7 +286,7 @@ class PlayerViewController : UIViewController {
   // MARK: - Asset reading
   
   func readMetadataFromAsset(asset: AVAsset, completionHandler: ((Bool) -> Void)) {
-    print("readMetadataFromAsset")
+    // print("readMetadataFromAsset")
     
     asset.loadValuesAsynchronouslyForKeys(["tracks"]) { () -> Void in
       // Dispatch all the reading work to a background queue, so we do not block the main thread
@@ -324,7 +324,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setUpReaderForAsset(asset: AVAsset) -> Bool {
-    print("setUpReaderForAsset")
+    // print("setUpReaderForAsset")
     
     var success = true
     
@@ -374,7 +374,7 @@ class PlayerViewController : UIViewController {
   }
   
   func startReadingLocationMetadata() -> Bool {
-    print("startReadingLocationMetadata")
+    // print("startReadingLocationMetadata")
     
     // Instruct the asset reader to get ready to do work
     let success = reader.startReading()
@@ -412,7 +412,7 @@ class PlayerViewController : UIViewController {
   // MARK: - Utilites
   
   func drawPathOnMap() {
-    print("drawPathOnMap")
+    // print("drawPathOnMap")
     
     let numberOfPoints = metadatas.count
     var pointsToUse = [CLLocationCoordinate2D](count: numberOfPoints, repeatedValue: CLLocationCoordinate2D())
@@ -478,7 +478,7 @@ class PlayerViewController : UIViewController {
   }
   
   func locationFromMetadataGroup(group: AVTimedMetadataGroup) -> CLLocation? {
-    print("locationFromMetadataGroup")
+    // print("locationFromMetadataGroup")
     
     var location: CLLocation? = nil
     
@@ -503,7 +503,7 @@ class PlayerViewController : UIViewController {
   }
   
   func speedFromMetadataGroup(group: AVTimedMetadataGroup) -> String? {
-    print("speedFromMetadataGroup")
+    // print("speedFromMetadataGroup")
     
     var speed: String? = nil
     
@@ -525,7 +525,7 @@ class PlayerViewController : UIViewController {
   }
   
   func timeFromMetadataGroup(group: AVTimedMetadataGroup) -> String? {
-    print("timeFromMetadataGroup")
+    // print("timeFromMetadataGroup")
     
     var time: String? = nil
     
@@ -549,7 +549,7 @@ class PlayerViewController : UIViewController {
   
   
   func updateCurrentLocation(location: CLLocation) {
-    print("updateCurrentLocation")
+    // print("updateCurrentLocation")
     // Update current pin to the new location
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       if let currentPin = self.currentPin {
@@ -563,7 +563,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setCentered() {
-    print("setCentered")
+    // print("setCentered")
     centeredButton.setImage(UIImage(named: "CenteredHi"), forState: .Normal)
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
       if let currentPin = self.currentPin {
@@ -573,7 +573,7 @@ class PlayerViewController : UIViewController {
   }
   
   func setUncentered() {
-    print("setUncentered")
+    // print("setUncentered")
 
     centeredButton.setImage(UIImage(named: "Centered"), forState: .Normal)
   }
@@ -694,7 +694,7 @@ class PlayerViewController : UIViewController {
   
   // MARK: - Navigation
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    print("prepareForSegue")
+    // print("prepareForSegue")
     if segue.identifier == "showMovie" {
       let playerVC = segue.destinationViewController as! AVPlayerViewController
       setupVariables()
@@ -711,7 +711,7 @@ class PlayerViewController : UIViewController {
 extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
   
   func metadataOutput(output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], fromPlayerItemTrack track: AVPlayerItemTrack) {
-    print("metadataOutput_didOutputTimedMetadataGroups")
+    // print("metadataOutput_didOutputTimedMetadataGroups")
     if playerMapMode != .Distance {
       // Go through the list of timed metadata groups and update location
       for group in groups {
@@ -743,7 +743,7 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
 extension PlayerViewController: MKMapViewDelegate {
   
   func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-    print("mapView_viewForAnnotation")
+    // print("mapView_viewForAnnotation")
     
     var pin = mapView.dequeueReusableAnnotationViewWithIdentifier("currentPin")
 
@@ -758,7 +758,7 @@ extension PlayerViewController: MKMapViewDelegate {
   }
   
   func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
-    print("mapView_rendererForOverlay")
+    // print("mapView_rendererForOverlay")
     
     let polylineRenderer = MKPolylineRenderer(overlay: overlay)
     polylineRenderer.lineWidth = 5.0

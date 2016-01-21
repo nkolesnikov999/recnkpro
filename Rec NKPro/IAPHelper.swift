@@ -43,13 +43,13 @@ class IAPHelper: NSObject {
   
   var setChangeLogo = false {
     didSet {
-      print("CHANGE LOGO = \(setChangeLogo)")
+      //print("CHANGE LOGO = \(setChangeLogo)")
     }
   }
   
   var setRemoveAd = false {
     didSet {
-      print("REMOVE AD = \(setRemoveAd)")
+      //print("REMOVE AD = \(setRemoveAd)")
     }
   }
   
