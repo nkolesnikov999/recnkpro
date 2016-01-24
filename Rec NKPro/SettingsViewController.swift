@@ -102,17 +102,21 @@ class SettingsViewController: UITableViewController {
       let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing files will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
       let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
         //print("OK")
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-          self.delegate?.saveSettings()
-          self.dismissViewControllerAnimated(false, completion: nil)
-        })
+        defer {
+          dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.delegate?.saveSettings()
+            self.dismissViewControllerAnimated(false, completion: nil)
+          })
+        }
       }
       let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .Default) { (action: UIAlertAction!) -> Void in
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-          self.settings.maxNumberFiles = self.oldSettingNumberFiles
-          self.maxNumberFilesLabel.text = "\(self.oldSettingNumberFiles)"
-          self.maxNumberFilesSlider.value = Float(self.oldSettingNumberFiles)
-        })        
+        defer {
+          dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.settings.maxNumberFiles = self.oldSettingNumberFiles
+            self.maxNumberFilesLabel.text = "\(self.oldSettingNumberFiles)"
+            self.maxNumberFilesSlider.value = Float(self.oldSettingNumberFiles)
+          })
+        }
       }
       
       alert.addAction(agreeAction)
@@ -139,7 +143,6 @@ class SettingsViewController: UITableViewController {
   
   @IBAction func selectTextOnVideo(sender: UISwitch) {
     settings.textOnVideo = sender.on
-    tableView.reloadData()
   }
   
   @IBAction func setMinInterval(sender: UISlider) {
@@ -298,27 +301,6 @@ class SettingsViewController: UITableViewController {
     
     restorePurchasesButton.enabled = !(IAPHelper.iapHelper.setChangeLogo && IAPHelper.iapHelper.setRemoveAd)
   
-  }
-  
-  
-  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if section == 0 {
-      if settings.textOnVideo {
-        return 5
-      } else {
-        return 4
-      }
-    } else if section == 1 {
-      return 3
-    } else if section == 2 {
-      return 2
-    } else if section == 3 {
-      return 3
-    } else if section == 4 {
-      return 1
-    } else {
-      return 0
-    }
   }
   
 }

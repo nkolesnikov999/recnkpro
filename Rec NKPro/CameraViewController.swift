@@ -170,10 +170,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     controlView.hidden = false
     
     createMovieContents()
-    
-    if !IAPHelper.iapHelper.setRemoveAd {
-      UIViewController.prepareInterstitialAds()
-    }
+
   }
   
   override func viewWillDisappear(animated: Bool) {
@@ -905,9 +902,6 @@ extension CameraViewController : CaptureManagerDelegate {
         destVC.assetItemsList = assetItemsList
         destVC.freeSpace = freeSpace
         destVC.typeSpeed = settings.typeSpeed
-        if !IAPHelper.iapHelper.setRemoveAd {
-          destVC.interstitialPresentationPolicy = .Manual
-        }
       }
     }
   }

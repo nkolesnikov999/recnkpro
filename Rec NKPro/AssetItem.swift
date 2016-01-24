@@ -11,7 +11,7 @@ import AVFoundation
 
 class AssetItem {
   var title: String
-  var size: Int = 0
+  var size: UInt = 0
   var url: NSURL
   var image: UIImage?
   
@@ -26,7 +26,7 @@ class AssetItem {
     do {
       let dictionary = try fileManager.attributesOfItemAtPath(movieString)
       
-      size = dictionary["NSFileSize"] as! Int
+      size = dictionary["NSFileSize"] as! UInt
     } catch {
       let nserror = error as NSError
       print("ERROR: AssetsItem.sizeFile - \(nserror.userInfo)")

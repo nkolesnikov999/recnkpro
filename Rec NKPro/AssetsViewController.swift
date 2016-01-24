@@ -35,7 +35,6 @@ class AssetsViewController : UIViewController {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     
-    canDisplayBannerAds = !IAPHelper.iapHelper.setRemoveAd
   }
   
   deinit {
@@ -65,18 +64,13 @@ class AssetsViewController : UIViewController {
       if let url = movieURL {
         playerVC.url = url
         playerVC.typeSpeed = typeSpeed
-        if !IAPHelper.iapHelper.setRemoveAd {
-          playerVC.interstitialPresentationPolicy = .Automatic
-        }
       }
     }
   }
   
   func moveMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
-    if !IAPHelper.iapHelper.setRemoveAd {
-      requestInterstitialAdPresentation()
-    }
+
     self.activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
@@ -98,9 +92,7 @@ class AssetsViewController : UIViewController {
   
   func copyMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
-    if !IAPHelper.iapHelper.setRemoveAd {
-      requestInterstitialAdPresentation()
-    }
+
     self.activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
