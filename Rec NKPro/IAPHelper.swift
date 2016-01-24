@@ -10,10 +10,7 @@ import Foundation
 import StoreKit
 
 enum RecPurchase: String {
-  case RemoveAds = "RemoveAds"
-  case ChangeLogo5000 = "ChangeLogo5000"
-  case ChangeLogo1000 = "ChangeLogo1000"
-  case ChangeLogo = "ChangeLogo"
+  case FullVersion = "FullVersion"
   
   var productId: String {
     return "net.nkpro.RecNKPro." + rawValue
@@ -27,29 +24,19 @@ enum RecPurchase: String {
 class IAPHelper: NSObject {
   
   static let IAPHelperPurchaseNotification = "IAPHelperPurchaseNotification"
-  static let RemoveAdKey = "RemoveAdKey"
-  static let ChangeLogoKey = "ChangeLogoKey"
+  static let FullVersionKey = "FullVersionKey"
   
   static let iapHelper = IAPHelper(prodIds: Set([
-    RecPurchase.RemoveAds,
-    RecPurchase.ChangeLogo,
-    RecPurchase.ChangeLogo1000,
-    RecPurchase.ChangeLogo5000
+    RecPurchase.FullVersion
     ].map { $0.productId }))
   
   typealias ProductsRequestCompletionHandler = (products: [SKProduct]?) -> ()
   
   
   
-  var setChangeLogo = false {
+  var setFullVersion = false {
     didSet {
-      //print("CHANGE LOGO = \(setChangeLogo)")
-    }
-  }
-  
-  var setRemoveAd = false {
-    didSet {
-      //print("REMOVE AD = \(setRemoveAd)")
+      //print("CHANGE Full Version = \(setFullVersion)")
     }
   }
   
@@ -87,11 +74,8 @@ extension IAPHelper {
   }
   
   private func loadSettings() {
-    if let setRemoveAd = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.RemoveAdKey)?.boolValue {
-      self.setRemoveAd = setRemoveAd
-    }
-    if let setChangeLogo = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.ChangeLogoKey)?.boolValue {
-      self.setChangeLogo = setChangeLogo
+    if let setFullVersion = NSUserDefaults.standardUserDefaults().valueForKey(IAPHelper.FullVersionKey)?.boolValue {
+      self.setFullVersion = setFullVersion
     }
   }
   

@@ -161,6 +161,16 @@ class AssetsViewController : UIViewController {
     return success
   }
   
+  func showAlert() {
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+    
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+      
+    }
+    alert.addAction(cancelAction)
+    self.presentViewController(alert, animated: true, completion: nil)
+  }
+  
 }
 
 // MARK: - UITableViewDataSource
@@ -214,17 +224,27 @@ extension AssetsViewController : UITableViewDelegate {
       style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       
-      if self.checkFreeSpace(asset) {
-        self.moveMovieToCameraRoll(movieURL)
-        self.assetItemsList.removeAtIndex(indexPath.row)
-        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-      }
+        if IAPHelper.iapHelper.setFullVersion {
+          if self.checkFreeSpace(asset) {
+            self.moveMovieToCameraRoll(movieURL)
+            self.assetItemsList.removeAtIndex(indexPath.row)
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+          }
+        } else {
+          self.showAlert()
+        }
     })
+  
     let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
-      if self.checkFreeSpace(asset) {
-        self.copyMovieToCameraRoll(movieURL)
+      
+      if IAPHelper.iapHelper.setFullVersion {
+        if self.checkFreeSpace(asset) {
+          self.copyMovieToCameraRoll(movieURL)
+        }
+      } else {
+        self.showAlert()
       }
     })
     let deleteAction = UIAlertAction(title: NSLocalizedString("Delete", comment: "AssetsVC: Delete"),

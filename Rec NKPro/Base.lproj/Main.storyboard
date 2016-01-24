@@ -763,9 +763,9 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lfx-fa-y6i">
                                                     <rect key="frame" x="10" y="7" width="580" height="30"/>
-                                                    <state key="normal" title="Change Logo On Video"/>
+                                                    <state key="normal" title="Full Version"/>
                                                     <connections>
-                                                        <action selector="changeLogo:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="elT-UU-mNq"/>
+                                                        <action selector="buyFullVersion:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="RUm-Ig-fUz"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -777,31 +777,8 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="0Ih-l2-v0r">
-                                        <rect key="frame" x="0.0" y="660" width="600" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0Ih-l2-v0r" id="4ne-YX-Hiz">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yi6-0Y-H3r">
-                                                    <rect key="frame" x="10" y="7" width="580" height="30"/>
-                                                    <state key="normal" title="Remove Ads"/>
-                                                    <connections>
-                                                        <action selector="removeAds:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="MLO-dh-NU7"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="Yi6-0Y-H3r" secondAttribute="trailing" constant="10" id="DH3-Ug-O3A"/>
-                                                <constraint firstItem="Yi6-0Y-H3r" firstAttribute="leading" secondItem="4ne-YX-Hiz" secondAttribute="leading" constant="10" id="XOw-4s-Bhj"/>
-                                                <constraint firstItem="Yi6-0Y-H3r" firstAttribute="centerY" secondItem="4ne-YX-Hiz" secondAttribute="centerY" id="fLM-zJ-0og"/>
-                                                <constraint firstItem="Yi6-0Y-H3r" firstAttribute="centerX" secondItem="4ne-YX-Hiz" secondAttribute="centerX" id="xmK-mh-ava"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="2s8-iu-F8s">
-                                        <rect key="frame" x="0.0" y="704" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="660" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2s8-iu-F8s" id="jVU-fI-hUt">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -809,7 +786,7 @@
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WuV-Qu-9dC">
                                                     <rect key="frame" x="10" y="7" width="580" height="30"/>
-                                                    <state key="normal" title="Restore Purchases"/>
+                                                    <state key="normal" title="Restore"/>
                                                     <connections>
                                                         <action selector="restorePurchases:" destination="u8v-CQ-GHX" eventType="touchUpInside" id="yqD-rW-YMi"/>
                                                     </connections>
@@ -828,7 +805,7 @@
                             <tableViewSection headerTitle=" Default Settings" id="Y9u-hl-drQ">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="uh1-1j-nFB">
-                                        <rect key="frame" x="0.0" y="776" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="732" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uh1-1j-nFB" id="uog-g5-RIb">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -869,7 +846,7 @@
                     <size key="freeformSize" width="600" height="900"/>
                     <connections>
                         <outlet property="autofocusingSwitch" destination="6cs-l8-tei" id="q6V-hu-ay7"/>
-                        <outlet property="changeLogoButton" destination="lfx-fa-y6i" id="BN8-4A-6H9"/>
+                        <outlet property="fullVersionButton" destination="lfx-fa-y6i" id="3do-z7-cJy"/>
                         <outlet property="logotypeTextField" destination="48t-J9-FsH" id="czP-nr-5up"/>
                         <outlet property="maxNumberFilesLabel" destination="ucM-IH-wQ6" id="5cB-n5-zZn"/>
                         <outlet property="maxNumberFilesSlider" destination="pAN-MJ-QSP" id="lHK-0d-atk"/>
@@ -878,7 +855,6 @@
                         <outlet property="minIntervalLabel" destination="LZB-Xi-JNG" id="ZZa-gM-mnK"/>
                         <outlet property="minIntervalSlider" destination="qAm-mN-JPn" id="mwx-vP-wz3"/>
                         <outlet property="qualityModeSegment" destination="GYt-8r-HXd" id="Voq-g9-xag"/>
-                        <outlet property="removeAdsButton" destination="Yi6-0Y-H3r" id="VhF-pe-JDo"/>
                         <outlet property="restorePurchasesButton" destination="WuV-Qu-9dC" id="pT5-4m-I4g"/>
                         <outlet property="textOnVideoSwitch" destination="2Fi-if-e0e" id="3gw-8X-Hbn"/>
                         <outlet property="typeCameraSegment" destination="ydl-cg-1hO" id="SKV-fY-FOR"/>

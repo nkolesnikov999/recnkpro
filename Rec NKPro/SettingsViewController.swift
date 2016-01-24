@@ -25,14 +25,12 @@ protocol SettingsControllerDelegate: class {
 
 class SettingsViewController: UITableViewController {
   
-  let logo5000distance: Int = 5_000_000
-  let logo1000distance: Int = 1_000_000
-  
-  private var removeAdProduct: SKProduct?
-  private var changeLogoProduct: SKProduct?
+  private var fullVersionProduct: SKProduct?
   
   weak var delegate: SettingsControllerDelegate?
   var settings: Settings!
+  var price = ""
+  var alertMaxFiles = false
   
   var numberAssetFiles = 0
   var oldSettingNumberFiles = 0
@@ -49,8 +47,7 @@ class SettingsViewController: UITableViewController {
   @IBOutlet weak var maxNumberFilesLabel: UILabel!
   @IBOutlet weak var maxNumberFilesSlider: UISlider!
   @IBOutlet weak var logotypeTextField: UITextField!
-  @IBOutlet weak var changeLogoButton: UIButton!
-  @IBOutlet weak var removeAdsButton: UIButton!
+  @IBOutlet weak var fullVersionButton: UIButton!
   @IBOutlet weak var restorePurchasesButton: UIButton!
   
   override func viewDidLoad() {
@@ -62,9 +59,8 @@ class SettingsViewController: UITableViewController {
       //qualityModeSegment.removeSegmentAtIndex(2, animated: false)
     }
     
-    changeLogoButton.enabled = false
-    removeAdsButton.enabled = false
-    
+    fullVersionButton.enabled = false
+
     logotypeTextField.delegate = self
     
     setAllControls()
@@ -97,7 +93,7 @@ class SettingsViewController: UITableViewController {
   
   @IBAction func tapBackButton(sender: UIBarButtonItem) {
     
-    if settings.maxNumberFiles < numberAssetFiles {
+    if settings.maxNumberFiles < numberAssetFiles  && IAPHelper.iapHelper.setFullVersion {
       
       let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing files will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
       let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
@@ -167,10 +163,29 @@ class SettingsViewController: UITableViewController {
   }
   
   @IBAction func setMaxNumberFiles(sender: UISlider) {
-    let value = Int(sender.value)
-    sender.value = Float(value)
-    maxNumberFilesLabel.text = "\(value)"
-    settings.maxNumberFiles = value
+    //print("valueChange")
+    
+    if Int(sender.value) > settings.maxNumberFiles && !IAPHelper.iapHelper.setFullVersion {
+      sender.value = Float(settings.maxNumberFiles)
+      
+      if !alertMaxFiles {
+        alertMaxFiles = true
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+          self.alertMaxFiles = false
+        }
+        
+        alert.addAction(cancelAction)
+        presentViewController(alert, animated: true, completion: nil)
+      }
+
+    } else {
+      let value = Int(sender.value)
+      sender.value = Float(value)
+      maxNumberFilesLabel.text = "\(value)"
+      settings.maxNumberFiles = value
+    }
     
   }
   
@@ -178,17 +193,12 @@ class SettingsViewController: UITableViewController {
     settings.odometerMeters = 0
   }
   
-  @IBAction func changeLogo(sender: UIButton) {
+  @IBAction func buyFullVersion(sender: UIButton) {
     // print("Logo")
-    guard let changeLogoProduct = changeLogoProduct else { return }
-    IAPHelper.iapHelper.buyProduct(changeLogoProduct)
+    guard let fullVersionProduct = fullVersionProduct else { return }
+    IAPHelper.iapHelper.buyProduct(fullVersionProduct)
   }
-  
-  @IBAction func removeAds(sender: UIButton) {
-    // print("Ads")
-    guard let removeAdProduct = removeAdProduct else { return }
-    IAPHelper.iapHelper.buyProduct(removeAdProduct)
-  }
+
   
   @IBAction func restorePurchases(sender: UIButton) {
     // print("Restore")
@@ -232,37 +242,32 @@ class SettingsViewController: UITableViewController {
       products in
       guard let products = products else { return }
       
-      if !IAPHelper.iapHelper.setRemoveAd {
-        self.removeAdProduct = products.filter {
-          $0.productIdentifier == RecPurchase.RemoveAds.productId
+      if !IAPHelper.iapHelper.setFullVersion {
+        self.fullVersionProduct = products.filter {
+          $0.productIdentifier == RecPurchase.FullVersion.productId
         }.first
       }
       
-      if self.removeAdProduct != .None {
-        self.removeAdsButton.enabled = true
+      if self.fullVersionProduct != .None {
+        self.fullVersionButton.enabled = true
+        
+        let priceFormatter = NSNumberFormatter()
+        priceFormatter.numberStyle = .CurrencyStyle
+        priceFormatter.locale = self.fullVersionProduct?.priceLocale
+        
+        if let price = self.fullVersionProduct?.price {
+          if let strPrice = priceFormatter.stringFromNumber(price) {
+            self.price = strPrice
+          }
+        }
+        
+        let title = NSLocalizedString("Full Version - ", comment: "SettingsVC: Full Version") + self.price
+        self.fullVersionButton.setTitle(title, forState: .Normal)
       }
       
-      var changeLogoId = ""
       
-      if self.settings.odometerMeters >= self.logo5000distance {
-        changeLogoId = RecPurchase.ChangeLogo5000.productId
-      } else if self.settings.odometerMeters >= self.logo1000distance {
-        changeLogoId = RecPurchase.ChangeLogo1000.productId
-      } else {
-        changeLogoId = RecPurchase.ChangeLogo.productId
-      }
-      
-      if !IAPHelper.iapHelper.setChangeLogo {
-        self.changeLogoProduct = products.filter {
-          $0.productIdentifier == changeLogoId
-          }.first
-      }
-      
-      if self.changeLogoProduct != .None {
-        self.changeLogoButton.enabled = true
-      }
-      
-      // print("AdRemoval Product: \(self.removeAdProduct?.productIdentifier) \n ChangeLogo Product: \(self.changeLogoProduct?.productIdentifier)")
+    
+      //print("FullVersion Product: \(self.fullVersionProduct?.productIdentifier), price: \(self.price)")
     }
     
   }
@@ -271,25 +276,12 @@ class SettingsViewController: UITableViewController {
     // print("handlePurchaseNotification")
     if let productID = notification.object as? String {
       
-//      if productID == RecPurchase.RemoveAds.productId {
 //        print("Bought: \(productID)")
-//      } else if productID == RecPurchase.ChangeLogo.productId {
-//        print("Bought: \(productID)")
-//      } else if productID == RecPurchase.ChangeLogo1000.productId {
-//        print("Bought: \(productID)")
-//      } else if productID == RecPurchase.ChangeLogo5000.productId {
-//        print("Bought: \(productID)")
-//      }
       
-      
-      if productID == RecPurchase.RemoveAds.productId {
-        IAPHelper.iapHelper.setRemoveAd = true
-        IAPHelper.iapHelper.saveSettings(IAPHelper.RemoveAdKey)
-        removeAdsButton.enabled = false
-      } else if productID == RecPurchase.ChangeLogo.productId || productID == RecPurchase.ChangeLogo1000.productId || productID == RecPurchase.ChangeLogo5000.productId {
-        IAPHelper.iapHelper.setChangeLogo = true
-        IAPHelper.iapHelper.saveSettings(IAPHelper.ChangeLogoKey)
-        changeLogoButton.enabled = false
+      if productID == RecPurchase.FullVersion.productId {
+        IAPHelper.iapHelper.setFullVersion = true
+        IAPHelper.iapHelper.saveSettings(IAPHelper.FullVersionKey)
+        fullVersionButton.enabled = false
       } else {
         print("No such product")
       }
@@ -299,7 +291,7 @@ class SettingsViewController: UITableViewController {
   
   func checkStateRestoreButton() {
     
-    restorePurchasesButton.enabled = !(IAPHelper.iapHelper.setChangeLogo && IAPHelper.iapHelper.setRemoveAd)
+    restorePurchasesButton.enabled = !(IAPHelper.iapHelper.setFullVersion)
   
   }
   
@@ -310,15 +302,6 @@ extension SettingsViewController: UITextFieldDelegate {
     settings.logotype = textField.text!
     textField.resignFirstResponder()
     return true
-  }
-  
-  func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-    if !IAPHelper.iapHelper.setChangeLogo {
-      guard let changeLogoProduct = changeLogoProduct else { return false }
-      IAPHelper.iapHelper.buyProduct(changeLogoProduct)
-    }
-    
-    return IAPHelper.iapHelper.setChangeLogo
   }
 }
 
