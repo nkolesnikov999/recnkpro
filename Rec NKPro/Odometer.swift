@@ -11,6 +11,7 @@ import CoreLocation
 
 class Odometer {
   
+  static let accuracity = 50
   var distance: Int
   var location: CLLocation?
   
@@ -22,7 +23,7 @@ class Odometer {
     
     if let location = location {
       let delta = Int(newLocation.distanceFromLocation(location))
-      if delta > 20 {
+      if delta > Odometer.accuracity {
         self.location = newLocation
         distance += delta
         save()

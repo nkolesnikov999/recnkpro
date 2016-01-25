@@ -935,9 +935,7 @@ extension CaptureManager : CLLocationManagerDelegate {
       // Test the age of the location measurement to determine if the measurement is cached
       if -(newLocation.timestamp.timeIntervalSinceNow) > 5.0 { continue }
       
-      if newLocation.horizontalAccuracy < 10 {
-        self.delegate?.distanceUpdate(newLocation)
-      }
+      self.delegate?.distanceUpdate(newLocation)
       
       dispatch_async(movieWritingQueue!, { () -> Void in
         if let assetWriter = self.assetWriter {

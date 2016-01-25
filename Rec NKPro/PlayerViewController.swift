@@ -665,7 +665,7 @@ class PlayerViewController : UIViewController {
       //print("+++\(speed)+++")
       index++
       let delta = metadata.location!.distanceFromLocation(metadatas[index].location!)
-      if delta > 20 {
+      if delta > Double(Odometer.accuracity) {
         distance += delta
         metadata = metadatas[index]
       }
