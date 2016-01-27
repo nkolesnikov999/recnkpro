@@ -127,16 +127,22 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     // Initialize the class responsible for managing AV capture session and asset writer
     captureManager = CaptureManager()
-    captureManager?.delegate = self
-    captureManager?.minInterval = settings.minIntervalLocations
-    captureManager?.typeSpeed = settings.typeSpeed
-    captureManager?.autofocusing = settings.autofocusing
-    captureManager?.typeCamera = settings.typeCamera
-    captureManager?.logotype = settings.logotype
-    captureManager?.textOnVideo = settings.textOnVideo
     
-    // Setup and start the capture session
-    captureManager?.setupAndStartCaptureSession()
+    if let captureManager = captureManager {
+    
+      captureManager.delegate = self
+      captureManager.minInterval = settings.minIntervalLocations
+      captureManager.typeSpeed = settings.typeSpeed
+      captureManager.autofocusing = settings.autofocusing
+      captureManager.typeCamera = settings.typeCamera
+      captureManager.logotype = settings.logotype
+      captureManager.textOnVideo = settings.textOnVideo
+      
+      // Setup and start the capture session
+      captureManager.setupAndStartCaptureSession()
+    } else {
+      print("CaptureManager didn't create!")
+    }
     
     odometer = Odometer(distance: settings.odometerMeters)
     createOdometerLabel(settings.odometerMeters)
@@ -419,7 +425,7 @@ extension CameraViewController : CaptureManagerDelegate {
   func recordingDidStart() {
     //print("CameraVC.recordingDidStart")
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
-      self.recordingTimer = NSTimer.scheduledTimerWithTimeInterval(Double(self.settings.maxRecordingTime * 60), target: self, selector: Selector("stopRecordigByTimer"), userInfo: nil, repeats: false)
+      self.recordingTimer = NSTimer.scheduledTimerWithTimeInterval(Double(self.settings.maxRecordingTime) * 60.0, target: self, selector: Selector("stopRecordigByTimer"), userInfo: nil, repeats: false)
       
       
       // Enable the stop button now that the recording has started

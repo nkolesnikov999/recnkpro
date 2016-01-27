@@ -104,7 +104,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   var colorSpace: CGColorSpace?
   var ciContext: CIContext!
-  var ciMaskImage: CIImage!
   var ciInputImage: CIImage!
   
   var movieURL: NSURL!
@@ -213,9 +212,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     var outputImage: CIImage?
     
     if textOnVideo {
-      let filter = CIFilter(name: "CIBlendWithMask")
+      let filter = CIFilter(name: "CISourceOverCompositing")
+      filter?.setDefaults()
       filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
-      filter?.setValue(self.ciMaskImage, forKey: "inputMaskImage")
       filter?.setValue(self.ciInputImage, forKey: "inputImage")
       outputImage = filter?.outputImage
     } else {
@@ -236,8 +235,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             if let adaptor = self.assetWriterInputPixelBufferAdaptor {
               if !adaptor.appendPixelBuffer(buffer, withPresentationTime: timestamp) {
                 print("Timestamp error: \(timestamp) <=======================")
+              } else {
+                // print("Timestamp: \(timestamp)")
               }
             }
+            
             frc.calculateFramerateAtTimestamp(timestamp)
           }
         }
@@ -248,9 +250,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   func imageFromText() {
     dispatch_async(imageCreateQueue!, { () -> Void in
       // Setup the font specific variables
-      let textColor = UIColor.whiteColor()
-      let backColor = UIColor.blackColor()
-      let fillColor = UIColor.redColor()
+      let textColor = UIColor.redColor()
+      let backColor = UIColor.clearColor()
       
       var textSize: CGFloat = 10
       
@@ -329,21 +330,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         // draw in context, you can use also drawInRect:withFont:
         text.drawAtPoint(CGPointMake(0, 0), withAttributes: textFontAttributes)
         // transfer image
-        var image = UIGraphicsGetImageFromCurrentImageContext()
+        let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        self.ciMaskImage = CIImage(CGImage: image.CGImage!)
+        self.ciInputImage = CIImage(CGImage: image.CGImage!)
         
-        UIGraphicsBeginImageContext(CGSize(width: self.widthVideo, height: self.heightVideo))
-        
-        fillColor.setFill()
-        UIRectFill(CGRectMake(0, 0, self.widthVideo, self.heightVideo))
-        
-        // transfer image
-        image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        self.ciInputImage = CIImage(CGImage: image!.CGImage!)
       }
     })
   }
@@ -538,7 +529,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       return
     }
     
-    var writer = assetWriter;
+    let writer = assetWriter;
     
     assetWriterAudioIn = nil
     assetWriterVideoIn = nil
@@ -554,33 +545,35 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     dispatch_async(movieWritingQueue!) { () -> Void in
       if self.recordingWillBeStopped || !self.recording { return }
       self.recordingWillBeStopped = true
-      writer!.finishWritingWithCompletionHandler({ () -> Void in
-        let completionStatus = writer!.status
-        switch (completionStatus) {
-        case AVAssetWriterStatus.Completed:
-          // Save the movie stored in the temp folder into camera roll.
-          self.readyToRecordVideo = false
-          self.readyToRecordAudio = false
-          self.readyToRecordMetadata = false
-          writer = nil
-          
-          //
-          //
-          self.recordingWillBeStopped = false
-          self.recording = false
-          self.delegate?.recordingDidStop()
-          self.frc.reset()
-          //
-          
-        case AVAssetWriterStatus.Failed:
-          if let error = writer!.error {
-            //print("ERROR: CaptureManager.stopRecording")
-            self.delegate?.showError(error)
+      if let writer = writer {
+        writer.finishWritingWithCompletionHandler({ () -> Void in
+          let completionStatus = writer.status
+          switch (completionStatus) {
+          case AVAssetWriterStatus.Completed:
+            // Save the movie stored in the temp folder into camera roll.
+            self.readyToRecordVideo = false
+            self.readyToRecordAudio = false
+            self.readyToRecordMetadata = false
+            //writer = nil
+            
+            //
+            //
+            self.recordingWillBeStopped = false
+            self.recording = false
+            self.delegate?.recordingDidStop()
+            self.frc.reset()
+            //
+            
+          case AVAssetWriterStatus.Failed:
+            if let error = writer.error {
+              //print("ERROR: CaptureManager.stopRecording")
+              self.delegate?.showError(error)
+            }
+          default:
+            break
           }
-        default:
-          break
-        }
-      })
+        })
+      }
       
       
     }
