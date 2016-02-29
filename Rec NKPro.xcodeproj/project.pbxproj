@@ -69,7 +69,6 @@
 			children = (
 				4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */,
 				4C3EEC8F1BF8FA6D00FE0C4C /* Rec NKPro */,
-				4C3EEC8E1BF8FA6D00FE0C4C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -79,6 +78,7 @@
 				4C3EEC8D1BF8FA6D00FE0C4C /* Rec NKPro.app */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		4C3EEC8F1BF8FA6D00FE0C4C /* Rec NKPro */ = {
@@ -92,6 +92,7 @@
 				4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */,
 				4C2773301C37D91600348A99 /* Localizable.strings */,
 				4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */,
+				4C3EEC8E1BF8FA6D00FE0C4C /* Products */,
 			);
 			path = "Rec NKPro";
 			sourceTree = "<group>";

@@ -19,6 +19,7 @@
 import UIKit
 import AVFoundation
 import CoreLocation
+import Photos
 
 let FixdriveSpeedIdentifier = "mdta/net.nkpro.fixdrive.speed.field"
 let FixdriveTimeIdentifier = "mdta/net.nkpro.fixdrive.time.field"
@@ -98,9 +99,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var videoDevice: AVCaptureDevice!
   var videoIn: AVCaptureDeviceInput!
   var videoOut: AVCaptureVideoDataOutput!
+  var photoOut: AVCaptureStillImageOutput!
   var captureSession: AVCaptureSession?
   var audioConnection: AVCaptureConnection?
   var videoConnection: AVCaptureConnection?
+  var photoConnection: AVCaptureConnection?
   
   var colorSpace: CGColorSpace?
   var ciContext: CIContext!
@@ -743,6 +746,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       session.removeInput(videoIn)
       session.removeOutput(videoOut)
+      session.removeOutput(photoOut)
       videoIn = nil
       videoDevice = nil
       
@@ -785,9 +789,53 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       session.addOutput(videoOut)
     }
     
-    
     videoConnection = videoOut.connectionWithMediaType(AVMediaTypeVideo)
     videoOrientation = videoConnection?.videoOrientation
+    
+    photoOut = AVCaptureStillImageOutput()
+    if session.canAddOutput(photoOut) {
+      photoOut.outputSettings = [AVVideoCodecKey : AVVideoCodecJPEG]
+      session.addOutput(photoOut)
+    }
+    
+    photoConnection = photoOut.connectionWithMediaType(AVMediaTypeVideo)
+    //photoConnection?.videoOrientation = referenceOrientation
+    
+ 
+  }
+  
+  func snapImage() {
+    
+    photoConnection?.videoOrientation = referenceOrientation
+    print("ReferenceOrientation: \(referenceOrientation.rawValue)")
+    
+    guard let photoConnection = self.photoConnection else { return }
+    
+    dispatch_async(movieWritingQueue!) {
+      self.photoOut.captureStillImageAsynchronouslyFromConnection(photoConnection) {
+        imageDataSampleBuffer, error in
+        if let error = error {
+          print(error.localizedDescription)
+        } else {
+          let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
+          if let image = UIImage(data: imageData) {
+            PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
+              PHAssetCreationRequest.creationRequestForAssetFromImage(image)
+              }) { (success, error) -> Void in
+                if let nserror = error {
+                  print("ERROR: CM.snapImage - \(nserror.localizedDescription)")
+                }
+                if success {
+                  // print("Image saved")
+                } else {
+                  // print("Image didn't save")
+                }
+            }
+          }
+        }
+      }
+    }
+    
   }
   
   func setAutofocusing() {

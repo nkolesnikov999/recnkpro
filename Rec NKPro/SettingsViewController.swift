@@ -267,7 +267,7 @@ class SettingsViewController: UITableViewController {
       
       
     
-      //print("FullVersion Product: \(self.fullVersionProduct?.productIdentifier), price: \(self.price)")
+      print("FullVersion Product: \(self.fullVersionProduct?.productIdentifier), price: \(self.price)")
     }
     
   }
@@ -276,7 +276,7 @@ class SettingsViewController: UITableViewController {
     // print("handlePurchaseNotification")
     if let productID = notification.object as? String {
       
-//        print("Bought: \(productID)")
+        print("Bought: \(productID)")
       
       if productID == RecPurchase.FullVersion.productId {
         IAPHelper.iapHelper.setFullVersion = true

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="eOE-Im-nve">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="eOE-Im-nve">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -50,6 +50,19 @@
                                 <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a63-CL-UT1">
+                                <rect key="frame" x="22" y="200" width="70" height="70"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="70" id="ufc-ph-P8t"/>
+                                    <constraint firstAttribute="width" constant="70" id="x7h-pU-ULA"/>
+                                </constraints>
+                                <state key="normal" title="Photo">
+                                    <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="takePhoto:" destination="eOE-Im-nve" eventType="touchUpInside" id="HCd-4j-Gqj"/>
+                                </connections>
+                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gTM-bj-bZc">
                                 <rect key="frame" x="505" y="145" width="75" height="75"/>
                                 <subviews>
@@ -336,6 +349,7 @@
                             <constraint firstItem="Z2F-Gt-3KC" firstAttribute="centerX" secondItem="auV-TU-zXX" secondAttribute="centerX" id="CQb-UU-fgQ"/>
                             <constraint firstItem="VN3-rA-N7X" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="FmG-lH-pOE"/>
                             <constraint firstItem="T2h-dV-0Y4" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="HPY-Nl-S84"/>
+                            <constraint firstItem="a63-CL-UT1" firstAttribute="centerX" secondItem="72w-Ec-285" secondAttribute="centerX" id="HsJ-Ob-mNU"/>
                             <constraint firstItem="mRS-bt-HHr" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="IDZ-l4-3vD"/>
                             <constraint firstItem="PtV-hu-ps3" firstAttribute="centerX" secondItem="Mjl-GR-1Mx" secondAttribute="centerX" id="Jih-pg-za4"/>
                             <constraint firstAttribute="trailing" secondItem="VN3-rA-N7X" secondAttribute="trailing" id="Ny5-V6-IV8"/>
@@ -346,6 +360,7 @@
                             <constraint firstItem="72w-Ec-285" firstAttribute="centerX" secondItem="Z2F-Gt-3KC" secondAttribute="centerX" id="ZC9-LM-l3I"/>
                             <constraint firstItem="T2h-dV-0Y4" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" id="bFr-Y3-l9q"/>
                             <constraint firstItem="72w-Ec-285" firstAttribute="top" secondItem="Z2F-Gt-3KC" secondAttribute="bottom" constant="4" id="f25-Dk-t9X"/>
+                            <constraint firstItem="a63-CL-UT1" firstAttribute="top" secondItem="72w-Ec-285" secondAttribute="bottom" constant="21" id="fPv-CP-Io6"/>
                             <constraint firstAttribute="trailing" secondItem="T2h-dV-0Y4" secondAttribute="trailing" id="lgD-wa-WDA"/>
                             <constraint firstItem="auV-TU-zXX" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" constant="40" id="ngD-FD-Iew"/>
                             <constraint firstAttribute="trailing" secondItem="MDt-aa-swn" secondAttribute="trailing" constant="20" id="nwn-Dy-IMP"/>

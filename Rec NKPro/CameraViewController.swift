@@ -155,6 +155,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("CameraVC.viewDidAppear")
     super.viewDidAppear(animated)
     
+    // Disable the idle timer for CameraVC
+    UIApplication.sharedApplication().idleTimerDisabled = true
+    
     createOdometerLabel(settings.odometerMeters)
     speedLabel.text = ""
     timeLabel.text = ""
@@ -182,6 +185,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   override func viewWillDisappear(animated: Bool) {
     //print("CameraVC.viewWillDisappear")
     super.viewWillDisappear(animated)
+    
+    UIApplication.sharedApplication().idleTimerDisabled = false
     
     //Stop update timer label
     stopTimer(&updateTimeTimer)
@@ -398,6 +403,13 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
   }
   
+  @IBAction func takePhoto(sender: AnyObject) {
+    
+    if let cm = captureManager {
+      cm.snapImage()
+    }
+    
+  }
 }
 
 //MARK: - CaptureManagerDelegate
@@ -411,9 +423,6 @@ extension CameraViewController : CaptureManagerDelegate {
       self.settingsButton.enabled = false
       self.backButton.enabled = false
       self.recordButton.setImage(UIImage(named: "StartHighlight"), forState: .Normal)
-      
-      // Disable the idle timer while we are recording
-      UIApplication.sharedApplication().idleTimerDisabled = true
       
       // Make sure we have time to finish saving the movie if the app is backgrounded during recording
       if UIDevice.currentDevice().multitaskingSupported {
@@ -469,8 +478,7 @@ extension CameraViewController : CaptureManagerDelegate {
         
         self.speedLabel.text = ""
         self.speedView.hidden = true
-        
-        UIApplication.sharedApplication().idleTimerDisabled = false
+      
         // for previewLayer
         self.captureManager?.resumeCaptureSession()
         
