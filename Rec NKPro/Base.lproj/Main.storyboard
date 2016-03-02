@@ -50,12 +50,14 @@
                                 <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a63-CL-UT1">
-                                <rect key="frame" x="22" y="200" width="70" height="70"/>
+                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a63-CL-UT1">
+                                <rect key="frame" x="22" y="189" width="70" height="70"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="ufc-ph-P8t"/>
                                     <constraint firstAttribute="width" constant="70" id="x7h-pU-ULA"/>
                                 </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <state key="normal" title="Photo">
                                     <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
@@ -360,7 +362,7 @@
                             <constraint firstItem="72w-Ec-285" firstAttribute="centerX" secondItem="Z2F-Gt-3KC" secondAttribute="centerX" id="ZC9-LM-l3I"/>
                             <constraint firstItem="T2h-dV-0Y4" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" id="bFr-Y3-l9q"/>
                             <constraint firstItem="72w-Ec-285" firstAttribute="top" secondItem="Z2F-Gt-3KC" secondAttribute="bottom" constant="4" id="f25-Dk-t9X"/>
-                            <constraint firstItem="a63-CL-UT1" firstAttribute="top" secondItem="72w-Ec-285" secondAttribute="bottom" constant="21" id="fPv-CP-Io6"/>
+                            <constraint firstItem="a63-CL-UT1" firstAttribute="top" secondItem="72w-Ec-285" secondAttribute="bottom" constant="10" id="fPv-CP-Io6"/>
                             <constraint firstAttribute="trailing" secondItem="T2h-dV-0Y4" secondAttribute="trailing" id="lgD-wa-WDA"/>
                             <constraint firstItem="auV-TU-zXX" firstAttribute="top" secondItem="DKv-GT-l0r" secondAttribute="bottom" constant="40" id="ngD-FD-Iew"/>
                             <constraint firstAttribute="trailing" secondItem="MDt-aa-swn" secondAttribute="trailing" constant="20" id="nwn-Dy-IMP"/>

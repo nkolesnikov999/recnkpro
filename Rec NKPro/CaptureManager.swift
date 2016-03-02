@@ -498,7 +498,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   func startRecording() {
     //print("CaptureManager.startRecording")
     resumeCaptureSession()
-    locationManager.startUpdatingLocation()
+    // locationManager.startUpdatingLocation()
     
     dispatch_async(movieWritingQueue!) { () -> Void in
       if self.recordingWillBeStarted || self.recording { return }
@@ -526,7 +526,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   func stopRecording() {
     //print("CaptureManager.stopRecording")
     //pauseCaptureSession()
-    locationManager.stopUpdatingLocation()
+    //locationManager.stopUpdatingLocation()
     
     if assetWriter == nil {
       return
@@ -580,6 +580,16 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       
     }
+  }
+  
+  func startUpdatingLocation() {
+    locationManager.startUpdatingLocation()
+    //print("LM START")
+  }
+  
+  func stopUpdatingLocation() {
+    locationManager.stopUpdatingLocation()
+    //print("LM STOP")
   }
   
   //MARK: - Capture
@@ -732,6 +742,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       session.stopRunning()
       NSNotificationCenter.defaultCenter().removeObserver(self, name: AVCaptureSessionDidStopRunningNotification, object: session)
       locationManager.stopUpdatingLocation()
+      //print("LM STOP")
     }
     captureSession = nil
   }
@@ -978,6 +989,28 @@ extension CaptureManager : CLLocationManagerDelegate {
       
       self.delegate?.distanceUpdate(newLocation)
       
+      var kSpeed: Float = 3.6
+      var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")
+      if self.typeSpeed == .Mi {
+        kSpeed = 2.236936
+        strSpeed = NSLocalizedString("mph", comment: "CaptureManager: mph")
+      }
+      
+      var locationSpeed = Float(newLocation.speed)
+      
+      if locationSpeed < 0 || locationSpeed > 1000 {
+        locationSpeed = 0
+      }
+      
+      let speed = Int(locationSpeed*kSpeed)
+      let speedStr = NSString(format: "%d %@", speed, strSpeed) as String
+      
+      self.speed = speedStr
+      
+        self.delegate?.newLocationUpdate(speedStr)
+        //print("SPEED: \(speedStr)")
+
+      
       dispatch_async(movieWritingQueue!, { () -> Void in
         if let assetWriter = self.assetWriter {
           if assetWriter.status == AVAssetWriterStatus.Writing {
@@ -1012,25 +1045,6 @@ extension CaptureManager : CLLocationManagerDelegate {
             let speedItem = AVMutableMetadataItem()
             speedItem.identifier = FixdriveSpeedIdentifier
             speedItem.dataType = kCMMetadataBaseDataType_UTF8 as String
-            
-            var kSpeed: Float = 3.6
-            var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")
-            if self.typeSpeed == .Mi {
-              kSpeed = 2.236936
-              strSpeed = NSLocalizedString("mph", comment: "CaptureManager: mph")
-            }
-            
-            var locationSpeed = Float(newLocation.speed)
-            
-            if locationSpeed < 0 || locationSpeed > 1000 {
-              locationSpeed = 0
-            }
-            
-            let speed = Int(locationSpeed*kSpeed)
-            let speedStr = NSString(format: "%d %@", speed, strSpeed)
-            
-            self.speed = speedStr as String
-            
             speedItem.value = String(format: "%07.2f", locationSpeed)
             
             // Annotation time item
@@ -1047,10 +1061,7 @@ extension CaptureManager : CLLocationManagerDelegate {
             if let assetWriterMetadataIn = self.assetWriterMetadataIn, let assetWriterMetadataAdaptor = self.assetWriterMetadataAdaptor {
               if assetWriterMetadataIn.readyForMoreMediaData {
                 if assetWriterMetadataAdaptor.appendTimedMetadataGroup(newGroup) {
-                  dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.delegate?.newLocationUpdate(speedStr as String)
-                    // print("LOC_UPDATE")
-                  })
+                  // print("LOC_UPDATE")
                 } else {
                   if let error = assetWriter.error {
                     print("ERROR: CaptureManager.locationManager_didUpdateLocations")

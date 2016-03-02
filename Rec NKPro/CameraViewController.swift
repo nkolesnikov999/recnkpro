@@ -112,8 +112,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       self.treatPhoneCall(call)
     }
     
-    speedLabel.text = ""
-    speedView.hidden = true
+    speedLabelNoData()
+    speedView.hidden = false
     
     timeLabel.text = "2016/01/01 00:00:00"
     batteryLabel.text = "80"
@@ -159,7 +159,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     UIApplication.sharedApplication().idleTimerDisabled = true
     
     createOdometerLabel(settings.odometerMeters)
-    speedLabel.text = ""
     timeLabel.text = ""
     
     // Setup preview layer
@@ -180,11 +179,23 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     createMovieContents()
 
+    if let captureManager = captureManager {
+      captureManager.startUpdatingLocation()
+    } else {
+      print("CaptureManager didn't create!")
+    }
+
   }
   
   override func viewWillDisappear(animated: Bool) {
     //print("CameraVC.viewWillDisappear")
     super.viewWillDisappear(animated)
+    
+    if let captureManager = captureManager {
+      captureManager.stopUpdatingLocation()
+    }
+    
+    odometer.stop()
     
     UIApplication.sharedApplication().idleTimerDisabled = false
     
@@ -441,8 +452,6 @@ extension CameraViewController : CaptureManagerDelegate {
       self.recordButton.enabled = true
       self.recordButton.setImage(UIImage(named: "StopNormal"), forState: .Normal)
       self.resetControlViewTimer()
-      self.speedView.hidden = false
-      self.speedLabelNoData()
     }
   }
   
@@ -453,15 +462,11 @@ extension CameraViewController : CaptureManagerDelegate {
       
       self.recordButton.enabled = false
       self.recordButton.setImage(UIImage(named: "StopHighlight"), forState: .Normal)
-      self.unitsSpeedLabel.text = ""
-      self.speedLabel.text = NSLocalizedString("Stop", comment: "CameraVC: Stop")
       // Pause the capture session so that saving will be as fast as possible.
       // We resume the sesssion in recordingDidStop:
       self.captureManager?.pauseCaptureSession()
       self.stopTimer(&self.removeControlViewTimer)
-      self.stopTimer(&self.updateLocationTimer)
       
-      self.odometer.stop()
     }
   }
   
@@ -475,9 +480,6 @@ extension CameraViewController : CaptureManagerDelegate {
         self.recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
         self.settingsButton.enabled = true
         self.backButton.enabled = true
-        
-        self.speedLabel.text = ""
-        self.speedView.hidden = true
       
         // for previewLayer
         self.captureManager?.resumeCaptureSession()
