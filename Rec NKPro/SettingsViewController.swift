@@ -126,11 +126,24 @@ class SettingsViewController: UITableViewController {
   }
 
   @IBAction func selectQualityMode(sender: UISegmentedControl) {
-    settings.qualityMode = QualityMode(rawValue:  sender.selectedSegmentIndex)!
+    
+    if settings.typeCamera == .Back {
+      settings.backQualityMode = QualityMode(rawValue:  sender.selectedSegmentIndex)!
+    } else {
+      settings.frontQualityMode = QualityMode(rawValue:  sender.selectedSegmentIndex)!
+    }
+
   }
   
   @IBAction func selectTypeCamera(sender: UISegmentedControl) {
     settings.typeCamera = TypeCamera(rawValue: sender.selectedSegmentIndex)!
+    
+    if settings.typeCamera == .Back {
+      qualityModeSegment.selectedSegmentIndex = settings.backQualityMode.rawValue
+    } else {
+      qualityModeSegment.selectedSegmentIndex = settings.frontQualityMode.rawValue
+    }
+    
   }
   
   @IBAction func selectAutofocusing(sender: UISwitch) {
@@ -208,7 +221,8 @@ class SettingsViewController: UITableViewController {
   @IBAction func setDefaultSettings(sender: AnyObject) {
     let new = Settings()
     
-    settings.qualityMode = new.qualityMode
+    settings.backQualityMode = new.backQualityMode
+    settings.frontQualityMode = new.frontQualityMode
     settings.typeCamera = new.typeCamera
     settings.autofocusing = new.autofocusing
     settings.minIntervalLocations = new.minIntervalLocations
@@ -221,8 +235,15 @@ class SettingsViewController: UITableViewController {
   }
   
   func setAllControls() {
-    qualityModeSegment.selectedSegmentIndex = settings.qualityMode.rawValue
+
     typeCameraSegment.selectedSegmentIndex = settings.typeCamera.rawValue
+    
+    if settings.typeCamera == .Back {
+      qualityModeSegment.selectedSegmentIndex = settings.backQualityMode.rawValue
+    } else {
+      qualityModeSegment.selectedSegmentIndex = settings.frontQualityMode.rawValue
+    }
+    
     autofocusingSwitch.on = settings.autofocusing
     minIntervalSlider.value = Float(settings.minIntervalLocations)
     typeSpeedSegment.selectedSegmentIndex = settings.typeSpeed.rawValue

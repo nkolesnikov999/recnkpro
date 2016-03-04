@@ -19,7 +19,8 @@ import CoreTelephony
 import CoreLocation
 import AVFoundation
 
-let QualityModeKey = "QualityModeKey"
+let FrontQualityModeKey = "FrontQualityModeKey"
+let BackQualityModeKey = "BackQualityModeKey"
 let TypeCameraKey = "TypeCameraKey"
 let AutofocusingKey = "AutofocusingKey"
 let MinIntervalLocationsKey = "MinIntervalLocationsKey"
@@ -40,6 +41,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var backgroundRecordingID: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
   var mustRecord = false
   var resetRecordingTimer = false
+  var changingCamera = false
   var freeSpace: Float = 0
   
   var recordingTimer: NSTimer?
@@ -52,11 +54,25 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var assetItemsList: [AssetItem]!
   var odometer: Odometer!
   
-  let kUpdateTimeInterval: NSTimeInterval = 1
+  let kUpdateTimeInterval: NSTimeInterval = 1.0
   let kUpdateLocationInterval: NSTimeInterval = 3.0
   let kUpdateBatteryAndDiskInterval: NSTimeInterval = 30.0
   let kRemoveControlViewInterval: NSTimeInterval = 10.0
   
+  var iconsImage: UIImage? {
+    didSet {
+      let tmpImage = backButton.imageForState(.Normal)
+      if let image = iconsImage {
+        backButton.setImage(image, forState: .Normal)
+        let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 5))
+        dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+          self.backButton.setImage(tmpImage, forState: .Normal)
+        }
+      } else {
+        backButton.setImage(UIImage(named: "Icons"), forState: .Normal)
+      }
+    }
+  }
   
   
   @IBOutlet weak var previewView: UIView!
@@ -77,6 +93,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var batteryLabel: UILabel!
   @IBOutlet weak var controlViewConstraint: NSLayoutConstraint!
   
+  @IBOutlet weak var flashView: UIView!
 
   //MARK: - View Loading
   
@@ -91,10 +108,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     textLabel.layer.cornerRadius = 10.0
     
     timeLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
-    timeLabel.layer.cornerRadius = 13.0
+    timeLabel.layer.cornerRadius = 10.0
     
     odometerLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
-    odometerLabel.layer.cornerRadius = 18.0
+    odometerLabel.layer.cornerRadius = 10.0
     
     // Keep track of changes to the device orientation so we can update the capture manager
     let notificationCenter = NSNotificationCenter.defaultCenter()
@@ -378,16 +395,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
   }
   
-  /*
-  @IBAction func toggQualityMode(sender: UISegmentedControl) {
-    print("CameraVC.toggQualityMode")
-    setSessionPresetAndSelectedQuality(QualityMode(rawValue: sender.selectedSegmentIndex)!)
-    
-    NSUserDefaults.standardUserDefaults().setValue(qualityModeSegment.selectedSegmentIndex, forKey: SelectedSegmentKey)
-    NSUserDefaults.standardUserDefaults().synchronize()
-  }
-  */
-  
   @IBAction func changeOpacity(sender: UISlider) {
     layer?.opacity = sender.value
     
@@ -416,10 +423,35 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   @IBAction func takePhoto(sender: AnyObject) {
     
+    self.flashView.backgroundColor = UIColor.whiteColor()
+    self.flashView.alpha = 1
+    UIView.animateWithDuration(0.2) {
+      self.flashView.alpha = 0
+    }
+
     if let cm = captureManager {
       cm.snapImage()
     }
     
+  }
+  
+  @IBAction func changeCamera(sender: AnyObject) {
+    
+    if settings.typeCamera == .Back {
+      settings.typeCamera = .Front
+    } else {
+      settings.typeCamera = .Back
+    }
+    if let cm = captureManager {
+      if cm.recording {
+        cm.stopRecording()
+        changingCamera = true
+      }
+      cm.typeCamera = settings.typeCamera
+    }
+    setResolutionAndTextLabels()
+    NSUserDefaults.standardUserDefaults().setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
+    NSUserDefaults.standardUserDefaults().synchronize()
   }
 }
 
@@ -496,6 +528,13 @@ extension CameraViewController : CaptureManagerDelegate {
         }
       }
       
+      if self.changingCamera {
+        self.changingCamera = false
+        if let cm = self.captureManager {
+          cm.startRecording()
+        }
+      }
+      
       self.createMovieContents()
       self.checkMaxNumberFiles()
     }
@@ -552,9 +591,17 @@ extension CameraViewController : CaptureManagerDelegate {
       textLabel.hidden = true
     }
     
-    if settings.qualityMode == .High {
+    var mode: QualityMode = .Low
+    
+    if settings.typeCamera == .Back {
+      mode = settings.backQualityMode
+    } else {
+      mode = settings.frontQualityMode
+    }
+    
+    if mode == .High {
       resolutionLabel.text = "720p"
-    } else if settings.qualityMode == .Medium {
+    } else if mode == .Medium {
       resolutionLabel.text = "480p"
     } else {
       resolutionLabel.text = "288p"
@@ -697,7 +744,7 @@ extension CameraViewController : CaptureManagerDelegate {
   func setupPreviewLayer() {
     if let session = captureManager?.captureSession {
       
-      setSessionPresetAndSelectedQuality(settings.qualityMode)
+      setSessionPresetAndSelectedQuality()
       
       let orientation = UIDevice.currentDevice().orientation
       var angle: CGFloat = 0.0
@@ -721,7 +768,7 @@ extension CameraViewController : CaptureManagerDelegate {
       }
       if let layer = self.layer {
         //A string defining how the video is displayed within an AVCaptureVideoPreviewLayer bounds rect.
-        layer.videoGravity = AVLayerVideoGravityResizeAspect
+        layer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
         if let storedOpacity = NSUserDefaults.standardUserDefaults().valueForKey(LayerOpacityValueKey)?.floatValue {
           layer.opacity = storedOpacity
@@ -736,39 +783,55 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
-  func setSessionPresetAndSelectedQuality(value: QualityMode) {
+  func setSessionPresetAndSelectedQuality() {
+    var value: QualityMode = .Low
+    
+    if settings.typeCamera == .Back {
+      value = settings.backQualityMode
+    } else {
+      value = settings.frontQualityMode
+    }
+    
     if let session = captureManager?.captureSession {
       switch value {
       case .High:
         if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) && settings.typeCamera == .Back {
           session.sessionPreset = AVCaptureSessionPreset1280x720
           captureManager?.scaleText = 2
-          settings.qualityMode = .High
+          value = .High
         } else if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
           session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 1
-          settings.qualityMode = .Medium
+          value = .Medium
         } else {
           session.sessionPreset = AVCaptureSessionPresetLow
           captureManager?.scaleText = 0
-          settings.qualityMode = .Low
+          value = .Low
         }
       case .Medium:
         if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
           session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 1
-          settings.qualityMode = .Medium
+          value = .Medium
         } else {
           session.sessionPreset = AVCaptureSessionPresetLow
           captureManager?.scaleText = 0
-          settings.qualityMode = .Low
+          value = .Low
         }
       case .Low:
         session.sessionPreset = AVCaptureSessionPresetLow
         captureManager?.scaleText = 0
-        settings.qualityMode = .Low
+        value = .Low
       }
-      NSUserDefaults.standardUserDefaults().setValue(settings.qualityMode.rawValue, forKey: QualityModeKey)
+      
+      if settings.typeCamera == .Back {
+        settings.backQualityMode = value
+        NSUserDefaults.standardUserDefaults().setValue(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
+      } else {
+        settings.frontQualityMode = value
+        NSUserDefaults.standardUserDefaults().setValue(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
+      }
+      
       NSUserDefaults.standardUserDefaults().synchronize()
     }
   }
@@ -791,8 +854,12 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func loadSettings() {
     
-    if let storedQuality = NSUserDefaults.standardUserDefaults().valueForKey(QualityModeKey)?.integerValue {
-      settings.qualityMode = QualityMode(rawValue: storedQuality)!
+    if let storedQuality = NSUserDefaults.standardUserDefaults().valueForKey(FrontQualityModeKey)?.integerValue {
+      settings.frontQualityMode = QualityMode(rawValue: storedQuality)!
+    }
+    
+    if let storedQuality = NSUserDefaults.standardUserDefaults().valueForKey(BackQualityModeKey)?.integerValue {
+      settings.backQualityMode = QualityMode(rawValue: storedQuality)!
     }
     
     if let storedTypeCamera = NSUserDefaults.standardUserDefaults().valueForKey(TypeCameraKey)?.integerValue {
@@ -847,7 +914,8 @@ extension CameraViewController : CaptureManagerDelegate {
     
     checkMaxNumberFiles()
     
-    NSUserDefaults.standardUserDefaults().setValue(settings.qualityMode.rawValue, forKey: QualityModeKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.autofocusing, forKey: AutofocusingKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.minIntervalLocations, forKey: MinIntervalLocationsKey)

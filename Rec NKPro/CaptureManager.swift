@@ -25,6 +25,9 @@ let FixdriveSpeedIdentifier = "mdta/net.nkpro.fixdrive.speed.field"
 let FixdriveTimeIdentifier = "mdta/net.nkpro.fixdrive.time.field"
 
 protocol CaptureManagerDelegate : class {
+  
+  var iconsImage: UIImage? {get set}
+  
   func recordingWillStart()
   func recordingDidStart()
   func recordingWillStop()
@@ -59,11 +62,19 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   var typeSpeed: TypeSpeed!
   
-  var scaleText = 0
+  var scaleText = 0 {
+    didSet {
+      heightVideo = 0
+      widthVideo = 0
+      ciInputImage = nil
+    }
+  }
   var time: String = "" {
     didSet {
       if textOnVideo {
-        imageFromText()
+        dispatch_async(imageCreateQueue!) {
+         self.imageFromText()
+        }
       }
     }
   }
@@ -108,6 +119,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var colorSpace: CGColorSpace?
   var ciContext: CIContext!
   var ciInputImage: CIImage!
+  var ciFilter: CIFilter!
   
   var movieURL: NSURL!
   var assetWriter: AVAssetWriter?
@@ -159,6 +171,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     let eaglContext = EAGLContext(API: EAGLRenderingAPI.OpenGLES2)
     ciContext = CIContext(EAGLContext: eaglContext)
     colorSpace = CGColorSpaceCreateDeviceRGB()
+    
+    ciFilter = CIFilter(name: "CISourceOverCompositing")
+    ciFilter.setDefaults()
     
   }
   
@@ -215,11 +230,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     var outputImage: CIImage?
     
     if textOnVideo {
-      let filter = CIFilter(name: "CISourceOverCompositing")
-      filter?.setDefaults()
-      filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
-      filter?.setValue(self.ciInputImage, forKey: "inputImage")
-      outputImage = filter?.outputImage
+      ciFilter.setValue(inputBackImage, forKey: "inputBackgroundImage")
+      ciFilter.setValue(self.ciInputImage, forKey: "inputImage")
+      outputImage = ciFilter.outputImage
     } else {
       outputImage = inputBackImage
     }
@@ -251,7 +264,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func imageFromText() {
-    dispatch_async(imageCreateQueue!, { () -> Void in
       // Setup the font specific variables
       let textColor = UIColor.redColor()
       let backColor = UIColor.clearColor()
@@ -283,9 +295,13 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       let text = "\(self.logotype)\n\(self.time) \(self.speed)\n\(self.coordinate)"
       
+      //print("TEXT: \(text)")
+      
       let size = text.sizeWithAttributes(textFontAttributes)
       
       if self.widthVideo != 0 && self.heightVideo != 0 {
+        
+        //print("imageFromText - width: \(self.widthVideo), height: \(self.heightVideo)")
         
         UIGraphicsBeginImageContext(CGSize(width: self.widthVideo, height: self.heightVideo))
         
@@ -297,11 +313,21 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           margin = 10
           switch self.referenceOrientation! {
           case .LandscapeRight, .Portrait:
-            CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
-            CGContextRotateCTM(context, CGFloat(0))
+            if self.typeCamera == .Front {
+              CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
+              CGContextRotateCTM(context, CGFloat(M_PI))
+            } else {
+              CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
+              CGContextRotateCTM(context, CGFloat(0))
+            }
           case .LandscapeLeft, .PortraitUpsideDown:
-            CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
-            CGContextRotateCTM(context, CGFloat(M_PI))
+            if self.typeCamera == .Front {
+              CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
+              CGContextRotateCTM(context, CGFloat(0))
+            } else {
+              CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
+              CGContextRotateCTM(context, CGFloat(M_PI))
+            }
           }
           
         } else {
@@ -337,9 +363,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         UIGraphicsEndImageContext()
         
         self.ciInputImage = CIImage(CGImage: image.CGImage!)
-        
+        //print("ciInputImage")
       }
-    })
+
   }
   
   func setupAssetWriterAudioInput(currentFormatDescription: CMFormatDescriptionRef) -> Bool {
@@ -748,9 +774,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func changeTypeCamera() {
-    //if typeCamera == .Front {
-      delegate?.setupPreviewLayer()
-    //}
+    
+    delegate?.setupPreviewLayer()
+    
     if let session = captureSession {
       session.stopRunning()
       session.beginConfiguration()
@@ -822,32 +848,85 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
     guard let photoConnection = self.photoConnection else { return }
     
-    dispatch_async(movieWritingQueue!) {
+    
       self.photoOut.captureStillImageAsynchronouslyFromConnection(photoConnection) {
         imageDataSampleBuffer, error in
         if let error = error {
           print(error.localizedDescription)
         } else {
+          dispatch_async(self.imageCreateQueue!) {
+          self.setupHeightAndWidth(imageDataSampleBuffer)
+          // while ciInputImage is nil, filter doesn't work
+          while self.ciInputImage == nil {
+              sleep(10)
+          }
           let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
-          if let image = UIImage(data: imageData) {
+          
+          
+          if let inputImage = UIImage(data: imageData) {
+            let inputBackImage = CIImage(image: inputImage)
+            print("FILTER")
+            var outputImage: CIImage?
+            if self.textOnVideo {
+              let filter = CIFilter(name: "CISourceOverCompositing")
+              filter?.setDefaults()
+              filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
+              filter?.setValue(self.ciInputImage, forKey: "inputImage")
+              outputImage = filter?.outputImage
+            } else {
+              outputImage = inputBackImage
+            }
+            
+            guard let savedCIImage = outputImage else { return }
+            
+            // 1
+            let context = CIContext(options:nil)
+            
+            // 2
+            let cgimg = context.createCGImage(savedCIImage, fromRect: savedCIImage.extent)
+            
+            // 3
+            let newImage = UIImage(CGImage: cgimg, scale: 1.0, orientation: inputImage.imageOrientation)
+            
+            
             PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-              PHAssetCreationRequest.creationRequestForAssetFromImage(image)
+              PHAssetCreationRequest.creationRequestForAssetFromImage(newImage)
               }) { (success, error) -> Void in
                 if let nserror = error {
-                  print("ERROR: CM.snapImage - \(nserror.localizedDescription)")
+                  print("ERROR: CM.snapImage - \(nserror)")
                 }
                 if success {
-                  // print("Image saved")
+                  print("Image saved")
                 } else {
-                  // print("Image didn't save")
+                  print("Image didn't save")
                 }
             }
+
+            dispatch_async(dispatch_get_main_queue()) {
+              self.delegate?.iconsImage = newImage
+            }
+            
           }
         }
       }
     }
     
   }
+    
+  func setupHeightAndWidth(sampleBuffer: CMSampleBuffer!) {
+    
+    //dispatch_async(imageCreateQueue!) {
+      if let buffer = sampleBuffer, let formatDescription = CMSampleBufferGetFormatDescription(buffer) {
+      
+        let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
+        //print("setupHeightAndWidth - WIDTH: \(dimensions.width), HEIGHT: \(dimensions.height)")
+        self.widthVideo = CGFloat(dimensions.width)
+        self.heightVideo = CGFloat(dimensions.height)
+        //self.imageFromText()
+      //}
+    }
+  }
+
   
   func setAutofocusing() {
     if let device = videoDevice {
@@ -1007,9 +1086,25 @@ extension CaptureManager : CLLocationManagerDelegate {
       
       self.speed = speedStr
       
-        self.delegate?.newLocationUpdate(speedStr)
-        //print("SPEED: \(speedStr)")
+      var latitudeStr = ""
+      var longitudeStr = ""
+      
+      if newLocation.coordinate.latitude >= 0 {
+        latitudeStr = NSString(format: "N:%9.5lf", newLocation.coordinate.latitude) as String
+      } else {
+        latitudeStr = NSString(format: "S:%9.5lf", -newLocation.coordinate.latitude)  as String
+      }
+      
+      if newLocation.coordinate.longitude >= 0 {
+        longitudeStr = NSString(format: "E:%9.5lf", newLocation.coordinate.longitude) as String
+      } else {
+        longitudeStr = NSString(format: "W:%9.5lf", -newLocation.coordinate.longitude)  as String
+      }
+      
+      self.coordinate = "\(latitudeStr), \(longitudeStr)"
 
+      self.delegate?.newLocationUpdate(speedStr)
+      //print("SPEED: \(speedStr)")
       
       dispatch_async(movieWritingQueue!, { () -> Void in
         if let assetWriter = self.assetWriter {
@@ -1021,24 +1116,6 @@ extension CaptureManager : CLLocationManagerDelegate {
             // CoreLocation objects contain altitude information as well
             // If you need to store an ISO 6709 notation which includes altitude too, append it at the end of the string below
             let iso6709Notation = NSString(format: "%+08.4lf%+09.4lf/", newLocation.coordinate.latitude, newLocation.coordinate.longitude)
-            
-            var latitudeStr = ""
-            var longitudeStr = ""
-            
-            if newLocation.coordinate.latitude >= 0 {
-              latitudeStr = NSString(format: "N:%9.5lf", newLocation.coordinate.latitude) as String
-            } else {
-              latitudeStr = NSString(format: "S:%9.5lf", -newLocation.coordinate.latitude)  as String
-            }
-            
-            if newLocation.coordinate.longitude >= 0 {
-              longitudeStr = NSString(format: "E:%9.5lf", newLocation.coordinate.longitude) as String
-            } else {
-              longitudeStr = NSString(format: "W:%9.5lf", -newLocation.coordinate.longitude)  as String
-            }
-            
-            self.coordinate = "\(latitudeStr), \(longitudeStr)"
-            
             metadataItem.value = iso6709Notation
             
             // Annotation speed item
