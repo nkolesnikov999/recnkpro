@@ -72,7 +72,7 @@ class SettingsViewController: UITableViewController {
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "handlePurchaseNotification:", name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
     checkStateRestoreButton()
     
-    oldSettingNumberFiles = settings.maxNumberFiles
+    oldSettingNumberFiles = settings.maxNumberVideo  // <=========
   }
   
   override func didReceiveMemoryWarning() {
@@ -93,7 +93,7 @@ class SettingsViewController: UITableViewController {
   
   @IBAction func tapBackButton(sender: UIBarButtonItem) {
     
-    if settings.maxNumberFiles < numberAssetFiles  && IAPHelper.iapHelper.setFullVersion {
+    if settings.maxNumberVideo < numberAssetFiles  && IAPHelper.iapHelper.setFullVersion { // <===========
       
       let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing files will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
       let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
@@ -108,7 +108,7 @@ class SettingsViewController: UITableViewController {
       let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .Default) { (action: UIAlertAction!) -> Void in
         defer {
           dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.settings.maxNumberFiles = self.oldSettingNumberFiles
+            self.settings.maxNumberVideo = self.oldSettingNumberFiles // <=============
             self.maxNumberFilesLabel.text = "\(self.oldSettingNumberFiles)"
             self.maxNumberFilesSlider.value = Float(self.oldSettingNumberFiles)
           })
@@ -178,8 +178,8 @@ class SettingsViewController: UITableViewController {
   @IBAction func setMaxNumberFiles(sender: UISlider) {
     //print("valueChange")
     
-    if Int(sender.value) > settings.maxNumberFiles && !IAPHelper.iapHelper.setFullVersion {
-      sender.value = Float(settings.maxNumberFiles)
+    if Int(sender.value) > settings.maxNumberVideo && !IAPHelper.iapHelper.setFullVersion { // <===============
+      sender.value = Float(settings.maxNumberVideo) // <=============
       
       if !alertMaxFiles {
         alertMaxFiles = true
@@ -197,7 +197,7 @@ class SettingsViewController: UITableViewController {
       let value = Int(sender.value)
       sender.value = Float(value)
       maxNumberFilesLabel.text = "\(value)"
-      settings.maxNumberFiles = value
+      settings.maxNumberVideo = value  // <==========
     }
     
   }
@@ -227,7 +227,7 @@ class SettingsViewController: UITableViewController {
     settings.autofocusing = new.autofocusing
     settings.minIntervalLocations = new.minIntervalLocations
     settings.maxRecordingTime = new.maxRecordingTime
-    settings.maxNumberFiles = new.maxNumberFiles
+    settings.maxNumberVideo = new.maxNumberVideo  // <============
     settings.textOnVideo = new.textOnVideo
 
     setAllControls()
@@ -248,13 +248,13 @@ class SettingsViewController: UITableViewController {
     minIntervalSlider.value = Float(settings.minIntervalLocations)
     typeSpeedSegment.selectedSegmentIndex = settings.typeSpeed.rawValue
     maxRecordingTimeSlider.value = Float(settings.maxRecordingTime)
-    maxNumberFilesSlider.value = Float(settings.maxNumberFiles)
+    maxNumberFilesSlider.value = Float(settings.maxNumberVideo) // <=============
     logotypeTextField.text = settings.logotype
     textOnVideoSwitch.on = settings.textOnVideo
     
     minIntervalLabel.text = String(format: NSLocalizedString("%d m", comment: "SettingsVC Format for minIntervalLabel"), settings.minIntervalLocations)
     maxRecordingTimeLabel.text = String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), settings.maxRecordingTime)
-    maxNumberFilesLabel.text = "\(settings.maxNumberFiles)"
+    maxNumberFilesLabel.text = "\(settings.maxNumberVideo)"  // <=============
   }
   
   func requestIAPProducts() {

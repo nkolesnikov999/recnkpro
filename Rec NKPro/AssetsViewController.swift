@@ -118,6 +118,10 @@ class AssetsViewController : UIViewController {
     if fileManager.fileExistsAtPath(filePath!) {
       do {
         try fileManager.removeItemAtPath(filePath!)
+        if let bytes = CameraViewController.deviceRemainingFreeSpaceInBytes() {
+          let hMBytes = Int(bytes/10_0000_000)
+          freeSpace = Float(hMBytes)/10
+        }
       } catch {
         let nserror = error as NSError
         print("ERROR: AssetsVC.removeFile - \(nserror.userInfo)")

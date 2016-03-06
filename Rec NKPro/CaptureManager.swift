@@ -525,6 +525,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     //print("CaptureManager.startRecording")
     resumeCaptureSession()
     // locationManager.startUpdatingLocation()
+    setAutofocusing()
     
     dispatch_async(movieWritingQueue!) { () -> Void in
       if self.recordingWillBeStarted || self.recording { return }
@@ -865,7 +866,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           
           if let inputImage = UIImage(data: imageData) {
             let inputBackImage = CIImage(image: inputImage)
-            print("FILTER")
             var outputImage: CIImage?
             if self.textOnVideo {
               let filter = CIFilter(name: "CISourceOverCompositing")

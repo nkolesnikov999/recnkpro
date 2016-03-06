@@ -26,7 +26,7 @@ let AutofocusingKey = "AutofocusingKey"
 let MinIntervalLocationsKey = "MinIntervalLocationsKey"
 let TypeSpeedKey = "TypeSpeedKey"
 let MaxRecordingTimeKey = "MaxRecordingTimeKey"
-let MaxNumberFilesKey = "MaxNumberFilesKey"
+let MaxNumberVideoKey = "MaxNumberVideoKey" // <============
 let LayerOpacityValueKey = "LayerOpacityValueKey"
 let OdometerMetersKey = "OdometerMetersKey"
 let TextOnVideoKey = "TextOnVideoKey"
@@ -42,9 +42,11 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var mustRecord = false
   var resetRecordingTimer = false
   var changingCamera = false
+  var isPhotoImage = false
   var freeSpace: Float = 0
   
   var recordingTimer: NSTimer?
+  var photoTimer: NSTimer?
   var updateTimeTimer: NSTimer?
   var updateLocationTimer: NSTimer?
   var updateBatteryAndDiskTimer: NSTimer?
@@ -61,16 +63,28 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   var iconsImage: UIImage? {
     didSet {
-      let tmpImage = backButton.imageForState(.Normal)
+      var tmpImage: UIImage?
+      if !isPhotoImage {
+        tmpImage = backButton.imageForState(.Normal)
+        isPhotoImage = true
+      }
+      
       if let image = iconsImage {
         backButton.setImage(image, forState: .Normal)
-        let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 5))
-        dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+        delay(5) {
           self.backButton.setImage(tmpImage, forState: .Normal)
+          self.isPhotoImage = false
         }
       } else {
-        backButton.setImage(UIImage(named: "Icons"), forState: .Normal)
+        backButton.setImage(tmpImage, forState: .Normal)
       }
+    }
+  }
+  
+  func delay(time: Double, completionBlock: () -> ()) {
+    let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * time))
+    dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+      completionBlock()
     }
   }
   
@@ -94,8 +108,21 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var controlViewConstraint: NSLayoutConstraint!
   
   @IBOutlet weak var flashView: UIView!
+  @IBOutlet weak var photoView: UIImageView!
 
   //MARK: - View Loading
+  
+  class func deviceRemainingFreeSpaceInBytes() -> Int64? {
+    let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+    let defaultManager = NSFileManager.defaultManager()
+    do {
+      let systemAttributes = try defaultManager.attributesOfFileSystemForPath((documentDirectoryPath.last as String?)!)
+      let freeSize = (systemAttributes[NSFileSystemFreeSize] as? NSNumber)?.longLongValue
+      return freeSize
+    } catch {
+      return nil
+    }
+  }
   
   override func viewDidLoad() {
     //print("CameraVC.viewDidLoad")
@@ -165,8 +192,16 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     createOdometerLabel(settings.odometerMeters)
     
     setResolutionAndTextLabels()
+    
+    let photoLongRecognizer = UILongPressGestureRecognizer(target: self, action: "photoLong:")
+    photoLongRecognizer.minimumPressDuration = 2.0
+    self.photoView.addGestureRecognizer(photoLongRecognizer)
+    
+    let photoTapRecognizer = UITapGestureRecognizer(target: self, action: "photoTap:")
+    self.photoView.addGestureRecognizer(photoTapRecognizer)
   }
   
+
   
   override func viewDidAppear(animated: Bool) {
     //print("CameraVC.viewDidAppear")
@@ -212,6 +247,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       captureManager.stopUpdatingLocation()
     }
     
+    photoView.image = UIImage(named: "Camera")
+    
     odometer.stop()
     
     UIApplication.sharedApplication().idleTimerDisabled = false
@@ -221,6 +258,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     stopTimer(&updateLocationTimer)
     stopTimer(&removeControlViewTimer)
     stopTimer(&recordingTimer)
+    stopTimer(&photoTimer)
   }
   
   deinit {
@@ -262,6 +300,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     captureManager?.delegate = nil
     
     //Stop update time and speed timer
+    stopTimer(&photoTimer)
     stopTimer(&updateTimeTimer)
     stopTimer(&updateLocationTimer)
     stopTimer(&removeControlViewTimer)
@@ -387,7 +426,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   func checkMaxNumberFiles() {
     
-    while assetItemsList.count > settings.maxNumberFiles {
+    while assetItemsList.count > settings.maxNumberVideo { // <=========
       let asset = assetItemsList[0]
       removeFile(asset.url)
       assetItemsList.removeAtIndex(0)
@@ -409,7 +448,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   @IBAction func tapGesture(sender: UITapGestureRecognizer) {
-    //print("TAP")
+    print("TAP")
     if let cm = captureManager {
       if cm.recording {
         if controlViewConstraint.constant != 0 {
@@ -420,20 +459,59 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       }
     }
   }
-  
-  @IBAction func takePhoto(sender: AnyObject) {
-    
-    self.flashView.backgroundColor = UIColor.whiteColor()
-    self.flashView.alpha = 1
-    UIView.animateWithDuration(0.2) {
-      self.flashView.alpha = 0
-    }
 
+  
+  func photoLong(sender: UITapGestureRecognizer) {
+    print("LONG Tap")
+    if sender.state == .Began {
+      print("LongTapBegan")
+      takeAutoPhoto()
+      
+    } else if sender.state == .Ended {
+      print("LongTapEnded")
+      photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: Selector("takeAutoPhoto"), userInfo: nil, repeats: true)
+      
+    } else {
+      print("LongTapOther")
+    }
+  }
+  
+  func photoTap(sender: UITapGestureRecognizer) {
+    print("Photo Tap")
+    if sender.state == .Ended {
+      
+      if photoTimer != nil {
+        print("Stop Auto")
+        stopTimer(&photoTimer)
+        photoView.image = UIImage(named: "Camera")
+      } else {
+        self.flashView.backgroundColor = UIColor.whiteColor()
+        self.flashView.alpha = 1
+        UIView.animateWithDuration(0.2) {
+          self.flashView.alpha = 0
+        }
+        photoView.image = UIImage(named: "CameraPhoto")
+        delay(0.5) {
+          self.photoView.image = UIImage(named: "Camera")
+        }
+        if let cm = captureManager {
+          cm.snapImage()
+        }
+      }
+    }
+  }
+  
+  func takeAutoPhoto() {
+    print("Photo!")
+    photoView.image = UIImage(named: "CameraAutoPhoto")
+    delay(0.5) {
+      self.photoView.image = UIImage(named: "CameraAuto")
+    }
     if let cm = captureManager {
       cm.snapImage()
     }
-    
   }
+
   
   @IBAction func changeCamera(sender: AnyObject) {
     
@@ -677,7 +755,7 @@ extension CameraViewController : CaptureManagerDelegate {
       batteryLabel.textColor = UIColor.redColor()
     }
     
-    if let bytes = deviceRemainingFreeSpaceInBytes() {
+    if let bytes = CameraViewController.deviceRemainingFreeSpaceInBytes() {
       let hMBytes = Int(bytes/10_0000_000)
       freeSpace = Float(hMBytes)/10
       fillDiskLabel.text = "\(freeSpace)"
@@ -691,18 +769,6 @@ extension CameraViewController : CaptureManagerDelegate {
       if mustRecord && freeSpace < 0.3 {
         checkFilesStopRecordingDueSpaceLimit()
       }
-    }
-  }
-  
-  func deviceRemainingFreeSpaceInBytes() -> Int64? {
-    let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-    let defaultManager = NSFileManager.defaultManager()
-    do {
-      let systemAttributes = try defaultManager.attributesOfFileSystemForPath((documentDirectoryPath.last as String?)!)
-      let freeSize = (systemAttributes[NSFileSystemFreeSize] as? NSNumber)?.longLongValue
-      return freeSize
-    } catch {
-      return nil
     }
   }
   
@@ -890,8 +956,8 @@ extension CameraViewController : CaptureManagerDelegate {
       settings.maxRecordingTime = storeMaxRecordingTime
     }
     
-    if let storedMaxNumberFiles = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberFilesKey)?.integerValue {
-      settings.maxNumberFiles = storedMaxNumberFiles
+    if let storedMaxNumberVideo = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberVideoKey)?.integerValue {
+      settings.maxNumberVideo = storedMaxNumberVideo // <======
     }
     
     if let storedOdometerMeters = NSUserDefaults.standardUserDefaults().valueForKey(OdometerMetersKey)?.integerValue {
@@ -921,7 +987,7 @@ extension CameraViewController : CaptureManagerDelegate {
     NSUserDefaults.standardUserDefaults().setValue(settings.minIntervalLocations, forKey: MinIntervalLocationsKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberFiles, forKey: MaxNumberFilesKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberVideo, forKey: MaxNumberVideoKey) // <===========
     NSUserDefaults.standardUserDefaults().setValue(settings.textOnVideo, forKey: TextOnVideoKey)
     NSUserDefaults.standardUserDefaults().setObject(settings.logotype, forKey: LogotypeKey)
     

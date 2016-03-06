@@ -51,7 +51,7 @@
 "IlQ-KB-9SA.text" = "Title";
 
 /* Class = "UILabel"; text = "Max Number of Files:"; ObjectID = "KuL-1o-Hog"; */
-"KuL-1o-Hog.text" = "Макс кол файлов:";
+"KuL-1o-Hog.text" = "Макс кол видео:";
 
 /* Class = "UILabel"; text = "km/h"; ObjectID = "L6G-H7-qG1"; */
 "L6G-H7-qG1.text" = "км/ч";
