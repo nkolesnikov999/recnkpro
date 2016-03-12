@@ -30,10 +30,13 @@ class SettingsViewController: UITableViewController {
   weak var delegate: SettingsControllerDelegate?
   var settings: Settings!
   var price = ""
-  var alertMaxFiles = false
+  var alertMaxVideo = false
+  var alertMaxPictures = false
   
   var numberAssetFiles = 0
-  var oldSettingNumberFiles = 0
+  var numberPictureAsset = 0
+  var oldSettingNumberVideo = 0
+  var oldSettingNumberPicture = 0
   
   @IBOutlet weak var qualityModeSegment: UISegmentedControl!
   @IBOutlet weak var typeCameraSegment: UISegmentedControl!
@@ -46,6 +49,10 @@ class SettingsViewController: UITableViewController {
   @IBOutlet weak var maxRecordingTimeSlider: UISlider!
   @IBOutlet weak var maxNumberFilesLabel: UILabel!
   @IBOutlet weak var maxNumberFilesSlider: UISlider!
+  @IBOutlet weak var maxNumberPicturesLabel: UILabel!
+  @IBOutlet weak var maxNumberPicturesSlider: UISlider!
+  @IBOutlet weak var intervalPicturesLabel: UILabel!
+  @IBOutlet weak var intervalPicturesSlider: UISlider!
   @IBOutlet weak var logotypeTextField: UITextField!
   @IBOutlet weak var fullVersionButton: UIButton!
   @IBOutlet weak var restorePurchasesButton: UIButton!
@@ -72,7 +79,8 @@ class SettingsViewController: UITableViewController {
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "handlePurchaseNotification:", name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
     checkStateRestoreButton()
     
-    oldSettingNumberFiles = settings.maxNumberVideo  // <=========
+    oldSettingNumberVideo = settings.maxNumberVideo
+    oldSettingNumberPicture = settings.maxNumberPictures
   }
   
   override func didReceiveMemoryWarning() {
@@ -93,9 +101,9 @@ class SettingsViewController: UITableViewController {
   
   @IBAction func tapBackButton(sender: UIBarButtonItem) {
     
-    if settings.maxNumberVideo < numberAssetFiles  && IAPHelper.iapHelper.setFullVersion { // <===========
+    if settings.maxNumberVideo < numberAssetFiles  && IAPHelper.iapHelper.setFullVersion {
       
-      let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing files will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+      let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing video will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
       let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
         //print("OK")
         defer {
@@ -108,9 +116,34 @@ class SettingsViewController: UITableViewController {
       let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .Default) { (action: UIAlertAction!) -> Void in
         defer {
           dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.settings.maxNumberVideo = self.oldSettingNumberFiles // <=============
-            self.maxNumberFilesLabel.text = "\(self.oldSettingNumberFiles)"
-            self.maxNumberFilesSlider.value = Float(self.oldSettingNumberFiles)
+            self.settings.maxNumberVideo = self.oldSettingNumberVideo
+            self.maxNumberFilesLabel.text = "\(self.oldSettingNumberVideo)"
+            self.maxNumberFilesSlider.value = Float(self.oldSettingNumberVideo)
+          })
+        }
+      }
+      
+      alert.addAction(agreeAction)
+      alert.addAction(cancelAction)
+      presentViewController(alert, animated: true, completion: nil)
+    } else if settings.maxNumberPictures < numberPictureAsset  && IAPHelper.iapHelper.setFullVersion {
+      
+      let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing pictures will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+      let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+        //print("OK")
+        defer {
+          dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.delegate?.saveSettings()
+            self.dismissViewControllerAnimated(false, completion: nil)
+          })
+        }
+      }
+      let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .Default) { (action: UIAlertAction!) -> Void in
+        defer {
+          dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.settings.maxNumberPictures = self.oldSettingNumberPicture 
+            self.maxNumberPicturesLabel.text = "\(self.oldSettingNumberPicture)"
+            self.maxNumberPicturesSlider.value = Float(self.oldSettingNumberPicture)
           })
         }
       }
@@ -178,15 +211,14 @@ class SettingsViewController: UITableViewController {
   @IBAction func setMaxNumberFiles(sender: UISlider) {
     //print("valueChange")
     
-    if Int(sender.value) > settings.maxNumberVideo && !IAPHelper.iapHelper.setFullVersion { // <===============
-      sender.value = Float(settings.maxNumberVideo) // <=============
+    if Int(sender.value) > settings.maxNumberVideo && !IAPHelper.iapHelper.setFullVersion {       sender.value = Float(settings.maxNumberVideo)
       
-      if !alertMaxFiles {
-        alertMaxFiles = true
+      if !alertMaxVideo {
+        alertMaxVideo = true
         let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
         
         let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
-          self.alertMaxFiles = false
+          self.alertMaxVideo = false
         }
         
         alert.addAction(cancelAction)
@@ -197,9 +229,46 @@ class SettingsViewController: UITableViewController {
       let value = Int(sender.value)
       sender.value = Float(value)
       maxNumberFilesLabel.text = "\(value)"
-      settings.maxNumberVideo = value  // <==========
+      settings.maxNumberVideo = value
     }
     
+  }
+  
+  @IBAction func setMaxNumberPictures(sender: UISlider) {
+    let partValue = sender.value/10
+    let value = Int(partValue) * 10
+    sender.value = Float(value)
+    if Int(sender.value) > settings.maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+      sender.value = Float(settings.maxNumberPictures)
+      
+      if !alertMaxPictures {
+        alertMaxPictures = true
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+          self.alertMaxPictures = false
+        }
+        
+        alert.addAction(cancelAction)
+        presentViewController(alert, animated: true, completion: nil)
+      }
+      
+    } else {
+      let value = Int(sender.value)
+      sender.value = Float(value)
+      maxNumberPicturesLabel.text = "\(value)"
+      settings.maxNumberPictures = value
+    }
+
+  }
+  
+  @IBAction func setIntervalPictures(sender: UISlider) {
+    let partValue = sender.value/5
+    let value = Int(partValue) * 5
+    sender.value = Float(value)
+    intervalPicturesLabel.text =  String(format: NSLocalizedString("%d s", comment: "SettingsVC Format for intervalPicturesLabel"), value)
+    
+    settings.intervalPictures = value
   }
   
   @IBAction func resetOdometer(sender: AnyObject) {
@@ -227,7 +296,9 @@ class SettingsViewController: UITableViewController {
     settings.autofocusing = new.autofocusing
     settings.minIntervalLocations = new.minIntervalLocations
     settings.maxRecordingTime = new.maxRecordingTime
-    settings.maxNumberVideo = new.maxNumberVideo  // <============
+    settings.maxNumberVideo = new.maxNumberVideo
+    settings.maxNumberPictures = new.maxNumberPictures
+    settings.intervalPictures = new.intervalPictures
     settings.textOnVideo = new.textOnVideo
 
     setAllControls()
@@ -248,13 +319,17 @@ class SettingsViewController: UITableViewController {
     minIntervalSlider.value = Float(settings.minIntervalLocations)
     typeSpeedSegment.selectedSegmentIndex = settings.typeSpeed.rawValue
     maxRecordingTimeSlider.value = Float(settings.maxRecordingTime)
-    maxNumberFilesSlider.value = Float(settings.maxNumberVideo) // <=============
+    maxNumberFilesSlider.value = Float(settings.maxNumberVideo)
+    maxNumberPicturesSlider.value = Float(settings.maxNumberPictures)
+    intervalPicturesSlider.value = Float(settings.intervalPictures)
     logotypeTextField.text = settings.logotype
     textOnVideoSwitch.on = settings.textOnVideo
     
     minIntervalLabel.text = String(format: NSLocalizedString("%d m", comment: "SettingsVC Format for minIntervalLabel"), settings.minIntervalLocations)
     maxRecordingTimeLabel.text = String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), settings.maxRecordingTime)
-    maxNumberFilesLabel.text = "\(settings.maxNumberVideo)"  // <=============
+    maxNumberFilesLabel.text = "\(settings.maxNumberVideo)"
+    maxNumberPicturesLabel.text = "\(settings.maxNumberPictures)"
+    intervalPicturesLabel.text = String(format: NSLocalizedString("%d s", comment: "SettingsVC Format for intervalPicturesLabel"), settings.intervalPictures)
   }
   
   func requestIAPProducts() {

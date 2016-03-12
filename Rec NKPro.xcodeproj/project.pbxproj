@@ -25,6 +25,7 @@
 		4CB6F3B61C371E05009BF45B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CB6F3B81C371E05009BF45B /* Main.storyboard */; };
 		4CBF26381C4EBB9D000B79C7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */; };
 		4CBF263A1C4EBE9F000B79C7 /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */; };
+		4CE24E4B1C93437000775F1B /* PicturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE24E4A1C93437000775F1B /* PicturesViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
 		4CBF263C1C50F599000B79C7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
+		4CE24E4A1C93437000775F1B /* PicturesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PicturesViewController.swift; sourceTree = "<group>"; };
 		4CEA60641C46BF4F000EC854 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,6 +119,7 @@
 				4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */,
 				4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */,
 				4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */,
+				4CE24E4A1C93437000775F1B /* PicturesViewController.swift */,
 				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
 				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
 			);
@@ -216,6 +219,7 @@
 				4C3EECB51BF8FA9300FE0C4C /* PlayerViewController.swift in Sources */,
 				4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */,
 				4C3EECB21BF8FA9300FE0C4C /* SettingsViewController.swift in Sources */,
+				4CE24E4B1C93437000775F1B /* PicturesViewController.swift in Sources */,
 				4C2279301C425A7C0021F3F9 /* Metadata.swift in Sources */,
 				4C3EECB31BF8FA9300FE0C4C /* AssetsViewController.swift in Sources */,
 			);

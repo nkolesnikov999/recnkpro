@@ -857,10 +857,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         } else {
           dispatch_async(self.imageCreateQueue!) {
           self.setupHeightAndWidth(imageDataSampleBuffer)
-          // while ciInputImage is nil, filter doesn't work
-          while self.ciInputImage == nil {
-              sleep(10)
-          }
           let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
           
           

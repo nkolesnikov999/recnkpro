@@ -26,7 +26,9 @@ let AutofocusingKey = "AutofocusingKey"
 let MinIntervalLocationsKey = "MinIntervalLocationsKey"
 let TypeSpeedKey = "TypeSpeedKey"
 let MaxRecordingTimeKey = "MaxRecordingTimeKey"
-let MaxNumberVideoKey = "MaxNumberVideoKey" // <============
+let MaxNumberVideoKey = "MaxNumberVideoKey"
+let MaxNumberPictureKey = "MaxNumberPictureKey"
+let IntevalPictureKey = "IntevalPictureKey"
 let LayerOpacityValueKey = "LayerOpacityValueKey"
 let OdometerMetersKey = "OdometerMetersKey"
 let TextOnVideoKey = "TextOnVideoKey"
@@ -71,7 +73,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       
       if let image = iconsImage {
         backButton.setImage(image, forState: .Normal)
-        delay(5) {
+        delay(4) {
           self.backButton.setImage(tmpImage, forState: .Normal)
           self.isPhotoImage = false
         }
@@ -614,7 +616,7 @@ extension CameraViewController : CaptureManagerDelegate {
       }
       
       self.createMovieContents()
-      self.checkMaxNumberFiles()
+      self.checkMaxNumberFiles() // <==============
     }
   }
   
@@ -957,7 +959,19 @@ extension CameraViewController : CaptureManagerDelegate {
     }
     
     if let storedMaxNumberVideo = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberVideoKey)?.integerValue {
-      settings.maxNumberVideo = storedMaxNumberVideo // <======
+      settings.maxNumberVideo = storedMaxNumberVideo
+    } else if let storedMaxNumberFiles = NSUserDefaults.standardUserDefaults().valueForKey("MaxNumberFilesKey")?.integerValue {
+      if IAPHelper.iapHelper.setFullVersion {
+        settings.maxNumberVideo = storedMaxNumberFiles
+      }
+    }
+    
+    if let storedMaxNumberPicture = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberPictureKey)?.integerValue {
+      settings.maxNumberPictures = storedMaxNumberPicture
+    }
+    
+    if let storedIntervalPicture = NSUserDefaults.standardUserDefaults().valueForKey(IntevalPictureKey)?.integerValue {
+      settings.intervalPictures = storedIntervalPicture
     }
     
     if let storedOdometerMeters = NSUserDefaults.standardUserDefaults().valueForKey(OdometerMetersKey)?.integerValue {
@@ -978,7 +992,7 @@ extension CameraViewController : CaptureManagerDelegate {
       odometer.reset()
     }
     
-    checkMaxNumberFiles()
+    checkMaxNumberFiles() // <===========
     
     NSUserDefaults.standardUserDefaults().setValue(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
@@ -987,7 +1001,9 @@ extension CameraViewController : CaptureManagerDelegate {
     NSUserDefaults.standardUserDefaults().setValue(settings.minIntervalLocations, forKey: MinIntervalLocationsKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberVideo, forKey: MaxNumberVideoKey) // <===========
+    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberVideo, forKey: MaxNumberVideoKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberPictures, forKey: MaxNumberPictureKey)
+    NSUserDefaults.standardUserDefaults().setValue(settings.intervalPictures, forKey: IntevalPictureKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.textOnVideo, forKey: TextOnVideoKey)
     NSUserDefaults.standardUserDefaults().setObject(settings.logotype, forKey: LogotypeKey)
     
@@ -1048,10 +1064,12 @@ extension CameraViewController : CaptureManagerDelegate {
     }
     
     if segue.identifier == "assetsSegue" {
-      if let destVC = segue.destinationViewController as? AssetsViewController {
-        destVC.assetItemsList = assetItemsList
-        destVC.freeSpace = freeSpace
-        destVC.typeSpeed = settings.typeSpeed
+      if let tabBarController = segue.destinationViewController as? UITabBarController {
+        if let destVC = tabBarController.viewControllers?[0] as? AssetsViewController {
+          destVC.assetItemsList = assetItemsList
+          destVC.freeSpace = freeSpace
+          destVC.typeSpeed = settings.typeSpeed
+        }
       }
     }
   }

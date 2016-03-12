@@ -28,14 +28,14 @@ class Settings {
   var frontQualityMode: QualityMode = .Medium
   var backQualityMode: QualityMode = .Medium
   var typeCamera: TypeCamera = .Back
-  var autofocusing: Bool = false
+  var autofocusing: Bool = true
   var textOnVideo: Bool = true
   var logotype: String = "NKPRO.NET"
   var minIntervalLocations: Int = 0
   var typeSpeed: TypeSpeed = .Km
   var maxRecordingTime: Int = 30
   var maxNumberVideo: Int = 2
-  var maxNumberPictures: Int = 5
+  var maxNumberPictures: Int = 10
   var intervalPictures: Int = 10
   var odometerMeters: Int = 0
 }
