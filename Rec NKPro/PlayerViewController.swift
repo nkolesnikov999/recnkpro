@@ -64,7 +64,7 @@ class PlayerViewController : UIViewController {
     
     defineStackAxis()
     let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.addObserver(self, selector: "defineStackAxis", name: UIDeviceOrientationDidChangeNotification, object: nil)
+    notificationCenter.addObserver(self, selector: #selector(PlayerViewController.defineStackAxis), name: UIDeviceOrientationDidChangeNotification, object: nil)
     //notificationCenter.addObserver(self, selector: "didPlayToEndTime", name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
 
   }
@@ -235,7 +235,7 @@ class PlayerViewController : UIViewController {
         var pointsToUse = [CLLocationCoordinate2D]()
         
         // Extract all the coordinates to draw from the locationPoints array
-        for var i = startIndex; i <= endIndex; i++ {
+        for i in startIndex ..< endIndex {
           let metadata = metadatas[i]
           pointsToUse.append(metadata.coordinate)
         }
@@ -417,7 +417,7 @@ class PlayerViewController : UIViewController {
     var pointsToUse = [CLLocationCoordinate2D](count: numberOfPoints, repeatedValue: CLLocationCoordinate2D())
     
     // Extract all the coordinates to draw from the locationPoints array
-    for var i = 0; i < numberOfPoints; i++ {
+    for i in 0 ..< numberOfPoints {
       let metadata = metadatas[i]
       pointsToUse[i] = metadata.location!.coordinate
     }
@@ -455,7 +455,7 @@ class PlayerViewController : UIViewController {
         var pointsToUse = [CLLocationCoordinate2D]()
         
         // Extract all the coordinates to draw from the locationPoints array
-        for var i = startIndex; i < endIndex; i++ {
+        for i in startIndex ..< endIndex {
           let metadata = metadatas[i]
           pointsToUse.append(metadata.coordinate)
         }
@@ -663,7 +663,7 @@ class PlayerViewController : UIViewController {
       }
     
       //print("+++\(speed)+++")
-      index++
+      index += 1
       let delta = metadata.location!.distanceFromLocation(metadatas[index].location!)
       if delta > Double(Odometer.accuracity) {
         distance += delta

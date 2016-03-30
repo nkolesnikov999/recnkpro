@@ -194,7 +194,13 @@ extension AssetsViewController : UITableViewDataSource {
     let cell = tableView.dequeueReusableCellWithIdentifier("AssetCell", forIndexPath: indexPath) as UITableViewCell
     let asset = assetItemsList[indexPath.row]
     
-    cell.textLabel?.text = asset.title
+    let words = asset.title.componentsSeparatedByString(".")
+    if words.count == 2 {
+      cell.textLabel?.text = words[0]
+    } else {
+      cell.textLabel?.text = asset.title
+    }
+    
     cell.detailTextLabel?.text = "\(asset.size/1000000) M"
     if let image = asset.image {
       cell.imageView?.image = image

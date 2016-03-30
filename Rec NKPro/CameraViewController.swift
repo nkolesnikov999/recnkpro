@@ -144,9 +144,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     // Keep track of changes to the device orientation so we can update the capture manager
     let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.addObserver(self, selector: "deviceOrientationDidChange", name: UIDeviceOrientationDidChangeNotification, object: nil)
-    notificationCenter.addObserver(self, selector: "applicationDidBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: UIApplication.sharedApplication())
-    notificationCenter.addObserver(self, selector: "applicationWillResignActive:", name: UIApplicationWillResignActiveNotification, object: UIApplication.sharedApplication())
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.deviceOrientationDidChange), name: UIDeviceOrientationDidChangeNotification, object: nil)
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationDidBecomeActive(_:)), name: UIApplicationDidBecomeActiveNotification, object: UIApplication.sharedApplication())
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationWillResignActive(_:)), name: UIApplicationWillResignActiveNotification, object: UIApplication.sharedApplication())
     
     UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
     
@@ -195,11 +195,11 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     setResolutionAndTextLabels()
     
-    let photoLongRecognizer = UILongPressGestureRecognizer(target: self, action: "photoLong:")
+    let photoLongRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(CameraViewController.photoLong(_:)))
     photoLongRecognizer.minimumPressDuration = 2.0
     self.photoView.addGestureRecognizer(photoLongRecognizer)
     
-    let photoTapRecognizer = UITapGestureRecognizer(target: self, action: "photoTap:")
+    let photoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(CameraViewController.photoTap(_:)))
     self.photoView.addGestureRecognizer(photoTapRecognizer)
   }
   
@@ -225,8 +225,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     setResolutionAndTextLabels()
     
     // Start update timers label
-    updateTimeTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateTimeInterval, target: self, selector: Selector("timeLabelUpdate"), userInfo: nil, repeats: true)
-    updateBatteryAndDiskTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateBatteryAndDiskInterval, target: self, selector: Selector("updateBatteryAndDiskLabels"), userInfo: nil, repeats: true)
+    updateTimeTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateTimeInterval, target: self, selector: #selector(CameraViewController.timeLabelUpdate), userInfo: nil, repeats: true)
+    updateBatteryAndDiskTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateBatteryAndDiskInterval, target: self, selector: #selector(CameraViewController.updateBatteryAndDiskLabels), userInfo: nil, repeats: true)
     removeControlViewTimer = nil
     
     controlView.hidden = false
@@ -471,7 +471,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       
     } else if sender.state == .Ended {
       print("LongTapEnded")
-      photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: Selector("takeAutoPhoto"), userInfo: nil, repeats: true)
+      photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
       
     } else {
       print("LongTapOther")
@@ -557,7 +557,7 @@ extension CameraViewController : CaptureManagerDelegate {
   func recordingDidStart() {
     //print("CameraVC.recordingDidStart")
     dispatch_async(dispatch_get_main_queue()) { () -> Void in
-      self.recordingTimer = NSTimer.scheduledTimerWithTimeInterval(Double(self.settings.maxRecordingTime) * 60.0, target: self, selector: Selector("stopRecordigByTimer"), userInfo: nil, repeats: false)
+      self.recordingTimer = NSTimer.scheduledTimerWithTimeInterval(Double(self.settings.maxRecordingTime) * 60.0, target: self, selector: #selector(CameraViewController.stopRecordigByTimer), userInfo: nil, repeats: false)
       
       
       // Enable the stop button now that the recording has started
@@ -713,7 +713,7 @@ extension CameraViewController : CaptureManagerDelegate {
     //print("CameraVC.resetLocationTimer")
     stopTimer(&updateLocationTimer)
     if updateLocationTimer == nil {
-      updateLocationTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateLocationInterval, target: self, selector: Selector("speedLabelNoData"), userInfo: nil, repeats: true)
+      updateLocationTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateLocationInterval, target: self, selector: #selector(CameraViewController.speedLabelNoData), userInfo: nil, repeats: true)
     }
   }
   
@@ -721,7 +721,7 @@ extension CameraViewController : CaptureManagerDelegate {
     //print("CameraVC.resetControlViewTimer")
     stopTimer(&removeControlViewTimer)
     if removeControlViewTimer == nil {
-      removeControlViewTimer = NSTimer.scheduledTimerWithTimeInterval(kRemoveControlViewInterval, target: self, selector: Selector("removeControlView"), userInfo: nil, repeats: false)
+      removeControlViewTimer = NSTimer.scheduledTimerWithTimeInterval(kRemoveControlViewInterval, target: self, selector: #selector(CameraViewController.removeControlView), userInfo: nil, repeats: false)
     }
   }
   

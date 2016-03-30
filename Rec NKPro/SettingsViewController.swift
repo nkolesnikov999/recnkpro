@@ -76,7 +76,7 @@ class SettingsViewController: UITableViewController {
     //settings.odometerMeters = 1_000_001
     
     requestIAPProducts()
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "handlePurchaseNotification:", name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SettingsViewController.handlePurchaseNotification(_:)), name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
     checkStateRestoreButton()
     
     oldSettingNumberVideo = settings.maxNumberVideo

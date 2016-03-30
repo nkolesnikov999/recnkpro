@@ -725,7 +725,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
     if let session = captureSession {
       
-      NSNotificationCenter.defaultCenter().addObserver(self, selector: "captureSessionStoppedRunningNotification:", name: AVCaptureSessionDidStopRunningNotification, object: session)
+      NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CaptureManager.captureSessionStoppedRunningNotification(_:)), name: AVCaptureSessionDidStopRunningNotification, object: session)
       if !session.running {
         session.startRunning()
       }
@@ -1029,7 +1029,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     //print("CaptureManager.createDateString")
     let dateFormater = NSDateFormatter()
     //dateFormater.dateFormat = "yy/MM/dd HH:mm:ss"
-    dateFormater.dateFormat = "yyMMdd_HHmmss"
+    dateFormater.dateFormat = "yyMMdd_HHmmssSS"
     
     return dateFormater.stringFromDate(NSDate())
   }
