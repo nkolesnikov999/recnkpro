@@ -1045,8 +1045,11 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func createPicturesList() {
+    
     if let savedPictures = loadPictures() {
       picturesList = savedPictures
+    } else {
+      picturesList = [Picture]()
     }
   }
   
