@@ -27,6 +27,7 @@ let FixdriveTimeIdentifier = "mdta/net.nkpro.fixdrive.time.field"
 protocol CaptureManagerDelegate : class {
   
   var iconsImage: UIImage? {get set}
+  var picture: Picture? { get set }
   
   func recordingWillStart()
   func recordingDidStart()
@@ -105,6 +106,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   var locationManager: CLLocationManager!
+  var location: CLLocation?
   var frc: FrameRateCalculator!
   
   var videoDevice: AVCaptureDevice!
@@ -845,7 +847,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   func snapImage() {
     
     photoConnection?.videoOrientation = referenceOrientation
-    print("ReferenceOrientation: \(referenceOrientation.rawValue)")
+    //print("ReferenceOrientation: \(referenceOrientation.rawValue)")
     
     guard let photoConnection = self.photoConnection else { return }
     
@@ -884,22 +886,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             // 3
             let newImage = UIImage(CGImage: cgimg, scale: 1.0, orientation: inputImage.imageOrientation)
             
+            let picture = Picture(image: newImage, date: NSDate(), location: self.location)
+            self.delegate?.picture = picture
             
-            PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-              PHAssetCreationRequest.creationRequestForAssetFromImage(newImage)
-              }) { (success, error) -> Void in
-                if let nserror = error {
-                  print("ERROR: CM.snapImage - \(nserror)")
-                }
-                if success {
-                  print("Image saved")
-                } else {
-                  print("Image didn't save")
-                }
-            }
-
             dispatch_async(dispatch_get_main_queue()) {
-              self.delegate?.iconsImage = newImage
+              self.delegate?.iconsImage = newImage.thumbnailOfSize(CGSize(width: 48, height: 48))
             }
             
           }
@@ -1063,6 +1054,7 @@ extension CaptureManager : CLLocationManagerDelegate {
       if -(newLocation.timestamp.timeIntervalSinceNow) > 5.0 { continue }
       
       self.delegate?.distanceUpdate(newLocation)
+      self.location = newLocation
       
       var kSpeed: Float = 3.6
       var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")

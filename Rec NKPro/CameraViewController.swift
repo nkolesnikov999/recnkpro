@@ -56,6 +56,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   var callCenter: CTCallCenter!
   var assetItemsList: [AssetItem]!
+  var picturesList: [Picture]!
   var odometer: Odometer!
   
   let kUpdateTimeInterval: NSTimeInterval = 1.0
@@ -79,6 +80,15 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
         }
       } else {
         backButton.setImage(tmpImage, forState: .Normal)
+      }
+    }
+  }
+  
+  var picture: Picture? {
+    didSet {
+      if let picture = picture {
+        picturesList.append(picture)
+        savePictures()
       }
     }
   }
@@ -232,6 +242,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     controlView.hidden = false
     
     createMovieContents()
+    createPicturesList()
 
     if let captureManager = captureManager {
       captureManager.startUpdatingLocation()
@@ -464,13 +475,13 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
 
   
   func photoLong(sender: UITapGestureRecognizer) {
-    print("LONG Tap")
+    //print("LONG Tap")
     if sender.state == .Began {
-      print("LongTapBegan")
+      //print("LongTapBegan")
       takeAutoPhoto()
       
     } else if sender.state == .Ended {
-      print("LongTapEnded")
+      //print("LongTapEnded")
       photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
       
     } else {
@@ -479,7 +490,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func photoTap(sender: UITapGestureRecognizer) {
-    print("Photo Tap")
+    //print("Photo Tap")
     if sender.state == .Ended {
       
       if photoTimer != nil {
@@ -1033,6 +1044,12 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
+  func createPicturesList() {
+    if let savedPictures = loadPictures() {
+      picturesList = savedPictures
+    }
+  }
+  
   func removeFile(fileURL: NSURL) {
     //print("CameraVC.removeFile")
     
@@ -1070,8 +1087,27 @@ extension CameraViewController : CaptureManagerDelegate {
           destVC.freeSpace = freeSpace
           destVC.typeSpeed = settings.typeSpeed
         }
+        if let navVC = tabBarController.viewControllers?[1] as? UINavigationController {
+          if let destVC = navVC.viewControllers[0] as? PicturesViewController {
+            destVC.picturesList = picturesList
+          }
+        }
       }
     }
+  }
+  
+  
+  // MARK: NSCoding
+  
+  func savePictures() {
+    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(picturesList, toFile: Picture.ArchiveURL.path!)
+    if !isSuccessfulSave {
+      print("Failed to save pictures...")
+    }
+  }
+  
+  func loadPictures() -> [Picture]? {
+    return NSKeyedUnarchiver.unarchiveObjectWithFile(Picture.ArchiveURL.path!) as? [Picture]
   }
   
 }

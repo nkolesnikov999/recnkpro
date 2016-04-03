@@ -26,6 +26,9 @@
 		4CBF26381C4EBB9D000B79C7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */; };
 		4CBF263A1C4EBE9F000B79C7 /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */; };
 		4CE24E4B1C93437000775F1B /* PicturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE24E4A1C93437000775F1B /* PicturesViewController.swift */; };
+		4CE7324E1CAEAD2B00995440 /* Picture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE7324D1CAEAD2B00995440 /* Picture.swift */; };
+		4CE732501CAECE2400995440 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE7324F1CAECE2400995440 /* UIImage.swift */; };
+		4CE732521CAF06DF00995440 /* ZoomedPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE732511CAF06DF00995440 /* ZoomedPhotoViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +54,9 @@
 		4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
 		4CBF263C1C50F599000B79C7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 		4CE24E4A1C93437000775F1B /* PicturesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PicturesViewController.swift; sourceTree = "<group>"; };
+		4CE7324D1CAEAD2B00995440 /* Picture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Picture.swift; sourceTree = "<group>"; };
+		4CE7324F1CAECE2400995440 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		4CE732511CAF06DF00995440 /* ZoomedPhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomedPhotoViewController.swift; sourceTree = "<group>"; };
 		4CEA60641C46BF4F000EC854 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,6 +115,8 @@
 				4C0D2D691C38292600B14E22 /* Odometer.swift */,
 				4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */,
 				4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */,
+				4CE7324D1CAEAD2B00995440 /* Picture.swift */,
+				4CE7324F1CAECE2400995440 /* UIImage.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -122,6 +130,7 @@
 				4CE24E4A1C93437000775F1B /* PicturesViewController.swift */,
 				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
 				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
+				4CE732511CAF06DF00995440 /* ZoomedPhotoViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -214,8 +223,11 @@
 				4C1E791C1C391B6C004A86B9 /* FrameRateCalculator.swift in Sources */,
 				4C3EECB11BF8FA9300FE0C4C /* CameraViewController.swift in Sources */,
 				4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */,
+				4CE7324E1CAEAD2B00995440 /* Picture.swift in Sources */,
+				4CE732521CAF06DF00995440 /* ZoomedPhotoViewController.swift in Sources */,
 				4C3EECAD1BF8FA9300FE0C4C /* AppDelegate.swift in Sources */,
 				4C3EECB01BF8FA9300FE0C4C /* CaptureManager.swift in Sources */,
+				4CE732501CAECE2400995440 /* UIImage.swift in Sources */,
 				4C3EECB51BF8FA9300FE0C4C /* PlayerViewController.swift in Sources */,
 				4C3EECAE1BF8FA9300FE0C4C /* AssetItem.swift in Sources */,
 				4C3EECB21BF8FA9300FE0C4C /* SettingsViewController.swift in Sources */,
