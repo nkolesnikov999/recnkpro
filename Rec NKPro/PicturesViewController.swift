@@ -34,7 +34,7 @@ class PicturesViewController: UITableViewController {
   
   override func prefersStatusBarHidden() -> Bool {
     
-    return true
+    return false
   }
   
   override func shouldAutorotate() -> Bool {

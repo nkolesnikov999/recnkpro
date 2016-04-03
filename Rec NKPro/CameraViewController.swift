@@ -1085,10 +1085,12 @@ extension CameraViewController : CaptureManagerDelegate {
     
     if segue.identifier == "assetsSegue" {
       if let tabBarController = segue.destinationViewController as? UITabBarController {
-        if let destVC = tabBarController.viewControllers?[0] as? AssetsViewController {
-          destVC.assetItemsList = assetItemsList
-          destVC.freeSpace = freeSpace
-          destVC.typeSpeed = settings.typeSpeed
+        if let navVC = tabBarController.viewControllers?[0] as? UINavigationController {
+          if let destVC = navVC.viewControllers[0] as? AssetsViewController {
+            destVC.assetItemsList = assetItemsList
+            destVC.freeSpace = freeSpace
+            destVC.typeSpeed = settings.typeSpeed
+          }
         }
         if let navVC = tabBarController.viewControllers?[1] as? UINavigationController {
           if let destVC = navVC.viewControllers[0] as? PicturesViewController {

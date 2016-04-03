@@ -20,30 +20,40 @@ import Photos
 import AVFoundation
 import MobileCoreServices
 
-class AssetsViewController : UIViewController {
+class AssetsViewController : UITableViewController {
   
   var assetItemsList: [AssetItem]!
   var movieURL: NSURL!
   var freeSpace: Float!
   var typeSpeed: TypeSpeed!
-  
-  @IBOutlet weak var tableView: UITableView!
-  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+  var activityIndicator: UIActivityIndicatorView!
   
   override func viewDidLoad() {
     //print("AssetsViewController.viewDidLoad")
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
+    navigationItem.rightBarButtonItem = editButtonItem()
+    
+    let notificationCenter = NSNotificationCenter.defaultCenter()
+    notificationCenter.addObserver(self, selector: #selector(AssetsViewController.deviceOrientationDidChange), name: UIDeviceOrientationDidChangeNotification, object: nil)
+  
+    activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+    activityIndicator.color = UIColor(red: 252.0/255.0, green: 142.0/255.0, blue: 37.0/255.0, alpha: 1.0)
+     activityIndicator.frame.origin.x = (self.view.frame.size.width / 2 - activityIndicator.frame.size.width / 2)
+    activityIndicator.frame.origin.y = 150
+    view.addSubview(activityIndicator)
     
   }
   
   deinit {
     //print("AssetsViewController.deinit")
+    let notificationCenter = NSNotificationCenter.defaultCenter()
+    notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
   }
   
   override func prefersStatusBarHidden() -> Bool {
   
-    return true
+    return false
   }
   
   override func shouldAutorotate() -> Bool {
@@ -68,10 +78,15 @@ class AssetsViewController : UIViewController {
     }
   }
   
+  func deviceOrientationDidChange() {
+    activityIndicator.frame.origin.x = (self.view.frame.size.width / 2 - activityIndicator.frame.size.width / 2)
+  }
+  
   func moveMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
 
-    self.activityIndicator.startAnimating()
+    UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
     PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
@@ -84,8 +99,9 @@ class AssetsViewController : UIViewController {
           self.removeFile(fileURL)
         }
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-          self.activityIndicator.stopAnimating()
+          UIApplication.sharedApplication().networkActivityIndicatorVisible = false
           self.view.userInteractionEnabled = true
+          self.activityIndicator.stopAnimating()
         })
     }
   }
@@ -93,7 +109,8 @@ class AssetsViewController : UIViewController {
   func copyMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
 
-    self.activityIndicator.startAnimating()
+    UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
     PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
@@ -104,6 +121,7 @@ class AssetsViewController : UIViewController {
         }
         
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
+          UIApplication.sharedApplication().networkActivityIndicatorVisible = false
           self.activityIndicator.stopAnimating()
           self.view.userInteractionEnabled = true
         })
@@ -175,21 +193,15 @@ class AssetsViewController : UIViewController {
     self.presentViewController(alert, animated: true, completion: nil)
   }
   
-}
-
-// MARK: - UITableViewDataSource
-
-extension AssetsViewController : UITableViewDataSource {
-  
-  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
   }
   
-  func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return assetItemsList.count
   }
   
-  func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+  override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     //print("AssetsVC.cellForRowAtIndexPath: \(indexPath.row)")
     let cell = tableView.dequeueReusableCellWithIdentifier("AssetCell", forIndexPath: indexPath) as UITableViewCell
     let asset = assetItemsList[indexPath.row]
@@ -209,7 +221,7 @@ extension AssetsViewController : UITableViewDataSource {
     return cell
   }
   
-  func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+  override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
     if editingStyle == UITableViewCellEditingStyle.Delete {
       let asset = assetItemsList[indexPath.row]
       let movieURL = asset.url
@@ -218,13 +230,13 @@ extension AssetsViewController : UITableViewDataSource {
       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
     }
   }
-}
-
-// MARK: - UITableViewDelegate
-
-extension AssetsViewController : UITableViewDelegate {
   
-  func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+  override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    
+    return true
+  }
+  
+  override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
     
     let asset = assetItemsList[indexPath.row]
     let movieURL = asset.url
@@ -248,7 +260,7 @@ extension AssetsViewController : UITableViewDelegate {
     let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
-      
+      // TODO:
       if IAPHelper.iapHelper.setFullVersion {
         if self.checkFreeSpace(asset) {
           self.copyMovieToCameraRoll(movieURL)
@@ -289,12 +301,21 @@ extension AssetsViewController : UITableViewDelegate {
     self.presentViewController(optionMenu, animated: true, completion: nil)
   }
   
-  func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+  override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
     
     let asset = assetItemsList[indexPath.row]
     movieURL = asset.url
     
     return indexPath
+  }
+}
+
+// MARK: - UIScrollViewDelegate
+
+extension AssetsViewController {
+  override func scrollViewDidScroll(scrollView: UIScrollView) {
+    print("\(scrollView.contentOffset)")
+    activityIndicator.frame.origin.y = scrollView.contentOffset.y + 150
   }
 }
 
