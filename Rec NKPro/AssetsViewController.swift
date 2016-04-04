@@ -20,7 +20,7 @@ import Photos
 import AVFoundation
 import MobileCoreServices
 
-class AssetsViewController : UITableViewController {
+class AssetsViewController : UITableViewController, UINavigationControllerDelegate {
   
   var assetItemsList: [AssetItem]!
   var movieURL: NSURL!
@@ -314,7 +314,7 @@ class AssetsViewController : UITableViewController {
 
 extension AssetsViewController {
   override func scrollViewDidScroll(scrollView: UIScrollView) {
-    print("\(scrollView.contentOffset)")
+    //print("\(scrollView.contentOffset)")
     activityIndicator.frame.origin.y = scrollView.contentOffset.y + 150
   }
 }
@@ -338,10 +338,6 @@ extension AssetsViewController: UIImagePickerControllerDelegate {
   }
 }
 
-// MARK: - UINavigationControllerDelegate
-
-extension AssetsViewController: UINavigationControllerDelegate {
-}
 
 
 

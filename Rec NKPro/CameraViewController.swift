@@ -27,7 +27,6 @@ let MinIntervalLocationsKey = "MinIntervalLocationsKey"
 let TypeSpeedKey = "TypeSpeedKey"
 let MaxRecordingTimeKey = "MaxRecordingTimeKey"
 let MaxNumberVideoKey = "MaxNumberVideoKey"
-let MaxNumberPictureKey = "MaxNumberPictureKey"
 let IntevalPictureKey = "IntevalPictureKey"
 let LayerOpacityValueKey = "LayerOpacityValueKey"
 let OdometerMetersKey = "OdometerMetersKey"
@@ -63,6 +62,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   let kUpdateLocationInterval: NSTimeInterval = 3.0
   let kUpdateBatteryAndDiskInterval: NSTimeInterval = 30.0
   let kRemoveControlViewInterval: NSTimeInterval = 10.0
+  let maxNumberPictures = 10
   
   var iconsImage: UIImage? {
     didSet {
@@ -461,7 +461,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   @IBAction func tapGesture(sender: UITapGestureRecognizer) {
-    print("TAP")
+    // print("TAP")
     if let cm = captureManager {
       if cm.recording {
         if controlViewConstraint.constant != 0 {
@@ -478,14 +478,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("LONG Tap")
     if sender.state == .Began {
       //print("LongTapBegan")
-      takeAutoPhoto()
-      
-    } else if sender.state == .Ended {
-      //print("LongTapEnded")
       photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
-      
-    } else {
-      print("LongTapOther")
+      takeAutoPhoto()
     }
   }
   
@@ -494,9 +488,14 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     if sender.state == .Ended {
       
       if photoTimer != nil {
-        print("Stop Auto")
+        // print("Stop Auto")
         stopTimer(&photoTimer)
-        photoView.image = UIImage(named: "Camera")
+      }
+      
+      if picturesList.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+        // show alert
+        // print("ALERT")
+        showAlert()
       } else {
         self.flashView.backgroundColor = UIColor.whiteColor()
         self.flashView.alpha = 1
@@ -515,13 +514,25 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func takeAutoPhoto() {
-    print("Photo!")
-    photoView.image = UIImage(named: "CameraAutoPhoto")
-    delay(0.5) {
-      self.photoView.image = UIImage(named: "CameraAuto")
-    }
-    if let cm = captureManager {
-      cm.snapImage()
+    // print("Photo!")
+    if picturesList.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+      // show alert
+      // print("ALERT")
+      showAlert()
+      // stop auto
+      if photoTimer != nil {
+        // print("Stop Auto")
+        stopTimer(&photoTimer)
+      }
+      self.photoView.image = UIImage(named: "Camera")
+    } else {
+      photoView.image = UIImage(named: "CameraAutoPhoto")
+      delay(0.5) {
+        self.photoView.image = UIImage(named: "CameraAuto")
+      }
+      if let cm = captureManager {
+        cm.snapImage()
+      }
     }
   }
 
@@ -667,6 +678,17 @@ extension CameraViewController : CaptureManagerDelegate {
     let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
       exit(0)
     }
+    alert.addAction(cancelAction)
+    presentViewController(alert, animated: true, completion: nil)
+  }
+  
+  func showAlert() {
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to buy Full Version in Settings", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
+    
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+      //self.alertMaxVideo = false
+    }
+    
     alert.addAction(cancelAction)
     presentViewController(alert, animated: true, completion: nil)
   }
@@ -977,10 +999,6 @@ extension CameraViewController : CaptureManagerDelegate {
       }
     }
     
-    if let storedMaxNumberPicture = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberPictureKey)?.integerValue {
-      settings.maxNumberPictures = storedMaxNumberPicture
-    }
-    
     if let storedIntervalPicture = NSUserDefaults.standardUserDefaults().valueForKey(IntevalPictureKey)?.integerValue {
       settings.intervalPictures = storedIntervalPicture
     }
@@ -1013,7 +1031,6 @@ extension CameraViewController : CaptureManagerDelegate {
     NSUserDefaults.standardUserDefaults().setValue(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberVideo, forKey: MaxNumberVideoKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberPictures, forKey: MaxNumberPictureKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.intervalPictures, forKey: IntevalPictureKey)
     NSUserDefaults.standardUserDefaults().setValue(settings.textOnVideo, forKey: TextOnVideoKey)
     NSUserDefaults.standardUserDefaults().setObject(settings.logotype, forKey: LogotypeKey)
