@@ -22,6 +22,8 @@
 		4C3EECB51BF8FA9300FE0C4C /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */; };
 		4C3EECB71BF8FA9300FE0C4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */; };
 		4C3EECB91BF8FA9E00FE0C4C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */; };
+		4C66F6A71CB3F8F100570FE1 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C66F6A61CB3F8F100570FE1 /* TabBarViewController.swift */; };
+		4C66F6A91CB4293800570FE1 /* PicturesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C66F6A81CB4293800570FE1 /* PicturesList.swift */; };
 		4CB6F3B61C371E05009BF45B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CB6F3B81C371E05009BF45B /* Main.storyboard */; };
 		4CBF26381C4EBB9D000B79C7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */; };
 		4CBF263A1C4EBE9F000B79C7 /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */; };
@@ -49,6 +51,8 @@
 		4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4C66F6A61CB3F8F100570FE1 /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		4C66F6A81CB4293800570FE1 /* PicturesList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PicturesList.swift; sourceTree = "<group>"; };
 		4CB6F3B71C371E05009BF45B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
@@ -95,7 +99,6 @@
 				4C3EECA21BF8FA9300FE0C4C /* AppDelegate.swift */,
 				4CBF263D1C51099C000B79C7 /* Models */,
 				4CBF263E1C5109BF000B79C7 /* Controllers */,
-				4CB6F3B81C371E05009BF45B /* Main.storyboard */,
 				4C3EECAC1BF8FA9300FE0C4C /* Assets.xcassets */,
 				4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */,
 				4C2773301C37D91600348A99 /* Localizable.strings */,
@@ -108,6 +111,8 @@
 		4CBF263D1C51099C000B79C7 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				4C66F6A81CB4293800570FE1 /* PicturesList.swift */,
+				4CE7324D1CAEAD2B00995440 /* Picture.swift */,
 				4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */,
 				4C3EECA31BF8FA9300FE0C4C /* AssetItem.swift */,
 				4C3EECA41BF8FA9300FE0C4C /* Settings.swift */,
@@ -115,7 +120,6 @@
 				4C0D2D691C38292600B14E22 /* Odometer.swift */,
 				4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */,
 				4C3EECA51BF8FA9300FE0C4C /* CaptureManager.swift */,
-				4CE7324D1CAEAD2B00995440 /* Picture.swift */,
 				4CE7324F1CAECE2400995440 /* UIImage.swift */,
 			);
 			name = Models;
@@ -130,7 +134,9 @@
 				4CE24E4A1C93437000775F1B /* PicturesViewController.swift */,
 				4C3EECAA1BF8FA9300FE0C4C /* PlayerViewController.swift */,
 				4C3EECA91BF8FA9300FE0C4C /* PickerViewController.swift */,
+				4C66F6A61CB3F8F100570FE1 /* TabBarViewController.swift */,
 				4CE732511CAF06DF00995440 /* ZoomedPhotoViewController.swift */,
+				4CB6F3B81C371E05009BF45B /* Main.storyboard */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -221,6 +227,8 @@
 				4CBF263A1C4EBE9F000B79C7 /* IAPHelper.swift in Sources */,
 				4C3EECAF1BF8FA9300FE0C4C /* Settings.swift in Sources */,
 				4C1E791C1C391B6C004A86B9 /* FrameRateCalculator.swift in Sources */,
+				4C66F6A91CB4293800570FE1 /* PicturesList.swift in Sources */,
+				4C66F6A71CB3F8F100570FE1 /* TabBarViewController.swift in Sources */,
 				4C3EECB11BF8FA9300FE0C4C /* CameraViewController.swift in Sources */,
 				4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */,
 				4CE7324E1CAEAD2B00995440 /* Picture.swift in Sources */,

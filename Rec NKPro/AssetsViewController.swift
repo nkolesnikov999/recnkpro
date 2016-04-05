@@ -53,7 +53,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   
   override func prefersStatusBarHidden() -> Bool {
   
-    return false
+    return true
   }
   
   override func shouldAutorotate() -> Bool {
@@ -85,7 +85,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   func moveMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
 
-    UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    // UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
@@ -99,7 +99,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
           self.removeFile(fileURL)
         }
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-          UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+          // UIApplication.sharedApplication().networkActivityIndicatorVisible = false
           self.view.userInteractionEnabled = true
           self.activityIndicator.stopAnimating()
         })
@@ -109,7 +109,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   func copyMovieToCameraRoll(fileURL: NSURL) {
     //print("CaptureManager.saveMovieToCameraRoll")
 
-    UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+    // UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
@@ -121,7 +121,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
         }
         
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-          UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+          // UIApplication.sharedApplication().networkActivityIndicatorVisible = false
           self.activityIndicator.stopAnimating()
           self.view.userInteractionEnabled = true
         })

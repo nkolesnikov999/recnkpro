@@ -1063,7 +1063,7 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func createPicturesList() {
     
-    if let savedPictures = loadPictures() {
+    if let savedPictures = Picture.loadPictures() {
       picturesList = savedPictures
     } else {
       picturesList = [Picture]()
@@ -1109,11 +1109,11 @@ extension CameraViewController : CaptureManagerDelegate {
             destVC.typeSpeed = settings.typeSpeed
           }
         }
-        if let navVC = tabBarController.viewControllers?[1] as? UINavigationController {
-          if let destVC = navVC.viewControllers[0] as? PicturesViewController {
-            destVC.picturesList = picturesList
-          }
-        }
+//        if let navVC = tabBarController.viewControllers?[1] as? UINavigationController {
+//          if let destVC = navVC.viewControllers[0] as? PicturesViewController {
+//            destVC.picturesList = picturesList
+//          }
+//        }
       }
     }
   }
@@ -1128,9 +1128,7 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
-  func loadPictures() -> [Picture]? {
-    return NSKeyedUnarchiver.unarchiveObjectWithFile(Picture.ArchiveURL.path!) as? [Picture]
-  }
+  
   
 }
 

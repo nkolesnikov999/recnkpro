@@ -26,6 +26,10 @@ class PlayerViewController : UIViewController {
   var url: NSURL!
   var player: AVPlayer!
   var typeSpeed: TypeSpeed!
+  var asset: AVAsset!
+  var uiImage: UIImage!
+  var picturesList: [Picture]!
+  var location: CLLocation?
   
   // Reader variables
   private var reader: AVAssetReader!
@@ -50,6 +54,8 @@ class PlayerViewController : UIViewController {
   @IBOutlet weak var mapTypeButton: UIButton!
   @IBOutlet weak var centeredButton: UIButton!
   @IBOutlet weak var distanceButton: UIButton!
+  @IBOutlet weak var photoImage: UIImageView!
+  @IBOutlet weak var rateSlider: UISlider!
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -67,10 +73,18 @@ class PlayerViewController : UIViewController {
     notificationCenter.addObserver(self, selector: #selector(PlayerViewController.defineStackAxis), name: UIDeviceOrientationDidChangeNotification, object: nil)
     //notificationCenter.addObserver(self, selector: "didPlayToEndTime", name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
 
+    createPicturesList()
   }
   
   func didPlayToEndTime(){
     // print("didPlayToEndTime")
+  }
+  
+  override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    if (keyPath == "rate") {
+      //print("Rate: \(player.rate)")
+      rateSlider.value = player.rate
+    }
   }
   
   func defineStackAxis() {
@@ -86,6 +100,7 @@ class PlayerViewController : UIViewController {
   deinit {
     let notificationCenter = NSNotificationCenter.defaultCenter()
     notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+    player.removeObserver(self, forKeyPath: "rate")
     player = nil
     url = nil
   }
@@ -108,13 +123,16 @@ class PlayerViewController : UIViewController {
     
     setCentered()
     
-    let asset = AVURLAsset(URL: url)
+    asset = AVURLAsset(URL: url)
     let playerItem = AVPlayerItem(asset: asset)
     
     // Add metadata output to player item to get delegate callbacks during playback
     playerItem.addOutput(metadataOutput)
     
     player = AVPlayer(playerItem: playerItem)
+    
+    player.addObserver(self, forKeyPath: "rate", options: NSKeyValueObservingOptions.New, context: nil)
+    
     //player.videoGravity = AVLayerVideoGravityResizeAspect
     mapView.delegate = self
     mapView.mapType = .Standard
@@ -198,6 +216,53 @@ class PlayerViewController : UIViewController {
       playerMapMode = .None
       resetDistanceMode()
     }
+  }
+  
+  @IBAction func changeRateSlider(sender: UISlider) {
+    player.rate = sender.value
+  }
+  
+  @IBAction func takePhoto(sender: UIButton) {
+    let time = player.currentTime()
+    let date = photoDate(time)
+    print("Date: \(date)")
+    let imageGenerator = AVAssetImageGenerator(asset: asset)
+    let imageTimeValue = NSValue(CMTime: time)
+  
+    imageGenerator.appliesPreferredTrackTransform = true
+    imageGenerator.generateCGImagesAsynchronouslyForTimes([imageTimeValue], completionHandler: { (requestedTime, image, actualTime, result, error) -> Void in
+      if let cgImage = image {
+        self.uiImage = UIImage(CGImage: cgImage)
+        dispatch_async(dispatch_get_main_queue()){
+          self.photoImage.image = self.uiImage.thumbnailOfSize(CGSize(width: 60, height: 60))
+        }
+        if let picture = Picture(image: self.uiImage, date: date, location: self.location) {
+          self.picturesList.append(picture)
+          self.savePictures()
+        }
+      }
+    })
+  }
+  
+  @IBAction func openZoomingController(sender: AnyObject) {
+    if uiImage != nil {
+      player.pause()
+      self.performSegueWithIdentifier("zoomSegue", sender: nil)
+    }
+  }
+  
+  func photoDate(timestamp: CMTime) -> NSDate {
+    
+    if let timeFirst = metadatas.first?.time {
+      let dateFormater = NSDateFormatter()
+      dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
+      if let date = dateFormater.dateFromString(timeFirst) {
+        let delta = CMTimeGetSeconds(timestamp)
+
+        return date.dateByAddingTimeInterval(delta)
+      }
+    }
+    return NSDate()
   }
   
   func setDistancePoint(newLocation: CLLocation) {
@@ -536,7 +601,7 @@ class PlayerViewController : UIViewController {
         if itemString == FixdriveTimeIdentifier {
           if let timeDescription = item.stringValue {
             time = timeDescription
-            //print("Time: \(timeDescription)")
+            // print("Time: \(timeDescription)")
           }
           break
         }
@@ -695,11 +760,17 @@ class PlayerViewController : UIViewController {
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     // print("prepareForSegue")
     if segue.identifier == "showMovie" {
-      let playerVC = segue.destinationViewController as! AVPlayerViewController
-      setupVariables()
-      playerVC.player = player
-      //playerVC.player?.play()
-      playerVC.showsPlaybackControls = true
+      if let playerVC = segue.destinationViewController as? AVPlayerViewController {
+        setupVariables()
+        playerVC.player = player
+        //playerVC.player?.play()
+        playerVC.showsPlaybackControls = true
+      }
+    }
+    if segue.identifier == "zoomSegue" {
+      if let destVC = segue.destinationViewController as? ZoomedPhotoViewController {
+        destVC.image = uiImage
+      }
     }
   }
   
@@ -715,6 +786,7 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
       // Go through the list of timed metadata groups and update location
       for group in groups {
         if let newLocation = locationFromMetadataGroup(group) {
+          location = newLocation
           updateCurrentLocation(newLocation)
         }
         var timeSpeedStr = ""

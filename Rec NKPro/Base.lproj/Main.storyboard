@@ -1059,6 +1059,7 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="4pw-fj-NzQ" firstAttribute="top" secondItem="7fQ-hX-cbJ" secondAttribute="bottom" id="9Iw-xC-4li"/>
                             <constraint firstItem="RUw-aN-7V3" firstAttribute="leading" secondItem="A5Y-Ib-oad" secondAttribute="leading" constant="20" id="9YB-m4-fsd"/>
@@ -1184,7 +1185,7 @@
                                                 </connections>
                                             </mapView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uxV-oC-NfK">
-                                                <rect key="frame" x="505" y="248" width="75" height="32"/>
+                                                <rect key="frame" x="512" y="248" width="75" height="32"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                 <inset key="contentEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                                                 <size key="titleShadowOffset" width="1" height="1"/>
@@ -1215,21 +1216,56 @@
                                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="hNF-HY-oa0">
+                                                <rect key="frame" x="20" y="249" width="472" height="31"/>
+                                                <connections>
+                                                    <action selector="changeRateSlider:" destination="ytf-7o-fDd" eventType="valueChanged" id="AfV-OD-Kgr"/>
+                                                </connections>
+                                            </slider>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="49x-7s-9dO">
+                                                <rect key="frame" x="20" y="169" width="60" height="60"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="60" id="8c9-Wv-HbZ"/>
+                                                    <constraint firstAttribute="width" constant="60" id="FNR-Ww-Bpl"/>
+                                                </constraints>
+                                                <state key="normal" image="Camera"/>
+                                                <connections>
+                                                    <action selector="takePhoto:" destination="ytf-7o-fDd" eventType="touchUpInside" id="nie-pD-nRj"/>
+                                                </connections>
+                                            </button>
+                                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0NJ-kG-dHr">
+                                                <rect key="frame" x="20" y="89" width="60" height="60"/>
+                                                <gestureRecognizers/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="HxF-Bk-XIN"/>
+                                                    <constraint firstAttribute="height" constant="60" id="MRd-bX-Crt"/>
+                                                </constraints>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="aAC-Kj-pyG" appends="YES" id="5rJ-xB-HdM"/>
+                                                </connections>
+                                            </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
+                                            <constraint firstItem="hNF-HY-oa0" firstAttribute="top" secondItem="49x-7s-9dO" secondAttribute="bottom" constant="20" id="1sN-b3-YFi"/>
                                             <constraint firstAttribute="trailing" secondItem="Bmb-Gw-XCM" secondAttribute="trailing" id="3M4-vc-Jso"/>
                                             <constraint firstItem="uxV-oC-NfK" firstAttribute="top" secondItem="Mi9-F5-Nrv" secondAttribute="bottom" constant="20" id="D2P-CG-wmZ"/>
                                             <constraint firstAttribute="trailing" secondItem="Mi9-F5-Nrv" secondAttribute="trailing" constant="20" id="DyU-73-Xv1"/>
                                             <constraint firstAttribute="bottom" secondItem="uxV-oC-NfK" secondAttribute="bottom" constant="20" id="Fwj-34-817"/>
                                             <constraint firstItem="8f3-Qe-Zvz" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="10" id="I7t-0x-ey3"/>
+                                            <constraint firstItem="49x-7s-9dO" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="20" id="Nn1-47-47k"/>
                                             <constraint firstItem="Mi9-F5-Nrv" firstAttribute="top" secondItem="Yis-p6-FfC" secondAttribute="bottom" constant="20" id="PHy-0u-P2n"/>
                                             <constraint firstAttribute="bottom" secondItem="Bmb-Gw-XCM" secondAttribute="bottom" id="QWO-IH-2pe"/>
+                                            <constraint firstItem="uxV-oC-NfK" firstAttribute="centerX" secondItem="Mi9-F5-Nrv" secondAttribute="centerX" id="ad6-Gd-ZOS"/>
                                             <constraint firstAttribute="trailing" secondItem="Yis-p6-FfC" secondAttribute="trailing" constant="20" id="cBU-bd-56n"/>
-                                            <constraint firstAttribute="trailing" secondItem="uxV-oC-NfK" secondAttribute="trailing" constant="20" id="l68-zE-XIN"/>
+                                            <constraint firstAttribute="trailing" secondItem="hNF-HY-oa0" secondAttribute="trailing" constant="110" id="dxe-LO-suh"/>
+                                            <constraint firstItem="hNF-HY-oa0" firstAttribute="centerY" secondItem="uxV-oC-NfK" secondAttribute="centerY" id="e1q-eh-tQe"/>
+                                            <constraint firstItem="hNF-HY-oa0" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="22" id="gxM-er-qfc"/>
                                             <constraint firstItem="8f3-Qe-Zvz" firstAttribute="top" secondItem="p63-D5-maf" secondAttribute="top" constant="10" id="olj-xO-l0b"/>
                                             <constraint firstItem="Bmb-Gw-XCM" firstAttribute="top" secondItem="p63-D5-maf" secondAttribute="top" id="qTn-NQ-xoP"/>
                                             <constraint firstItem="Bmb-Gw-XCM" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" id="rBc-SC-1B4"/>
+                                            <constraint firstItem="0NJ-kG-dHr" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="20" id="slr-vH-Pp5"/>
+                                            <constraint firstItem="49x-7s-9dO" firstAttribute="top" secondItem="0NJ-kG-dHr" secondAttribute="bottom" constant="20" id="wXD-ES-s8a"/>
                                         </constraints>
                                         <variation key="heightClass=compact" misplaced="YES">
                                             <rect key="frame" x="300" y="0.0" width="300" height="400"/>
@@ -1268,8 +1304,11 @@
                         <outlet property="distanceButton" destination="Mi9-F5-Nrv" id="IYa-rd-OGj"/>
                         <outlet property="mapTypeButton" destination="uxV-oC-NfK" id="IAZ-uZ-OhW"/>
                         <outlet property="mapView" destination="Bmb-Gw-XCM" id="Im9-Sj-t1T"/>
+                        <outlet property="photoImage" destination="0NJ-kG-dHr" id="L4R-Mi-kjg"/>
                         <outlet property="playerStack" destination="fBj-4W-bFY" id="IR5-dN-bCO"/>
+                        <outlet property="rateSlider" destination="hNF-HY-oa0" id="dv8-jz-daO"/>
                         <outlet property="trackStatusLabel" destination="8f3-Qe-Zvz" id="XJN-jj-YLg"/>
+                        <segue destination="2KM-hc-9bm" kind="showDetail" identifier="zoomSegue" id="sMu-pj-N6J"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yOG-yq-0f1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1278,8 +1317,13 @@
                         <action selector="setPointOnMap:" destination="ytf-7o-fDd" id="hI9-T1-53S"/>
                     </connections>
                 </tapGestureRecognizer>
+                <tapGestureRecognizer id="aAC-Kj-pyG">
+                    <connections>
+                        <action selector="openZoomingController:" destination="ytf-7o-fDd" id="8kD-P7-Zby"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3248" y="387"/>
+            <point key="canvasLocation" x="3267" y="378"/>
         </scene>
         <!--AV Player View Controller-->
         <scene sceneID="uqV-X0-Vi2">
@@ -1287,7 +1331,7 @@
                 <avPlayerViewController videoGravity="AVLayerVideoGravityResizeAspect" id="W0k-gB-6pf" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EjC-LD-PEh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3941" y="386.75"/>
+            <point key="canvasLocation" x="4106" y="404"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="zIV-U6-ZzC">
@@ -1307,10 +1351,10 @@
             </objects>
             <point key="canvasLocation" x="208" y="1209"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="5m6-Am-9a9">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="x8I-yr-jwK" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="x8I-yr-jwK" customClass="TabBarViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="TyV-TL-Zt7">
                         <autoresizingMask key="autoresizingMask"/>
@@ -1381,5 +1425,8 @@
         <image name="Storage" width="15" height="15"/>
         <image name="Video" width="25" height="25"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="sMu-pj-N6J"/>
+    </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.99678522348403931" green="0.5586472749710083" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

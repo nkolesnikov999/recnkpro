@@ -19,7 +19,9 @@ class ZoomedPhotoViewController: UIViewController {
   var image: UIImage!
   
   override func viewDidLoad() {
-    imageView.image = image
+    if let image = image {
+      imageView.image = image
+    }
   }
   
   override func viewDidAppear(animated: Bool) {

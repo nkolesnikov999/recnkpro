@@ -27,6 +27,11 @@ class PicturesViewController: UITableViewController {
     navigationItem.rightBarButtonItem = editButtonItem()
   }
   
+  override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+    createPicturesList()
+  }
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -34,7 +39,7 @@ class PicturesViewController: UITableViewController {
   
   override func prefersStatusBarHidden() -> Bool {
     
-    return false
+    return true
   }
   
   override func shouldAutorotate() -> Bool {
