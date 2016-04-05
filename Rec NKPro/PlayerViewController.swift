@@ -28,7 +28,6 @@ class PlayerViewController : UIViewController {
   var typeSpeed: TypeSpeed!
   var asset: AVAsset!
   var uiImage: UIImage!
-  var picturesList: [Picture]!
   var location: CLLocation?
   
   // Reader variables
@@ -73,7 +72,6 @@ class PlayerViewController : UIViewController {
     notificationCenter.addObserver(self, selector: #selector(PlayerViewController.defineStackAxis), name: UIDeviceOrientationDidChangeNotification, object: nil)
     //notificationCenter.addObserver(self, selector: "didPlayToEndTime", name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
 
-    createPicturesList()
   }
   
   func didPlayToEndTime(){
@@ -223,25 +221,33 @@ class PlayerViewController : UIViewController {
   }
   
   @IBAction func takePhoto(sender: UIButton) {
-    let time = player.currentTime()
-    let date = photoDate(time)
-    print("Date: \(date)")
-    let imageGenerator = AVAssetImageGenerator(asset: asset)
-    let imageTimeValue = NSValue(CMTime: time)
-  
-    imageGenerator.appliesPreferredTrackTransform = true
-    imageGenerator.generateCGImagesAsynchronouslyForTimes([imageTimeValue], completionHandler: { (requestedTime, image, actualTime, result, error) -> Void in
-      if let cgImage = image {
-        self.uiImage = UIImage(CGImage: cgImage)
-        dispatch_async(dispatch_get_main_queue()){
-          self.photoImage.image = self.uiImage.thumbnailOfSize(CGSize(width: 60, height: 60))
+    
+    if PicturesList.pList.pictures.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+      // show alert
+      // print("ALERT")
+      showAlert()
+    } else {
+      
+      let time = player.currentTime()
+      let date = photoDate(time)
+      print("Date: \(date)")
+      let imageGenerator = AVAssetImageGenerator(asset: asset)
+      let imageTimeValue = NSValue(CMTime: time)
+      
+      imageGenerator.appliesPreferredTrackTransform = true
+      imageGenerator.generateCGImagesAsynchronouslyForTimes([imageTimeValue], completionHandler: { (requestedTime, image, actualTime, result, error) -> Void in
+        if let cgImage = image {
+          self.uiImage = UIImage(CGImage: cgImage)
+          dispatch_async(dispatch_get_main_queue()){
+            self.photoImage.image = self.uiImage.thumbnailOfSize(CGSize(width: 60, height: 60))
+          }
+          if let picture = Picture(image: self.uiImage, date: date, location: self.location) {
+            PicturesList.pList.pictures.append(picture)
+            PicturesList.pList.savePictures()
+          }
         }
-        if let picture = Picture(image: self.uiImage, date: date, location: self.location) {
-          self.picturesList.append(picture)
-          self.savePictures()
-        }
-      }
-    })
+      })
+    }
   }
   
   @IBAction func openZoomingController(sender: AnyObject) {
@@ -313,7 +319,6 @@ class PlayerViewController : UIViewController {
     }
     
   }
-  
   
   func userDidSeekToNewPosition(newLocation: CLLocation) {
     // print("userDidSeekToNewPosition")
@@ -753,6 +758,17 @@ class PlayerViewController : UIViewController {
     
     trackStatusLabel.text = "\(Int(distance)) \(mStr), \(timeString)\n\(minStr) \(Int(minSpeed)), \(maxStr) \(Int(maxSpeed)), \(avgStr) \(avgSpeed) \(unitSpeedStr)"
     
+  }
+  
+  func showAlert() {
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to buy Full Version in Settings", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
+    
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+      //self.alertMaxVideo = false
+    }
+    
+    alert.addAction(cancelAction)
+    presentViewController(alert, animated: true, completion: nil)
   }
 
   

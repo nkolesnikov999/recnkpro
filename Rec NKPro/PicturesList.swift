@@ -8,6 +8,9 @@
 
 import UIKit
 
+let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+let archiveURL = DocumentsDirectory.URLByAppendingPathComponent("pictures")
+
 class PicturesList {
   
   static let pList = PicturesList()
@@ -15,7 +18,7 @@ class PicturesList {
   var pictures: [Picture]
   
   init() {
-    if let pictures = NSKeyedUnarchiver.unarchiveObjectWithFile(Picture.ArchiveURL.path!) as? [Picture] {
+    if let pictures = NSKeyedUnarchiver.unarchiveObjectWithFile(archiveURL.path!) as? [Picture] {
       self.pictures = pictures
     } else {
       self.pictures = [Picture]()
@@ -23,7 +26,7 @@ class PicturesList {
   }
   
   func savePictures() {
-    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(pictures, toFile: Picture.ArchiveURL.path!)
+    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(pictures, toFile: archiveURL.path!)
     if !isSuccessfulSave {
       print("Failed to save pictures...")
     } else {

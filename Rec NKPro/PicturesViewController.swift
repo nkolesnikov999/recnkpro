@@ -17,7 +17,6 @@ class PicturesViewController: UITableViewController {
     case PhotoNoSaved = 2
   }
 
-  var picturesList: [Picture]!
   var image: UIImage?
   
   override func viewDidLoad() {
@@ -29,7 +28,7 @@ class PicturesViewController: UITableViewController {
   
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
-    createPicturesList()
+    tableView.reloadData()
   }
   
   override func didReceiveMemoryWarning() {
@@ -68,15 +67,6 @@ class PicturesViewController: UITableViewController {
 
   }
   
-  func savePictures() {
-    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(picturesList, toFile: Picture.ArchiveURL.path!)
-    if !isSuccessfulSave {
-      print("Failed to save pictures...")
-    } else {
-      print("Pictures saved")
-    }
-  }
-  
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if segue.identifier == "pictureSegue" {
       if let destVC = segue.destinationViewController as? ZoomedPhotoViewController {
@@ -88,12 +78,12 @@ class PicturesViewController: UITableViewController {
   }
 
   override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return picturesList.count
+    return PicturesList.pList.pictures.count
   }
   
   override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier("PictureCell", forIndexPath: indexPath) as UITableViewCell
-    let picture = picturesList[indexPath.row]
+    let picture = PicturesList.pList.pictures[indexPath.row]
     
     cell.textLabel?.text = picture.title
     cell.detailTextLabel?.text = picture.address
@@ -107,7 +97,7 @@ class PicturesViewController: UITableViewController {
 
   override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
     
-    let picture = picturesList[indexPath.row]
+    let picture = PicturesList.pList.pictures[indexPath.row]
     image = picture.loadImage()
     
     return indexPath
@@ -115,10 +105,10 @@ class PicturesViewController: UITableViewController {
   
   override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
     if editingStyle == UITableViewCellEditingStyle.Delete {
-      let picture = picturesList[indexPath.row]
+      let picture = PicturesList.pList.pictures[indexPath.row]
       removeImage(picture)
-      picturesList.removeAtIndex(indexPath.row)
-      savePictures()
+      PicturesList.pList.pictures.removeAtIndex(indexPath.row)
+      PicturesList.pList.savePictures()
       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
       
     }
@@ -135,7 +125,7 @@ class PicturesViewController: UITableViewController {
   
   override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
     
-    let picture = picturesList[indexPath.row]
+    let picture = PicturesList.pList.pictures[indexPath.row]
     let image = picture.loadImage()
     let optionMenu = UIAlertController(title: picture.title, message: nil, preferredStyle: .ActionSheet)
     
@@ -158,8 +148,8 @@ class PicturesViewController: UITableViewController {
                                           if success {
                                             print("Image saved")
                                             self.removeImage(picture)
-                                            self.picturesList.removeAtIndex(indexPath.row)
-                                            self.savePictures()
+                                            PicturesList.pList.pictures.removeAtIndex(indexPath.row)
+                                            PicturesList.pList.savePictures()
                                             dispatch_async(dispatch_get_main_queue()) {
                                               tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
                                             }
@@ -218,8 +208,8 @@ class PicturesViewController: UITableViewController {
                                       (alert: UIAlertAction!) -> Void in
                                       // Delete file
                                       self.removeImage(picture)
-                                      self.picturesList.removeAtIndex(indexPath.row)
-                                      self.savePictures()
+                                      PicturesList.pList.pictures.removeAtIndex(indexPath.row)
+                                      PicturesList.pList.savePictures()
                                       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
     })
     

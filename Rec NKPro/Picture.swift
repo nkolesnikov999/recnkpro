@@ -25,9 +25,6 @@ class Picture: NSObject, NSCoding {
   
   // MARK: Archiving Paths
   
-  static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-  static let ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("pictures")
-  
   let photoPathKey = "photoPathKey"
   let dateKey = "phdateKeyoto"
   let thumb80Key = "thumb80Key"

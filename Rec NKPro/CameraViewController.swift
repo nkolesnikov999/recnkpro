@@ -32,6 +32,7 @@ let LayerOpacityValueKey = "LayerOpacityValueKey"
 let OdometerMetersKey = "OdometerMetersKey"
 let TextOnVideoKey = "TextOnVideoKey"
 let LogotypeKey = "LogotypeKey"
+let maxNumberPictures = 10
 
 
 class CameraViewController : UIViewController, SettingsControllerDelegate {
@@ -55,14 +56,13 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   var callCenter: CTCallCenter!
   var assetItemsList: [AssetItem]!
-  var picturesList: [Picture]!
+  var picturesCount: Int = 0
   var odometer: Odometer!
   
   let kUpdateTimeInterval: NSTimeInterval = 1.0
   let kUpdateLocationInterval: NSTimeInterval = 3.0
   let kUpdateBatteryAndDiskInterval: NSTimeInterval = 30.0
   let kRemoveControlViewInterval: NSTimeInterval = 10.0
-  let maxNumberPictures = 10
   
   var iconsImage: UIImage? {
     didSet {
@@ -87,8 +87,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var picture: Picture? {
     didSet {
       if let picture = picture {
-        picturesList.append(picture)
-        savePictures()
+        PicturesList.pList.pictures.append(picture)
+        PicturesList.pList.savePictures()
+        picturesCount = PicturesList.pList.pictures.count
       }
     }
   }
@@ -242,7 +243,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     controlView.hidden = false
     
     createMovieContents()
-    createPicturesList()
+    picturesCount = PicturesList.pList.pictures.count
 
     if let captureManager = captureManager {
       captureManager.startUpdatingLocation()
@@ -492,7 +493,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
         stopTimer(&photoTimer)
       }
       
-      if picturesList.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+      if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
         // show alert
         // print("ALERT")
         showAlert()
@@ -515,7 +516,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   func takeAutoPhoto() {
     // print("Photo!")
-    if picturesList.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+    if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
       // show alert
       // print("ALERT")
       showAlert()
@@ -686,7 +687,6 @@ extension CameraViewController : CaptureManagerDelegate {
     let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to buy Full Version in Settings", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
     
     let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
-      //self.alertMaxVideo = false
     }
     
     alert.addAction(cancelAction)
@@ -1061,15 +1061,6 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
-  func createPicturesList() {
-    
-    if let savedPictures = Picture.loadPictures() {
-      picturesList = savedPictures
-    } else {
-      picturesList = [Picture]()
-    }
-  }
-  
   func removeFile(fileURL: NSURL) {
     //print("CameraVC.removeFile")
     
@@ -1119,16 +1110,6 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   
-  // MARK: NSCoding
-  
-  func savePictures() {
-    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(picturesList, toFile: Picture.ArchiveURL.path!)
-    if !isSuccessfulSave {
-      print("Failed to save pictures...")
-    }
-  }
-  
-  
-  
+
 }
 
