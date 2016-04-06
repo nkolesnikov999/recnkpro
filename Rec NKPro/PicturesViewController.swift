@@ -106,11 +106,10 @@ class PicturesViewController: UITableViewController {
   override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
     if editingStyle == UITableViewCellEditingStyle.Delete {
       let picture = PicturesList.pList.pictures[indexPath.row]
-      removeImage(picture)
       PicturesList.pList.pictures.removeAtIndex(indexPath.row)
-      PicturesList.pList.savePictures()
       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-      
+      removeImage(picture)
+      PicturesList.pList.savePictures()
     }
   }
   
@@ -128,6 +127,25 @@ class PicturesViewController: UITableViewController {
     let picture = PicturesList.pList.pictures[indexPath.row]
     let image = picture.loadImage()
     let optionMenu = UIAlertController(title: picture.title, message: nil, preferredStyle: .ActionSheet)
+    
+    let shareAction = UIAlertAction(title: NSLocalizedString("Share", comment: "AssetsVC: Share"),
+                                     style: .Default, handler: {
+                                      (alert: UIAlertAction!) -> Void in
+                                      if IAPHelper.iapHelper.setFullVersion {
+                                        let dateString = self.dateStringFrom(picture.date)
+                                        var locationMessage = ""
+                                        if let location = picture.location {
+                                          locationMessage = self.coordinateStringFrom(location)
+                                        }
+                                        let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
+                                        if let image = image {
+                                        let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
+                                          self.presentViewController(activityVC, animated: true, completion: nil)
+                                        }
+                                      } else {
+                                        self.showAlert(.FullVersion)
+                                      }
+    })
     
     let moveAction = UIAlertAction(title: NSLocalizedString("Move to Photo", comment: "AssetsVC: Move to Photo"),
                                    style: .Default, handler: {
@@ -218,6 +236,7 @@ class PicturesViewController: UITableViewController {
                                       (alert: UIAlertAction!) -> Void in
     })
     
+    optionMenu.addAction(shareAction)
     optionMenu.addAction(moveAction)
     optionMenu.addAction(copyAction)
     optionMenu.addAction(deleteAction)
@@ -234,6 +253,31 @@ class PicturesViewController: UITableViewController {
     }
     
     self.presentViewController(optionMenu, animated: true, completion: nil)
+  }
+  
+  func dateStringFrom(date: NSDate) -> String {
+    let dateFormater = NSDateFormatter()
+    dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
+    let timeString = dateFormater.stringFromDate(date)
+    return "Date: \(timeString)\n"
+  }
+  
+  func coordinateStringFrom(location: CLLocation) -> String {
+    var latitudeStr = ""
+    var longitudeStr = ""
+    if location.coordinate.latitude >= 0 {
+      latitudeStr = NSString(format: "N:%9.5lf", location.coordinate.latitude) as String
+    } else {
+      latitudeStr = NSString(format: "S:%9.5lf", -location.coordinate.latitude)  as String
+    }
+    
+    if location.coordinate.longitude >= 0 {
+      longitudeStr = NSString(format: "E:%9.5lf", location.coordinate.longitude) as String
+    } else {
+      longitudeStr = NSString(format: "W:%9.5lf", -location.coordinate.longitude)  as String
+    }
+    
+    return "Location: \(latitudeStr), \(longitudeStr)\n"
   }
   
   func showAlert(alert: AlertMessage) {

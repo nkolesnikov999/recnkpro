@@ -35,6 +35,6 @@ class Settings {
   var typeSpeed: TypeSpeed = .Km
   var maxRecordingTime: Int = 30
   var maxNumberVideo: Int = 2
-  var intervalPictures: Int = 10
+  var intervalPictures: Int = 60
   var odometerMeters: Int = 0
 }

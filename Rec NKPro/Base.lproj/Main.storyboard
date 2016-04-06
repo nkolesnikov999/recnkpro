@@ -808,8 +808,8 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10 s" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W1v-JN-Tyw">
-                                                    <rect key="frame" x="178" y="11.5" width="60" height="20.5"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="600 s" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W1v-JN-Tyw">
+                                                    <rect key="frame" x="178" y="11.5" width="60" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="iRe-ES-uLZ"/>
                                                     </constraints>
@@ -817,7 +817,7 @@
                                                     <color key="textColor" red="0.99678522349999998" green="0.558647275" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="5" maxValue="300" translatesAutoresizingMaskIntoConstraints="NO" id="QKy-jk-CYl">
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="60" minValue="20" maxValue="600" translatesAutoresizingMaskIntoConstraints="NO" id="QKy-jk-CYl">
                                                     <rect key="frame" x="244" y="7" width="350" height="31"/>
                                                     <connections>
                                                         <action selector="setIntervalPictures:" destination="u8v-CQ-GHX" eventType="valueChanged" id="6La-9K-IlN"/>

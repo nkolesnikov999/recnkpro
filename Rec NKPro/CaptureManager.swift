@@ -886,12 +886,12 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             // 3
             let newImage = UIImage(CGImage: cgimg, scale: 1.0, orientation: inputImage.imageOrientation)
             
-            let picture = Picture(image: newImage, date: NSDate(), location: self.location)
-            self.delegate?.picture = picture
-            
             dispatch_async(dispatch_get_main_queue()) {
               self.delegate?.iconsImage = newImage.thumbnailOfSize(CGSize(width: 48, height: 48))
             }
+
+            let picture = Picture(image: newImage, date: NSDate(), location: self.location)
+            self.delegate?.picture = picture
             
           }
         }

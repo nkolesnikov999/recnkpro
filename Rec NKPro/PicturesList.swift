@@ -15,9 +15,11 @@ class PicturesList {
   
   static let pList = PicturesList()
   
+  var savePicturesQueue: dispatch_queue_t!
   var pictures: [Picture]
   
   init() {
+    savePicturesQueue = dispatch_queue_create("net.nkpro.fixdrive.savePictures.queue", DISPATCH_QUEUE_CONCURRENT)
     if let pictures = NSKeyedUnarchiver.unarchiveObjectWithFile(archiveURL.path!) as? [Picture] {
       self.pictures = pictures
     } else {
@@ -26,11 +28,13 @@ class PicturesList {
   }
   
   func savePictures() {
-    let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(pictures, toFile: archiveURL.path!)
-    if !isSuccessfulSave {
-      print("Failed to save pictures...")
-    } else {
-      print("Pictures saved")
+    dispatch_async(savePicturesQueue) {
+      let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.pictures, toFile: archiveURL.path!)
+      if !isSuccessfulSave {
+        print("Failed to save pictures...")
+      } else {
+        print("Pictures saved")
+      }
     }
   }
 

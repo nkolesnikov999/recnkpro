@@ -480,6 +480,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     if sender.state == .Began {
       //print("LongTapBegan")
       photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
+      self.flashView.alpha = 1
+      UIView.animateWithDuration(0.2) {
+        self.flashView.alpha = 0
+      }
       takeAutoPhoto()
     }
   }
@@ -498,7 +502,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
         // print("ALERT")
         showAlert()
       } else {
-        self.flashView.backgroundColor = UIColor.whiteColor()
         self.flashView.alpha = 1
         UIView.animateWithDuration(0.2) {
           self.flashView.alpha = 0
@@ -698,10 +701,8 @@ extension CameraViewController : CaptureManagerDelegate {
   func setResolutionAndTextLabels() {
     if settings.textOnVideo {
       textLabel.text = NSLocalizedString("Text", comment: "CameraVC textLabel: Text")
-      textLabel.hidden = false
     } else {
-      textLabel.text = ""
-      textLabel.hidden = true
+      textLabel.text = NSLocalizedString("NT", comment: "CameraVC textLabel: NT")
     }
     
     var mode: QualityMode = .Low

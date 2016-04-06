@@ -206,8 +206,8 @@ class SettingsViewController: UITableViewController {
   }
   
   @IBAction func setIntervalPictures(sender: UISlider) {
-    let partValue = sender.value/5
-    let value = Int(partValue) * 5
+    let partValue = sender.value/10
+    let value = Int(partValue) * 10
     sender.value = Float(value)
     intervalPicturesLabel.text =  String(format: NSLocalizedString("%d s", comment: "SettingsVC Format for intervalPicturesLabel"), value)
     
