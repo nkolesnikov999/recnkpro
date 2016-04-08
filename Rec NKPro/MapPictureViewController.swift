@@ -91,7 +91,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
   }
   
   func shareClicked() {
-    print("shareClicked")
+    // print("shareClicked")
     if IAPHelper.iapHelper.setFullVersion {
       if PicturesList.pList.pictures.count != 0 {
         let picture = PicturesList.pList.pictures[currentIndex]

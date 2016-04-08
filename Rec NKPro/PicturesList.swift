@@ -33,7 +33,7 @@ class PicturesList {
       if !isSuccessfulSave {
         print("Failed to save pictures...")
       } else {
-        print("Pictures saved")
+        //print("Pictures saved")
       }
     }
   }
