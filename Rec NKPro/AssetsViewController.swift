@@ -27,6 +27,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   var freeSpace: Float!
   var typeSpeed: TypeSpeed!
   var activityIndicator: UIActivityIndicatorView!
+  var backgroundRecordingID: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
   
   override func viewDidLoad() {
     //print("AssetsViewController.viewDidLoad")
@@ -89,6 +90,11 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
+    // Make sure we have time to finish saving the movie if the app is backgrounded during recording
+    if UIDevice.currentDevice().multitaskingSupported {
+      self.backgroundRecordingID = UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({})
+    }
+    
     PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
       PHAssetCreationRequest.creationRequestForAssetFromVideoAtFileURL(fileURL)
       }) { (success, error) -> Void in
@@ -113,13 +119,21 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     activityIndicator.startAnimating()
     self.view.userInteractionEnabled = false
     
+    // Make sure we have time to finish saving the movie if the app is backgrounded during recording
+    if UIDevice.currentDevice().multitaskingSupported {
+      self.backgroundRecordingID = UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({})
+    }
+    
     PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
       PHAssetCreationRequest.creationRequestForAssetFromVideoAtFileURL(fileURL)
       }) { (success, error) -> Void in
         if let nserror = error {
           print("ERROR: AssetsVC.copyMovieToCameraRoll - \(nserror.userInfo)")
         }
-        
+        if UIDevice.currentDevice().multitaskingSupported {
+          UIApplication.sharedApplication().endBackgroundTask(self.backgroundRecordingID)
+          self.backgroundRecordingID = UIBackgroundTaskInvalid
+        }
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
           // UIApplication.sharedApplication().networkActivityIndicatorVisible = false
           self.activityIndicator.stopAnimating()
@@ -139,6 +153,10 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
         if let bytes = CameraViewController.deviceRemainingFreeSpaceInBytes() {
           let hMBytes = Int(bytes/10_0000_000)
           freeSpace = Float(hMBytes)/10
+        }
+        if UIDevice.currentDevice().multitaskingSupported {
+          UIApplication.sharedApplication().endBackgroundTask(self.backgroundRecordingID)
+          self.backgroundRecordingID = UIBackgroundTaskInvalid
         }
       } catch {
         let nserror = error as NSError
