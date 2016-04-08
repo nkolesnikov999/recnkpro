@@ -54,7 +54,7 @@ class PlayerViewController : UIViewController {
   @IBOutlet weak var centeredButton: UIButton!
   @IBOutlet weak var distanceButton: UIButton!
   @IBOutlet weak var photoImage: UIImageView!
-  @IBOutlet weak var rateSlider: UISlider!
+
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -78,13 +78,6 @@ class PlayerViewController : UIViewController {
     // print("didPlayToEndTime")
   }
   
-  override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-    if (keyPath == "rate") {
-      //print("Rate: \(player.rate)")
-      rateSlider.value = player.rate
-    }
-  }
-  
   func defineStackAxis() {
     let orientation = UIDevice.currentDevice().orientation
     if orientation.isPortrait {
@@ -98,7 +91,6 @@ class PlayerViewController : UIViewController {
   deinit {
     let notificationCenter = NSNotificationCenter.defaultCenter()
     notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
-    player.removeObserver(self, forKeyPath: "rate")
     player = nil
     url = nil
   }
@@ -128,8 +120,6 @@ class PlayerViewController : UIViewController {
     playerItem.addOutput(metadataOutput)
     
     player = AVPlayer(playerItem: playerItem)
-    
-    player.addObserver(self, forKeyPath: "rate", options: NSKeyValueObservingOptions.New, context: nil)
     
     //player.videoGravity = AVLayerVideoGravityResizeAspect
     mapView.delegate = self
@@ -216,10 +206,6 @@ class PlayerViewController : UIViewController {
     }
   }
   
-  @IBAction func changeRateSlider(sender: UISlider) {
-    player.rate = sender.value
-  }
-  
   @IBAction func takePhoto(sender: UIButton) {
     
     if PicturesList.pList.pictures.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
@@ -230,7 +216,7 @@ class PlayerViewController : UIViewController {
       
       let time = player.currentTime()
       let date = photoDate(time)
-      print("Date: \(date)")
+      // print("Date: \(date)")
       let imageGenerator = AVAssetImageGenerator(asset: asset)
       let imageTimeValue = NSValue(CMTime: time)
       

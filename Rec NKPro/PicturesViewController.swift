@@ -31,6 +31,11 @@ class PicturesViewController: UITableViewController {
     tableView.reloadData()
   }
   
+  override func viewDidDisappear(animated: Bool) {
+    super.viewDidDisappear(animated)
+    PicturesList.pList.savePictures()
+  }
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -58,7 +63,7 @@ class PicturesViewController: UITableViewController {
     if fileManager.fileExistsAtPath(path) {
       do {
         try fileManager.removeItemAtPath(path)
-        print("Image deleted")
+        //print("Image deleted")
       } catch {
         let nserror = error as NSError
         print("ERROR: PictureVC.removeFile - \(nserror.userInfo)")
@@ -109,7 +114,7 @@ class PicturesViewController: UITableViewController {
       PicturesList.pList.pictures.removeAtIndex(indexPath.row)
       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
       removeImage(picture)
-      PicturesList.pList.savePictures()
+      //PicturesList.pList.savePictures()
     }
   }
   
@@ -140,7 +145,10 @@ class PicturesViewController: UITableViewController {
                                         let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
                                         if let image = image {
                                         let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
-                                          self.presentViewController(activityVC, animated: true, completion: nil)
+                                          activityVC.excludedActivityTypes = [UIActivityTypeSaveToCameraRoll]
+                                          defer {
+                                            self.presentViewController(activityVC, animated: true, completion: nil)
+                                          }
                                         }
                                       } else {
                                         self.showAlert(.FullVersion)
@@ -164,15 +172,15 @@ class PicturesViewController: UITableViewController {
                                             print("ERROR: PictureVC.SavePhoto - \(nserror)")
                                           }
                                           if success {
-                                            print("Image saved")
+                                            //print("Image saved")
                                             self.removeImage(picture)
                                             PicturesList.pList.pictures.removeAtIndex(indexPath.row)
-                                            PicturesList.pList.savePictures()
+                                            //PicturesList.pList.savePictures()
                                             dispatch_async(dispatch_get_main_queue()) {
                                               tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
                                             }
                                           } else {
-                                            print("Image didn't save")
+                                            //print("Image didn't save")
                                             dispatch_async(dispatch_get_main_queue()) {
                                               self.showAlert(.PhotoNoSaved)
                                             }
@@ -204,12 +212,12 @@ class PicturesViewController: UITableViewController {
               print("ERROR: PictureVC.SavePhoto - \(nserror)")
             }
             if success {
-              print("Image saved")
+              //print("Image saved")
               dispatch_async(dispatch_get_main_queue()) {
                 self.showAlert(.PhotoSaved)
               }
             } else {
-              print("Image didn't save")
+              //print("Image didn't save")
               dispatch_async(dispatch_get_main_queue()) {
                 self.showAlert(.PhotoNoSaved)
               }
@@ -227,7 +235,7 @@ class PicturesViewController: UITableViewController {
                                       // Delete file
                                       self.removeImage(picture)
                                       PicturesList.pList.pictures.removeAtIndex(indexPath.row)
-                                      PicturesList.pList.savePictures()
+                                      //PicturesList.pList.savePictures()
                                       tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
     })
     
