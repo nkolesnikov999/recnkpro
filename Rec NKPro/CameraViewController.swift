@@ -687,7 +687,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to buy Full Version in Settings", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
     
     let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
     }

@@ -1219,7 +1219,7 @@
                                     <action selector="tapBackItem:" destination="gyA-ih-oXg" id="srv-ay-iUC"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Photo" id="M7W-1q-pnW">
+                            <barButtonItem title="Photos" id="M7W-1q-pnW">
                                 <connections>
                                     <action selector="tapPhotoItem:" destination="gyA-ih-oXg" id="nQb-Pf-g6S"/>
                                 </connections>
