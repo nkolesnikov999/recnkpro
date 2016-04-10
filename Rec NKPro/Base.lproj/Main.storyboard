@@ -800,7 +800,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Interval Auto Picture:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KVY-Xe-4kz">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Time Auto Picture:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KVY-Xe-4kz">
                                                     <rect key="frame" x="8" y="11.5" width="162" height="20.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="162" id="KRR-e6-7aw"/>
@@ -1304,18 +1304,18 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="49x-7s-9dO">
-                                                <rect key="frame" x="20" y="210" width="60" height="60"/>
+                                                <rect key="frame" x="270" y="210" width="60" height="60"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="60" id="8c9-Wv-HbZ"/>
                                                     <constraint firstAttribute="width" constant="60" id="FNR-Ww-Bpl"/>
                                                 </constraints>
-                                                <state key="normal" image="Camera"/>
+                                                <state key="normal" image="CameraPlayer"/>
                                                 <connections>
                                                     <action selector="takePhoto:" destination="ytf-7o-fDd" eventType="touchUpInside" id="nie-pD-nRj"/>
                                                 </connections>
                                             </button>
                                             <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0NJ-kG-dHr">
-                                                <rect key="frame" x="20" y="130" width="60" height="60"/>
+                                                <rect key="frame" x="20" y="210" width="60" height="60"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="60" id="HxF-Bk-XIN"/>
@@ -1329,21 +1329,21 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="Bmb-Gw-XCM" secondAttribute="trailing" id="3M4-vc-Jso"/>
+                                            <constraint firstItem="49x-7s-9dO" firstAttribute="centerX" secondItem="p63-D5-maf" secondAttribute="centerX" id="7iE-h0-DAT"/>
                                             <constraint firstItem="uxV-oC-NfK" firstAttribute="top" secondItem="Mi9-F5-Nrv" secondAttribute="bottom" constant="20" id="D2P-CG-wmZ"/>
                                             <constraint firstAttribute="trailing" secondItem="Mi9-F5-Nrv" secondAttribute="trailing" constant="20" id="DyU-73-Xv1"/>
                                             <constraint firstAttribute="bottom" secondItem="uxV-oC-NfK" secondAttribute="bottom" constant="20" id="Fwj-34-817"/>
                                             <constraint firstItem="8f3-Qe-Zvz" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="10" id="I7t-0x-ey3"/>
-                                            <constraint firstItem="49x-7s-9dO" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="20" id="Nn1-47-47k"/>
                                             <constraint firstItem="Mi9-F5-Nrv" firstAttribute="top" secondItem="Yis-p6-FfC" secondAttribute="bottom" constant="20" id="PHy-0u-P2n"/>
                                             <constraint firstAttribute="bottom" secondItem="Bmb-Gw-XCM" secondAttribute="bottom" id="QWO-IH-2pe"/>
                                             <constraint firstItem="uxV-oC-NfK" firstAttribute="centerX" secondItem="Mi9-F5-Nrv" secondAttribute="centerX" id="ad6-Gd-ZOS"/>
                                             <constraint firstAttribute="trailing" secondItem="Yis-p6-FfC" secondAttribute="trailing" constant="20" id="cBU-bd-56n"/>
                                             <constraint firstAttribute="bottom" secondItem="49x-7s-9dO" secondAttribute="bottom" constant="30" id="j3U-tg-uNP"/>
+                                            <constraint firstItem="0NJ-kG-dHr" firstAttribute="centerY" secondItem="49x-7s-9dO" secondAttribute="centerY" id="kcd-Kj-5c4"/>
                                             <constraint firstItem="8f3-Qe-Zvz" firstAttribute="top" secondItem="p63-D5-maf" secondAttribute="top" constant="10" id="olj-xO-l0b"/>
                                             <constraint firstItem="Bmb-Gw-XCM" firstAttribute="top" secondItem="p63-D5-maf" secondAttribute="top" id="qTn-NQ-xoP"/>
                                             <constraint firstItem="Bmb-Gw-XCM" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" id="rBc-SC-1B4"/>
                                             <constraint firstItem="0NJ-kG-dHr" firstAttribute="leading" secondItem="p63-D5-maf" secondAttribute="leading" constant="20" id="slr-vH-Pp5"/>
-                                            <constraint firstItem="49x-7s-9dO" firstAttribute="top" secondItem="0NJ-kG-dHr" secondAttribute="bottom" constant="20" id="wXD-ES-s8a"/>
                                         </constraints>
                                         <variation key="heightClass=compact" misplaced="YES">
                                             <rect key="frame" x="300" y="0.0" width="300" height="400"/>
@@ -1587,6 +1587,7 @@
     <resources>
         <image name="Battery" width="20" height="15"/>
         <image name="Camera" width="75" height="75"/>
+        <image name="CameraPlayer" width="75" height="75"/>
         <image name="CenteredHi" width="60" height="60"/>
         <image name="ChangeCamera" width="75" height="75"/>
         <image name="DarkSun" width="30" height="30"/>

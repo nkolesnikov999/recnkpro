@@ -88,6 +88,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     didSet {
       if let picture = picture {
         PicturesList.pList.pictures.append(picture)
+        PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
         PicturesList.pList.savePictures()
         picturesCount = PicturesList.pList.pictures.count
       }
@@ -479,10 +480,12 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("LONG Tap")
     if sender.state == .Began {
       //print("LongTapBegan")
-      photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
-      self.flashView.alpha = 1
-      UIView.animateWithDuration(0.2) {
-        self.flashView.alpha = 0
+      if picturesCount < maxNumberPictures || IAPHelper.iapHelper.setFullVersion {
+        photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
+        self.flashView.alpha = 1
+        UIView.animateWithDuration(0.2) {
+          self.flashView.alpha = 0
+        }
       }
       takeAutoPhoto()
     }

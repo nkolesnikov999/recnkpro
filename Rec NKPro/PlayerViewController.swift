@@ -229,6 +229,7 @@ class PlayerViewController : UIViewController {
           }
           if let picture = Picture(image: self.uiImage, date: date, location: self.location) {
             PicturesList.pList.pictures.append(picture)
+            PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
             PicturesList.pList.savePictures()
           }
         }
@@ -292,7 +293,8 @@ class PlayerViewController : UIViewController {
         var pointsToUse = [CLLocationCoordinate2D]()
         
         // Extract all the coordinates to draw from the locationPoints array
-        for i in startIndex ..< endIndex {
+        guard startIndex <= endIndex else { return }
+        for i in startIndex ... endIndex {
           let metadata = metadatas[i]
           pointsToUse.append(metadata.coordinate)
         }
@@ -511,7 +513,8 @@ class PlayerViewController : UIViewController {
         var pointsToUse = [CLLocationCoordinate2D]()
         
         // Extract all the coordinates to draw from the locationPoints array
-        for i in startIndex ..< endIndex {
+        guard startIndex <= endIndex else { return }
+        for i in startIndex ... endIndex {
           let metadata = metadatas[i]
           pointsToUse.append(metadata.coordinate)
         }
@@ -519,7 +522,6 @@ class PlayerViewController : UIViewController {
         // Draw the extracted path as an overlay on the map view
         distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
         mapView.addOverlay(distancePolyline!, level: .AboveRoads)
-    
       }
     }
     
@@ -822,9 +824,9 @@ extension PlayerViewController: MKMapViewDelegate {
 
     if pin == nil {
       pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "currentPin")
+      pin?.canShowCallout = true
     } else {
       pin?.annotation = annotation
-      pin?.canShowCallout = true
     }
     
     return pin

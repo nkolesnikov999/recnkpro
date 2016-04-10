@@ -57,7 +57,7 @@
 "ILh-wG-LHc.text" = "%";
 
 /* Class = "UILabel"; text = "Interval Auto Picture:"; ObjectID = "KVY-Xe-4kz"; */
-"KVY-Xe-4kz.text" = "Интервал Автоснимка:";
+"KVY-Xe-4kz.text" = "Время автоснимка:";
 
 /* Class = "UILabel"; text = "Max Numb. Videos:"; ObjectID = "KuL-1o-Hog"; */
 "KuL-1o-Hog.text" = "Макс кол видео:";

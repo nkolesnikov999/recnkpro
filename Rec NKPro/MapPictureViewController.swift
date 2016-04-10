@@ -266,7 +266,7 @@ extension MapPictureViewController: MKMapViewDelegate {
         
         //Create a plain MKAnnotationView if using a custom image...
         pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-        pinView!.canShowCallout = false
+        pinView?.canShowCallout = false
       }
       else {
         //Unrelated to the image problem but...
