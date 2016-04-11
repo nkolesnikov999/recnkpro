@@ -220,8 +220,6 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     }
     
     if let updatedPicture = updatedPicture {
-      // TODO:
-      
       pageVC?.newIndex = updatedPicture.pictureIndex
       currentIndex = updatedPicture.pictureIndex
     }

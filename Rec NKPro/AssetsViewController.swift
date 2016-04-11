@@ -278,7 +278,6 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
-      // TODO:
       if IAPHelper.iapHelper.setFullVersion {
         if self.checkFreeSpace(asset) {
           self.copyMovieToCameraRoll(movieURL)

@@ -146,6 +146,13 @@ class PicturesViewController: UITableViewController {
                                         if let image = image {
                                         let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
                                           activityVC.excludedActivityTypes = [UIActivityTypeSaveToCameraRoll]
+                                          if let popoverController = activityVC.popoverPresentationController {
+                                            let cell = tableView.cellForRowAtIndexPath(indexPath)
+                                            popoverController.sourceView = cell
+                                            if let cell = cell {
+                                              popoverController.sourceRect = cell.bounds
+                                            }
+                                          }
                                           defer {
                                             self.presentViewController(activityVC, animated: true, completion: nil)
                                           }
@@ -158,7 +165,6 @@ class PicturesViewController: UITableViewController {
     let moveAction = UIAlertAction(title: NSLocalizedString("Move to Photo", comment: "AssetsVC: Move to Photo"),
                                    style: .Default, handler: {
                                     (alert: UIAlertAction!) -> Void in
-                                    // TODO:
                                     if IAPHelper.iapHelper.setFullVersion {
                                       if let newImage = image {
                                         PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
@@ -196,7 +202,6 @@ class PicturesViewController: UITableViewController {
     let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
-      // TODO:
       if IAPHelper.iapHelper.setFullVersion {
         
         if let newImage = image {

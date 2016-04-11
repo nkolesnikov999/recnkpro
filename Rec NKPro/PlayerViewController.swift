@@ -284,7 +284,9 @@ class PlayerViewController : UIViewController {
       mapView.addAnnotation(endPoint)
     }
     
-    mapView.removeOverlay(distancePolyline!)
+    if let distancePolyline = distancePolyline {
+      mapView.removeOverlay(distancePolyline)
+    }
     
     if let startIndex = metadatas.indexOf(startPoint) {
       if let endIndex = metadatas.indexOf(endPoint) {
@@ -301,8 +303,9 @@ class PlayerViewController : UIViewController {
         
         // Draw the extracted path as an overlay on the map view
         distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
-        mapView.addOverlay(distancePolyline!, level: .AboveRoads)
-        
+        if let distancePolyline = distancePolyline {
+          mapView.addOverlay(distancePolyline, level: .AboveRoads)
+        }
       }
     }
     
@@ -521,7 +524,9 @@ class PlayerViewController : UIViewController {
         
         // Draw the extracted path as an overlay on the map view
         distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
-        mapView.addOverlay(distancePolyline!, level: .AboveRoads)
+        if let distancePolyline = distancePolyline {
+          mapView.addOverlay(distancePolyline, level: .AboveRoads)
+        }
       }
     }
     
@@ -529,7 +534,9 @@ class PlayerViewController : UIViewController {
   
   
   func removeDistancePath() {
-    mapView.removeOverlay(distancePolyline!)
+    if let distancePolyline = distancePolyline {
+      mapView.removeOverlay(distancePolyline)
+    }
     mapView.removeAnnotations([startPoint, endPoint])
     mapView.addAnnotation(currentPin)
   }
