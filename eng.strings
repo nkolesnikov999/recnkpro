@@ -1,0 +1,105 @@
+/* SettingsVC Format for minIntervalLabel meters */
+"%d m" = "%d m";
+
+/* SettingsVC Format for maxRecordingTimeLabel minutes */
+"%d min" = "%d min";
+
+/* SettingsVC Format for intervalPicturesLabel seconds */
+"%d s" = "%d s";
+
+/* PlayerVC: average speed: */
+"avg:" = "avg:";
+
+/* AssetsVC: Cancel */
+"Cancel" = "Cancel";
+
+/* AssetsVC: Copy to Photo */
+"Copy to Photos" = "Copy to Photos";
+
+/* AssetsVC: Delete */
+"Delete" = "Delete";
+
+/* SettingVC Error-Message */
+"Existing video will be deleted. Do you want to continue?" = "Existing video will be deleted. Do you want to continue?";
+
+/* CameraVC Alert-Message */
+"For more pictures you need to go to Settings and buy Full Version" = "For more pictures you need to go to Settings and buy Full Version";
+
+/* SettingVC Error-Message */
+"For running this function you need to buy Full Version" = "For running this function you need to buy Full Version";
+
+/* PictureVC FullVersion
+ SettingVC Error-Message */
+"For running this function you need to go to Settings and buy Full Version" = "For running this function you need to go to Settings and buy Full Version";
+
+/* SettingsVC: Full Version */
+"Full Version - " = "Full Version - ";
+
+/* CaptureManager: km/h
+ PlayerVC: speed units km/h */
+"km/h" = "km/h";
+
+/* PlayerVC: meters */
+"m" = "m";
+
+/* MapPictureVC - Title */
+"Map" = "Map";
+
+/* PlayerVC: maximum: */
+"max:" = "max:";
+
+/* SettingVC Error-Title */
+"Message" = "Message";
+
+/* PlayerVC: minimum: */
+"min:" = "min:";
+
+/* AssetsVC: Move to Photo */
+"Move to Photo" = "Move to Photo";
+
+/* CaptureManager: mph
+ PlayerVC: mph */
+"mph" = "mph";
+
+/* SettingVC Error-NO */
+"NO" = "NO";
+
+/* PlayerVC: No Data */
+"No Data" = "No Data";
+
+/* AssetsVC Error-Title: No Disk Space
+ CameraVC Error-Title: No Disk Space */
+"No Disk Space" = "No Disk Space";
+
+/* CameraVC textLabel: NT */
+"No Text" = "No Text";
+
+/* CameraVC Alert-OK
+ SettingVC Error-OK */
+"OK" = "OK";
+
+/* PictureVC PhotoSaved */
+"Photo has been copied" = "Photo has been copied";
+
+/* PictureVC PhotoNoSaved */
+"Photo hasn't been copied" = "Photo hasn't been copied";
+
+/* AssetsVC Error-Message: Please, Clear Storage
+ CameraVC Error-Message: Please, Clear Storage */
+"Please, Clear Storage" = "Please, Clear Storage";
+
+/* PlayerVC: Map Mode Satellite */
+"Satellite" = "Satellite";
+
+/* AssetsVC: Share for Social Networks */
+"Share" = "Share";
+
+/* PlayerVC: Map Mode Standard */
+"Standard" = "Standard";
+
+/* CameraVC textLabel: Text */
+"Text" = "Text";
+
+/* SettingVC Error-Title */
+"Warning!" = "Warning!";
+

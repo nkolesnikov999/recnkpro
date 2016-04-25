@@ -114,7 +114,7 @@ class Picture: NSObject, NSCoding {
           let placemark = placemarks[0]
           
           if let city = placemark.addressDictionary?["City"] as? String {
-            self.address += city
+            self.address = city
           }
           
           if let locationName = placemark.addressDictionary?["Name"] as? String {

@@ -119,7 +119,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     let dateFormater = NSDateFormatter()
     dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
     let timeString = dateFormater.stringFromDate(date)
-    return "Date: \(timeString)\n"
+    return "\(timeString)\n"
   }
   
   func coordinateStringFrom(location: CLLocation) -> String {
@@ -137,7 +137,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
       longitudeStr = NSString(format: "W:%9.5lf", -location.coordinate.longitude)  as String
     }
     
-    return "Location: \(latitudeStr), \(longitudeStr)\n"
+    return "\(latitudeStr), \(longitudeStr)\n"
   }
   
   func showAlert() {

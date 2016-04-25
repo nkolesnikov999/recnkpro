@@ -74,6 +74,14 @@ class PlayerViewController : UIViewController {
 
   }
   
+  override func viewWillDisappear(animated: Bool) {
+    //print("CameraVC.viewWillDisappear")
+    super.viewWillDisappear(animated)
+    
+    PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+    PicturesList.pList.savePictures()
+  }
+  
   func didPlayToEndTime(){
     // print("didPlayToEndTime")
   }
@@ -229,8 +237,8 @@ class PlayerViewController : UIViewController {
           }
           if let picture = Picture(image: self.uiImage, date: date, location: self.location) {
             PicturesList.pList.pictures.append(picture)
-            PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
-            PicturesList.pList.savePictures()
+            //PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+            //PicturesList.pList.savePictures()
           }
         }
       })
