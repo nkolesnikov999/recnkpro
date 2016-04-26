@@ -1,35 +1,42 @@
+
 /* Class = "UITableViewSection"; headerTitle = "Video"; ObjectID = "0o7-NC-rbN"; */
-"0o7-NC-rbN.headerTitle" = "Видео";
+"0o7-NC-rbN.headerTitle" = "ビデオ";
+
+/* Class = "UINavigationItem"; title = "Pictures"; ObjectID = "30f-pe-ggC"; */
+"30f-pe-ggC.title" = "ピクチャー";
 
 /* Class = "UINavigationItem"; title = "Title"; ObjectID = "3Mt-t3-OjU"; */
 "3Mt-t3-OjU.title" = "Title";
 
 /* Class = "UINavigationItem"; title = "TMP"; ObjectID = "3vp-Mc-V76"; */
-"3vp-Mc-V76.title" = "Врм Записи";
+"3vp-Mc-V76.title" = "一時的";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "4bB-aA-DRS"; */
+"4bB-aA-DRS.text" = "Subtitle";
 
 /* Class = "UIButton"; normalTitle = "Reset"; ObjectID = "5MK-5u-Y4E"; */
-"5MK-5u-Y4E.normalTitle" = "Сброс";
+"5MK-5u-Y4E.normalTitle" = "リセット";
+
+/* Class = "UILabel"; text = ">"; ObjectID = "5Ua-iw-LwW"; */
+"5Ua-iw-LwW.text" = ">";
 
 /* Class = "UIButton"; normalTitle = "Reset Odometer"; ObjectID = "661-Fx-7Ty"; */
-"661-Fx-7Ty.normalTitle" = "Сброс одометра";
+"661-Fx-7Ty.normalTitle" = "オドメーターをリセット";
 
 /* Class = "UILabel"; text = "Text"; ObjectID = "72w-Ec-285"; */
-"72w-Ec-285.text" = "Текст";
+"72w-Ec-285.text" = "テキスト";
 
 /* Class = "UILabel"; text = "Loading..."; ObjectID = "8f3-Qe-Zvz"; */
-"8f3-Qe-Zvz.text" = "Загрузка...";
-
-/* Class = "UIBarButtonItem"; title = "Camera"; ObjectID = "CDw-GV-ACF"; */
-"CDw-GV-ACF.title" = "Камера";
+"8f3-Qe-Zvz.text" = "ローディング...";
 
 /* Class = "UILabel"; text = "Autofocusing:"; ObjectID = "CHg-ar-HDg"; */
-"CHg-ar-HDg.text" = "Автофокус:";
+"CHg-ar-HDg.text" = "オートフォーカス方式:";
 
 /* Class = "UILabel"; text = "Camera:"; ObjectID = "EFO-Mk-ldW"; */
-"EFO-Mk-ldW.text" = "Камера:";
+"EFO-Mk-ldW.text" = "カメラ:";
 
 /* Class = "UITableViewSection"; headerTitle = "Location"; ObjectID = "Fnl-Ca-9ge"; */
-"Fnl-Ca-9ge.headerTitle" = "Локация";
+"Fnl-Ca-9ge.headerTitle" = "ロケーション";
 
 /* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[0] = "288p"; ObjectID = "GYt-8r-HXd"; */
 "GYt-8r-HXd.segmentTitles[0]" = "288p";
@@ -41,28 +48,34 @@
 "GYt-8r-HXd.segmentTitles[2]" = "720p";
 
 /* Class = "UILabel"; text = "Text On Video:"; ObjectID = "HVc-iE-b3d"; */
-"HVc-iE-b3d.text" = "Текст на видео:";
+"HVc-iE-b3d.text" = "ビデオ上のテキスト:";
+
+/* Class = "UIBarButtonItem"; title = "Map"; ObjectID = "IJo-OZ-Xgy"; */
+"IJo-OZ-Xgy.title" = "地図";
 
 /* Class = "UILabel"; text = "%"; ObjectID = "ILh-wG-LHc"; */
 "ILh-wG-LHc.text" = "%";
 
-/* Class = "UILabel"; text = "Title"; ObjectID = "IlQ-KB-9SA"; */
-"IlQ-KB-9SA.text" = "Title";
+/* Class = "UILabel"; text = "Time Auto Picture:"; ObjectID = "KVY-Xe-4kz"; */
+"KVY-Xe-4kz.text" = "タイムオートピクチャー:";
 
-/* Class = "UILabel"; text = "Max Number of Files:"; ObjectID = "KuL-1o-Hog"; */
-"KuL-1o-Hog.text" = "Макс кол видео:";
+/* Class = "UILabel"; text = "Max Numb. Videos:"; ObjectID = "KuL-1o-Hog"; */
+"KuL-1o-Hog.text" = "最大数のビデオ:";
 
 /* Class = "UILabel"; text = "km/h"; ObjectID = "L6G-H7-qG1"; */
-"L6G-H7-qG1.text" = "км/ч";
+"L6G-H7-qG1.text" = "km/h";
 
 /* Class = "UILabel"; text = "100 m"; ObjectID = "LZB-Xi-JNG"; */
-"LZB-Xi-JNG.text" = "100 м";
+"LZB-Xi-JNG.text" = "100 m";
 
-/* Class = "UIBarButtonItem"; title = "Photo"; ObjectID = "M7W-1q-pnW"; */
-"M7W-1q-pnW.title" = "Фото";
+/* Class = "UIBarButtonItem"; title = "Photos"; ObjectID = "M7W-1q-pnW"; */
+"M7W-1q-pnW.title" = "写真";
+
+/* Class = "UITabBarItem"; title = "Videos"; ObjectID = "MQV-Cq-Xgn"; */
+"MQV-Cq-Xgn.title" = "ビデオ";
 
 /* Class = "UILabel"; text = "Min Interval:"; ObjectID = "O1I-gw-ubP"; */
-"O1I-gw-ubP.text" = "Мин интервал:";
+"O1I-gw-ubP.text" = "分間隔:";
 
 /* Class = "UILabel"; text = "100"; ObjectID = "Owy-tK-M4D"; */
 "Owy-tK-M4D.text" = "100";
@@ -70,83 +83,110 @@
 /* Class = "UILabel"; text = "9999/99/99 99:99:99"; ObjectID = "PtV-hu-ps3"; */
 "PtV-hu-ps3.text" = "9999/99/99 99:99:99";
 
+/* Class = "UIButton"; normalTitle = "< Back"; ObjectID = "RUw-aN-7V3"; */
+"RUw-aN-7V3.normalTitle" = "< Back";
+
 /* Class = "UILabel"; text = "Gb"; ObjectID = "ScI-ZB-0sO"; */
-"ScI-ZB-0sO.text" = "Гб";
+"ScI-ZB-0sO.text" = "Gb";
 
 /* Class = "UIBarButtonItem"; title = "Back"; ObjectID = "Sgp-jk-foc"; */
-"Sgp-jk-foc.title" = "Назад";
+"Sgp-jk-foc.title" = "バック";
 
 /* Class = "UITableViewSection"; headerTitle = "Saving"; ObjectID = "T8a-ea-399"; */
-"T8a-ea-399.headerTitle" = "Сохранение";
+"T8a-ea-399.headerTitle" = "節約";
 
 /* Class = "UILabel"; text = "Logotype:"; ObjectID = "TE0-t9-k61"; */
-"TE0-t9-k61.text" = "Логотип:";
+"TE0-t9-k61.text" = "ロゴタイプ:";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "VHf-3D-frw"; */
+"VHf-3D-frw.text" = "Title";
 
 /* Class = "UITabBarItem"; title = "Camera"; ObjectID = "Vbd-jF-gBE"; */
-"Vbd-jF-gBE.title" = "Камера";
+"Vbd-jF-gBE.title" = "カメラ";
 
-/* Class = "UIButton"; normalTitle = "Restore Purchases"; ObjectID = "WuV-Qu-9dC"; */
-"WuV-Qu-9dC.normalTitle" = "Восстановить";
+/* Class = "UILabel"; text = "600 s"; ObjectID = "W1v-JN-Tyw"; */
+"W1v-JN-Tyw.text" = "600 s";
+
+/* Class = "UIButton"; normalTitle = "Restore"; ObjectID = "WuV-Qu-9dC"; */
+"WuV-Qu-9dC.normalTitle" = "リストア";
+
+/* Class = "UILabel"; text = " Date"; ObjectID = "XgI-wO-RdM"; */
+"XgI-wO-RdM.text" = " 日付";
+
+/* Class = "UILabel"; text = "<"; ObjectID = "Y12-5R-j2t"; */
+"Y12-5R-j2t.text" = "<";
 
 /* Class = "UITableViewSection"; headerTitle = " Default Settings"; ObjectID = "Y9u-hl-drQ"; */
-"Y9u-hl-drQ.headerTitle" = " Начальные настройки";
+"Y9u-hl-drQ.headerTitle" = " デフォルトの設定";
 
 /* Class = "UILabel"; text = "720p"; ObjectID = "Z2F-Gt-3KC"; */
 "Z2F-Gt-3KC.text" = "720p";
 
 /* Class = "UILabel"; text = "60 min"; ObjectID = "aOb-xc-nhK"; */
-"aOb-xc-nhK.text" = "60 мин";
+"aOb-xc-nhK.text" = "60 min";
 
 /* Class = "UILabel"; text = "0.0"; ObjectID = "ac8-gS-Hsc"; */
 "ac8-gS-Hsc.text" = "0.0";
 
+/* Class = "UIButton"; normalTitle = "Satellite"; ObjectID = "cfU-Gd-GkE"; */
+"cfU-Gd-GkE.normalTitle" = "衛星";
+
 /* Class = "UIButton"; normalTitle = "< Back"; ObjectID = "d8R-lk-vqK"; */
-"d8R-lk-vqK.normalTitle" = "< Назад";
+"d8R-lk-vqK.normalTitle" = "< バック";
 
 /* Class = "UILabel"; text = "200"; ObjectID = "emU-Lb-NdJ"; */
 "emU-Lb-NdJ.text" = "200";
 
 /* Class = "UILabel"; text = "Resolution:"; ObjectID = "ffM-sO-38I"; */
-"ffM-sO-38I.text" = "Разрешение:";
+"ffM-sO-38I.text" = "解決:";
 
 /* Class = "UILabel"; text = "00.0"; ObjectID = "fmk-Mx-NGs"; */
 "fmk-Mx-NGs.text" = "00.0";
 
 /* Class = "UILabel"; text = "Units:"; ObjectID = "gkR-4V-vtd"; */
-"gkR-4V-vtd.text" = "Ед измерения:";
+"gkR-4V-vtd.text" = "ユニット:";
 
 /* Class = "UITableViewSection"; headerTitle = " Purchases"; ObjectID = "j5t-el-dSn"; */
-"j5t-el-dSn.headerTitle" = " Покупки";
+"j5t-el-dSn.headerTitle" = " 購入";
 
-/* Class = "UIButton"; normalTitle = "Change Logo On Video"; ObjectID = "lfx-fa-y6i"; */
-"lfx-fa-y6i.normalTitle" = "Полная версия";
+/* Class = "UITabBarItem"; title = "Pictures"; ObjectID = "ldW-AG-xSn"; */
+"ldW-AG-xSn.title" = "ピクチャー";
+
+/* Class = "UIButton"; normalTitle = "Full Version"; ObjectID = "lfx-fa-y6i"; */
+"lfx-fa-y6i.normalTitle" = "完全版";
 
 /* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[0] = "km"; ObjectID = "mOX-GY-Lwt"; */
-"mOX-GY-Lwt.segmentTitles[0]" = "км";
+"mOX-GY-Lwt.segmentTitles[0]" = "km";
 
 /* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[1] = "mi"; ObjectID = "mOX-GY-Lwt"; */
-"mOX-GY-Lwt.segmentTitles[1]" = "мили";
+"mOX-GY-Lwt.segmentTitles[1]" = "mi";
 
 /* Class = "UILabel"; text = "8000.0"; ObjectID = "mRS-bt-HHr"; */
 "mRS-bt-HHr.text" = "8000.0";
 
-/* Class = "UILabel"; text = "Max Recording Time:"; ObjectID = "pvf-QP-kmD"; */
-"pvf-QP-kmD.text" = "Макс время записи:";
+/* Class = "UILabel"; text = "Address"; ObjectID = "nJV-8t-5rQ"; */
+"nJV-8t-5rQ.text" = "Text";
 
-/* Class = "UILabel"; text = "Subtitle"; ObjectID = "qj9-cm-X6g"; */
-"qj9-cm-X6g.text" = "Subtitle";
+/* Class = "UILabel"; text = "Title"; ObjectID = "oa5-Hr-ZBJ"; */
+"oa5-Hr-ZBJ.text" = "Title";
+
+/* Class = "UILabel"; text = "Max Recording Time:"; ObjectID = "pvf-QP-kmD"; */
+"pvf-QP-kmD.text" = "最大記録時間:";
 
 /* Class = "UILabel"; text = "20"; ObjectID = "ucM-IH-wQ6"; */
 "ucM-IH-wQ6.text" = "20";
 
 /* Class = "UIButton"; normalTitle = "Satellite"; ObjectID = "uxV-oC-NfK"; */
-"uxV-oC-NfK.normalTitle" = "Спутник";
+"uxV-oC-NfK.normalTitle" = "衛星";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "wN9-dg-8iv"; */
+"wN9-dg-8iv.text" = "Subtitle";
 
 /* Class = "UINavigationItem"; title = "Settings"; ObjectID = "yId-Ow-o07"; */
-"yId-Ow-o07.title" = "Настройки";
+"yId-Ow-o07.title" = "設定";
 
 /* Class = "UISegmentedControl"; ydl-cg-1hO.segmentTitles[0] = "Front"; ObjectID = "ydl-cg-1hO"; */
-"ydl-cg-1hO.segmentTitles[0]" = "Прдн";
+"ydl-cg-1hO.segmentTitles[0]" = "フロント";
 
 /* Class = "UISegmentedControl"; ydl-cg-1hO.segmentTitles[1] = "Back"; ObjectID = "ydl-cg-1hO"; */
-"ydl-cg-1hO.segmentTitles[1]" = "Задн";
+"ydl-cg-1hO.segmentTitles[1]" = "バック";
