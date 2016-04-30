@@ -75,6 +75,8 @@
 		4C68A7EF1CCFEB9B00425745 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		4C68A7F01CCFEB9B00425745 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		4CB6F3B71C371E05009BF45B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		4CB8082F1CD3EA3A00330683 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
+		4CB808301CD3EA3A00330683 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
 		4CCB36EF1CCE88BB006DABF9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 				es,
 				ja,
 				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 4C3EEC841BF8FA6D00FE0C4C;
 			productRefGroup = 4C3EEC8E1BF8FA6D00FE0C4C /* Products */;
@@ -305,6 +308,7 @@
 				4C0CCDAC1CCFDAB8003CB1D3 /* es */,
 				4C0CCDAE1CCFE27F003CB1D3 /* ja */,
 				4C68A7F01CCFEB9B00425745 /* zh-Hans */,
+				4CB808301CD3EA3A00330683 /* zh-Hant */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -320,6 +324,7 @@
 				4C0CCDAB1CCFDAB8003CB1D3 /* es */,
 				4C0CCDAD1CCFE27F003CB1D3 /* ja */,
 				4C68A7EF1CCFEB9B00425745 /* zh-Hans */,
+				4CB8082F1CD3EA3A00330683 /* zh-Hant */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
