@@ -149,9 +149,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var readyToRecordMetadata = false
   var recordingWillBeStarted = false
   var recordingWillBeStopped = false
+  var isAudioInput = false
+  var isMicOn = true
   
   var inputsReadyToRecord: Bool {
-    return readyToRecordAudio && readyToRecordVideo && readyToRecordMetadata
+    return (readyToRecordAudio || !isAudioInput) && readyToRecordVideo && readyToRecordMetadata
   }
   
   var textOnVideo = false
@@ -187,6 +189,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       if assetWriter.status == AVAssetWriterStatus.Unknown {
         // If the asset writer status is unknown, implies writing hasn't started yet, hence start writing with start time as the buffer's presentation timestamp
         if assetWriter.startWriting() {
+          // print("SourceTime: \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
           assetWriter.startSessionAtSourceTime(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         } else {
           if let error = assetWriter.error {
@@ -640,13 +643,15 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           }
         } else if (connection == self.audioConnection) {
           // Initialize the audio input if this is not done yet
-          if !self.readyToRecordAudio {
-            self.readyToRecordAudio = self.setupAssetWriterAudioInput(CMSampleBufferGetFormatDescription(sampleBuffer)!)
-          }
-          // Write audio data to file only when all the inputs are ready
-          if self.inputsReadyToRecord {
-            self.writeSampleBuffer(sampleBuffer, mediaType: AVMediaTypeAudio)
-          }
+            if !self.readyToRecordAudio {
+              self.readyToRecordAudio = self.setupAssetWriterAudioInput(CMSampleBufferGetFormatDescription(sampleBuffer)!)
+            }
+            
+            // Write audio data to file only when all the inputs are ready
+            // print("AudioTime: \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
+            if self.inputsReadyToRecord && self.isMicOn {
+              self.writeSampleBuffer(sampleBuffer, mediaType: AVMediaTypeAudio)
+            }
         }
         
         // Initialize the metadata input since capture is about to setup/ already initialized video and audio inputs
@@ -696,20 +701,19 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         let audioIn = try AVCaptureDeviceInput(device: self.audioDevice())
         if session.canAddInput(audioIn) {
           session.addInput(audioIn)
+          isAudioInput = true
         }
+        let audioOut = AVCaptureAudioDataOutput()
+        //let audioCaptureQueue = dispatch_queue_create("net.nkpro.fixdrive.audio.queue", DISPATCH_QUEUE_SERIAL)
+        audioOut.setSampleBufferDelegate(self, queue: movieWritingQueue!)
+        
+        if session .canAddOutput(audioOut) {
+          session.addOutput(audioOut)
+        }
+        audioConnection = audioOut.connectionWithMediaType(AVMediaTypeAudio)
       } catch {
         print("Could not init audio device")
       }
-      
-      let audioOut = AVCaptureAudioDataOutput()
-      //let audioCaptureQueue = dispatch_queue_create("net.nkpro.fixdrive.audio.queue", DISPATCH_QUEUE_SERIAL)
-      audioOut.setSampleBufferDelegate(self, queue: movieWritingQueue!)
-      
-      if session .canAddOutput(audioOut) {
-        session.addOutput(audioOut)
-      }
-      
-      audioConnection = audioOut.connectionWithMediaType(AVMediaTypeAudio)
       
       // Create video connection
       

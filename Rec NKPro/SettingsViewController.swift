@@ -31,7 +31,7 @@ class SettingsViewController: UITableViewController {
   var settings: Settings!
   var price = ""
   var alertMaxVideo = false
-  var alertMaxPictures = false
+  var alertMaxTime = false
   
   var numberAssetFiles = 0
   var oldSettingNumberVideo = 0
@@ -123,6 +123,9 @@ class SettingsViewController: UITableViewController {
       alert.addAction(cancelAction)
       presentViewController(alert, animated: true, completion: nil)
     } else {
+      if settings.maxRecordingTime > 5 && !IAPHelper.iapHelper.setFullVersion {
+        settings.maxRecordingTime = 5
+      }
       self.delegate?.saveSettings()
       self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -171,18 +174,34 @@ class SettingsViewController: UITableViewController {
   }
   
   @IBAction func setMaxRecordingTime(sender: UISlider) {
-    let partValue = sender.value/5
-    let value = Int(partValue) * 5
-    sender.value = Float(value)
-    maxRecordingTimeLabel.text =  String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), value)
+    
+    if !IAPHelper.iapHelper.setFullVersion {
+      sender.value = 5.0
+      if !alertMaxTime {
+        alertMaxTime = true
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+          self.alertMaxTime = false
+        }
+        alert.addAction(cancelAction)
+        presentViewController(alert, animated: true, completion: nil)
+      }
 
-    settings.maxRecordingTime = value
+    } else {
+      let partValue = sender.value/5
+      let value = Int(partValue) * 5
+      sender.value = Float(value)
+      maxRecordingTimeLabel.text =  String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), value)
+      settings.maxRecordingTime = value
+    }
   }
   
   @IBAction func setMaxNumberFiles(sender: UISlider) {
     //print("valueChange")
     
-    if Int(sender.value) > settings.maxNumberVideo && !IAPHelper.iapHelper.setFullVersion {       sender.value = Float(settings.maxNumberVideo)
+    if Int(sender.value) > settings.maxNumberVideo && !IAPHelper.iapHelper.setFullVersion {
+      sender.value = Float(settings.maxNumberVideo)
       
       if !alertMaxVideo {
         alertMaxVideo = true

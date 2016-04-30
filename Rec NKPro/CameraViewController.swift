@@ -32,6 +32,7 @@ let LayerOpacityValueKey = "LayerOpacityValueKey"
 let OdometerMetersKey = "OdometerMetersKey"
 let TextOnVideoKey = "TextOnVideoKey"
 let LogotypeKey = "LogotypeKey"
+let MicOnKey = "MicOnKey"
 let maxNumberPictures = 10
 
 
@@ -45,6 +46,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var resetRecordingTimer = false
   var changingCamera = false
   var isPhotoImage = false
+  var isMicOn = true
   var freeSpace: Float = 0
   
   var recordingTimer: NSTimer?
@@ -115,6 +117,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var timeLabel: UILabel!
   @IBOutlet weak var frameRateLabel: UILabel!
   @IBOutlet weak var resolutionLabel: UILabel!
+  @IBOutlet weak var micButton: UIButton!
   @IBOutlet weak var textLabel: UILabel!
   @IBOutlet weak var backButton: UIButton!
   @IBOutlet weak var fillDiskLabel: UILabel!
@@ -181,6 +184,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     frameRateLabel.textColor = UIColor.redColor()
 
     recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
+    micButton.setImage(UIImage(named: isMicOn ? "Mic" : "NoMic"), forState: .Normal)
+
     //controlView.hidden = true
     
     // Initialize the class responsible for managing AV capture session and asset writer
@@ -195,6 +200,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       captureManager.typeCamera = settings.typeCamera
       captureManager.logotype = settings.logotype
       captureManager.textOnVideo = settings.textOnVideo
+      captureManager.isMicOn = isMicOn
       
       // Setup and start the capture session
       captureManager.setupAndStartCaptureSession()
@@ -248,6 +254,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
 
     if let captureManager = captureManager {
       captureManager.startUpdatingLocation()
+      if !captureManager.isAudioInput {
+        micButton.setImage(UIImage(named: "NoMic"), forState: .Normal)
+        micButton.enabled = false
+      }
     } else {
       print("CaptureManager didn't create!")
     }
@@ -562,6 +572,23 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     NSUserDefaults.standardUserDefaults().setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
     NSUserDefaults.standardUserDefaults().synchronize()
   }
+  
+  @IBAction func toggleMic(sender: UIButton) {
+    if isMicOn {
+      micButton.setImage(UIImage(named: "NoMic"), forState: .Normal)
+      isMicOn = false
+      // print("NO MIC")
+    } else {
+      micButton.setImage(UIImage(named: "Mic"), forState: .Normal)
+      isMicOn = true
+      // print("MIC")
+    }
+    if let cm = captureManager {
+      cm.isMicOn = isMicOn
+    }
+    NSUserDefaults.standardUserDefaults().setValue(isMicOn, forKey: MicOnKey)
+    NSUserDefaults.standardUserDefaults().synchronize()
+  }
 }
 
 //MARK: - CaptureManagerDelegate
@@ -575,6 +602,7 @@ extension CameraViewController : CaptureManagerDelegate {
       self.settingsButton.enabled = false
       self.backButton.enabled = false
       self.recordButton.setImage(UIImage(named: "StartHighlight"), forState: .Normal)
+      self.micButton.enabled = false
       
       // Make sure we have time to finish saving the movie if the app is backgrounded during recording
       if UIDevice.currentDevice().multitaskingSupported {
@@ -641,6 +669,12 @@ extension CameraViewController : CaptureManagerDelegate {
         self.changingCamera = false
         if let cm = self.captureManager {
           cm.startRecording()
+        }
+      }
+      
+      if let cm = self.captureManager {
+        if cm.isAudioInput {
+          self.micButton.enabled = true
         }
       }
       
@@ -1009,6 +1043,10 @@ extension CameraViewController : CaptureManagerDelegate {
     
     if let storedOdometerMeters = NSUserDefaults.standardUserDefaults().valueForKey(OdometerMetersKey)?.integerValue {
       settings.odometerMeters = storedOdometerMeters
+    }
+    
+    if let storedMicOn = NSUserDefaults.standardUserDefaults().valueForKey(MicOnKey)?.boolValue {
+      isMicOn = storedMicOn
     }
 
   }

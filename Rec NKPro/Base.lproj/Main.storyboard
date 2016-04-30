@@ -32,13 +32,14 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="OI2-iK-uhs">
-                                <rect key="frame" x="241" y="58" width="118" height="21.5"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="OI2-iK-uhs">
+                                <rect key="frame" x="224" y="58" width="153" height="35"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="720p" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z2F-Gt-3KC">
-                                        <rect key="frame" x="0.0" y="0.0" width="54" height="21.5"/>
+                                        <rect key="frame" x="0.0" y="7" width="54" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="54" id="ZIU-i9-EZK"/>
+                                            <constraint firstAttribute="height" constant="22" id="jbG-Sj-Dkp"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.89391629750000001" blue="0.11041354220000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -46,10 +47,24 @@
                                         <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <size key="shadowOffset" width="-1" height="-1"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0dK-Xd-dhh">
+                                        <rect key="frame" x="59" y="0.0" width="35" height="35"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="35" id="jrN-xM-lA0"/>
+                                            <constraint firstAttribute="width" constant="35" id="y4b-Vi-703"/>
+                                        </constraints>
+                                        <state key="normal" image="Mic">
+                                            <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="toggleMic:" destination="eOE-Im-nve" eventType="touchUpInside" id="ruj-tn-44l"/>
+                                        </connections>
+                                    </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Text" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="72w-Ec-285">
-                                        <rect key="frame" x="64" y="0.0" width="54" height="21.5"/>
+                                        <rect key="frame" x="99" y="7" width="54" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="54" id="clG-k3-Tla"/>
+                                            <constraint firstAttribute="height" constant="22" id="oD2-z5-oeu"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="0.89391629750000001" blue="0.11041354220000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -58,6 +73,10 @@
                                         <size key="shadowOffset" width="-1" height="-1"/>
                                     </label>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="0dK-Xd-dhh" firstAttribute="top" secondItem="OI2-iK-uhs" secondAttribute="top" id="IAf-JO-koF"/>
+                                    <constraint firstAttribute="bottom" secondItem="0dK-Xd-dhh" secondAttribute="bottom" id="edM-2Y-Rq4"/>
+                                </constraints>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gTM-bj-bZc">
                                 <rect key="frame" x="520" y="180" width="75" height="55"/>
@@ -107,7 +126,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87O-aO-cC9">
-                                <rect key="frame" x="255" y="93" width="90" height="75"/>
+                                <rect key="frame" x="255" y="103" width="90" height="75"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="200" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emU-Lb-NdJ">
                                         <rect key="frame" x="6" y="4" width="77" height="51.5"/>
@@ -366,7 +385,7 @@
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="T2h-dV-0Y4" secondAttribute="bottom" id="0jA-NC-uUg"/>
                             <constraint firstItem="FAb-ho-7Zh" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" constant="10" id="1tl-ry-1rd"/>
                             <constraint firstItem="ReQ-ib-nty" firstAttribute="top" secondItem="Mjl-GR-1Mx" secondAttribute="top" id="6vi-ND-2ah"/>
-                            <constraint firstItem="87O-aO-cC9" firstAttribute="top" secondItem="PtV-hu-ps3" secondAttribute="bottom" constant="40" id="8gH-8y-bzL"/>
+                            <constraint firstItem="87O-aO-cC9" firstAttribute="top" secondItem="PtV-hu-ps3" secondAttribute="bottom" constant="50" id="8gH-8y-bzL"/>
                             <constraint firstItem="VN3-rA-N7X" firstAttribute="top" secondItem="mRS-bt-HHr" secondAttribute="bottom" constant="15" id="8o5-qr-kEm"/>
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="VN3-rA-N7X" secondAttribute="bottom" id="8od-W5-BLs"/>
                             <constraint firstItem="ReQ-ib-nty" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="9Kz-Dj-XA2"/>
@@ -404,6 +423,7 @@
                         <outlet property="flashView" destination="ReQ-ib-nty" id="Hsv-9a-hPQ"/>
                         <outlet property="frameRateLabel" destination="fmk-Mx-NGs" id="36a-hR-Iz3"/>
                         <outlet property="layerOpacitySlider" destination="vae-3r-AqZ" id="Q3b-Hz-TKu"/>
+                        <outlet property="micButton" destination="0dK-Xd-dhh" id="o0q-k0-tIA"/>
                         <outlet property="odometerLabel" destination="mRS-bt-HHr" id="f0R-ag-sae"/>
                         <outlet property="photoView" destination="FYr-2J-afa" id="XKd-gw-f2Y"/>
                         <outlet property="previewView" destination="T2h-dV-0Y4" id="zpI-Ac-Hv1"/>
@@ -1595,6 +1615,7 @@
         <image name="FPS" width="20" height="15"/>
         <image name="Icons" width="48" height="48"/>
         <image name="LightSun" width="30" height="30"/>
+        <image name="Mic" width="35" height="35"/>
         <image name="Picture" width="25" height="25"/>
         <image name="Placeholder" width="100" height="68"/>
         <image name="Settings" width="48" height="48"/>
