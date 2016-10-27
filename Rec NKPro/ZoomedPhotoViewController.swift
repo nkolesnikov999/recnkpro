@@ -24,7 +24,7 @@ class ZoomedPhotoViewController: UIViewController {
     }
   }
   
-  override func viewDidAppear(animated: Bool) {
+  override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     //print("imageView: \(imageView.bounds.width), \(imageView.bounds.height)")
   }
@@ -35,17 +35,17 @@ class ZoomedPhotoViewController: UIViewController {
     updateMinZoomScaleForSize(view.bounds.size)
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     
     return true
   }
 
   
-  @IBAction func tapBack(sender: UIButton) {
-    dismissViewControllerAnimated(false, completion: nil)
+  @IBAction func tapBack(_ sender: UIButton) {
+    dismiss(animated: false, completion: nil)
   }
   
-  private func updateMinZoomScaleForSize(size: CGSize) {
+  fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
     
     let widthScale = size.width / imageView.bounds.width
     let heightScale = size.height / imageView.bounds.height
@@ -56,7 +56,7 @@ class ZoomedPhotoViewController: UIViewController {
     scrollView.zoomScale = minScale
   }
   
-  private func updateConstraintsForSize(size: CGSize) {
+  fileprivate func updateConstraintsForSize(_ size: CGSize) {
     
     let yOffset = max(0, (size.height - imageView.frame.height) / 2)
     imageViewTopConstraint.constant = yOffset
@@ -73,11 +73,11 @@ class ZoomedPhotoViewController: UIViewController {
 }
 
 extension ZoomedPhotoViewController: UIScrollViewDelegate {
-  func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+  func viewForZooming(in scrollView: UIScrollView) -> UIView? {
     return imageView
   }
   
-  func scrollViewDidZoom(scrollView: UIScrollView) {
+  func scrollViewDidZoom(_ scrollView: UIScrollView) {
     updateConstraintsForSize(view.bounds.size)
     //print("imageView: \(imageView.bounds.width), \(imageView.bounds.height)")
   }

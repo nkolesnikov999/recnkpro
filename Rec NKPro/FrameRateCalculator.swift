@@ -24,7 +24,7 @@ class FrameRateCalculator {
     frameRate = 0.0
   }
   
-  func calculateFramerateAtTimestamp(timestamp: CMTime) {
+  func calculateFramerateAtTimestamp(_ timestamp: CMTime) {
     previousSecondTimestamps.append(timestamp)
     
     let oneSecond = CMTimeMake(1, 1)

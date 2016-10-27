@@ -19,10 +19,10 @@ class Odometer {
     self.distance = distance
   }
   
-  func distanceUpdate(newLocation: CLLocation) -> Int? {
+  func distanceUpdate(_ newLocation: CLLocation) -> Int? {
     
     if let location = location {
-      let delta = Int(newLocation.distanceFromLocation(location))
+      let delta = Int(newLocation.distance(from: location))
       if delta > Odometer.accuracity {
         self.location = newLocation
         distance += delta
@@ -45,7 +45,7 @@ class Odometer {
   }
   
   func save() {
-    NSUserDefaults.standardUserDefaults().setValue(distance, forKey: OdometerMetersKey)
+    UserDefaults.standard.setValue(distance, forKey: OdometerMetersKey)
   }
 
 }

@@ -32,6 +32,7 @@
 		4CB6F3B61C371E05009BF45B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CB6F3B81C371E05009BF45B /* Main.storyboard */; };
 		4CBF26381C4EBB9D000B79C7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */; };
 		4CBF263A1C4EBE9F000B79C7 /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */; };
+		4CC962871DC2AD6800DF7E94 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4CC962891DC2AD6800DF7E94 /* InfoPlist.strings */; };
 		4CE24E4B1C93437000775F1B /* PicturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE24E4A1C93437000775F1B /* PicturesViewController.swift */; };
 		4CE7324E1CAEAD2B00995440 /* Picture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE7324D1CAEAD2B00995440 /* Picture.swift */; };
 		4CE732501CAECE2400995440 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE7324F1CAECE2400995440 /* UIImage.swift */; };
@@ -79,6 +80,8 @@
 		4CB808301CD3EA3A00330683 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		4CBF26371C4EBB9D000B79C7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CBF26391C4EBE9F000B79C7 /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
+		4CC962881DC2AD6800DF7E94 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4CC9628A1DC2AD6D00DF7E94 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4CCB36EF1CCE88BB006DABF9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		4CCB36F01CCE88BB006DABF9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4CE24E4A1C93437000775F1B /* PicturesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PicturesViewController.swift; sourceTree = "<group>"; };
@@ -127,6 +130,7 @@
 				4C3EECB81BF8FA9E00FE0C4C /* LaunchScreen.storyboard */,
 				4C2773301C37D91600348A99 /* Localizable.strings */,
 				4C3EEC9C1BF8FA6D00FE0C4C /* Info.plist */,
+				4CC962891DC2AD6800DF7E94 /* InfoPlist.strings */,
 				4C3EEC8E1BF8FA6D00FE0C4C /* Products */,
 			);
 			path = "Rec NKPro";
@@ -205,12 +209,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Nikolay Kolesnikov";
 				TargetAttributes = {
 					4C3EEC8C1BF8FA6D00FE0C4C = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = 8SH8NY37S7;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
 								enabled = 1;
@@ -254,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C3EECB91BF8FA9E00FE0C4C /* LaunchScreen.storyboard in Resources */,
+				4CC962871DC2AD6800DF7E94 /* InfoPlist.strings in Resources */,
 				4C2773321C37D91600348A99 /* Localizable.strings in Resources */,
 				4C66F6BA1CB8EC7C00570FE1 /* Text.ru in Resources */,
 				4C3EECB71BF8FA9300FE0C4C /* Assets.xcassets in Resources */,
@@ -329,6 +335,15 @@
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
+		4CC962891DC2AD6800DF7E94 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4CC962881DC2AD6800DF7E94 /* Base */,
+				4CC9628A1DC2AD6D00DF7E94 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -336,6 +351,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -345,8 +361,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -368,7 +386,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -381,6 +399,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -390,8 +409,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -407,9 +428,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -424,12 +446,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = "Rec NKPro/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.nkpro.Rec-NKPro";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -442,11 +465,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = "Rec NKPro/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.nkpro.Rec-NKPro";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

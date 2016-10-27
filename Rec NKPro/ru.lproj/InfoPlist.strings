@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Rec NKPro
+
+  Created by NK on 28.10.16.
+  Copyright © 2016 Nikolay Kolesnikov. All rights reserved.
+*/
+
+
+CFBundleDisplayName = "Поехали";

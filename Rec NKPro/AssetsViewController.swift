@@ -23,7 +23,7 @@ import MobileCoreServices
 class AssetsViewController : UITableViewController, UINavigationControllerDelegate {
   
   var assetItemsList: [AssetItem]!
-  var movieURL: NSURL!
+  var movieURL: URL!
   var freeSpace: Float!
   var typeSpeed: TypeSpeed!
   var activityIndicator: UIActivityIndicatorView!
@@ -33,12 +33,12 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     //print("AssetsViewController.viewDidLoad")
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
-    navigationItem.rightBarButtonItem = editButtonItem()
+    navigationItem.rightBarButtonItem = editButtonItem
     
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.addObserver(self, selector: #selector(AssetsViewController.deviceOrientationDidChange), name: UIDeviceOrientationDidChangeNotification, object: nil)
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.addObserver(self, selector: #selector(AssetsViewController.deviceOrientationDidChange), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
   
-    activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+    activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
     activityIndicator.color = UIColor(red: 252.0/255.0, green: 142.0/255.0, blue: 37.0/255.0, alpha: 1.0)
      activityIndicator.frame.origin.x = (self.view.frame.size.width / 2 - activityIndicator.frame.size.width / 2)
     activityIndicator.frame.origin.y = 150
@@ -48,30 +48,32 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   
   deinit {
     //print("AssetsViewController.deinit")
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
   
     return true
   }
   
-  override func shouldAutorotate() -> Bool {
+  override var shouldAutorotate : Bool {
     return true
   }
   
-  @IBAction func tapBackItem(sender: UIBarButtonItem) {
-    dismissViewControllerAnimated(true, completion: nil)
+  @IBAction func tapBackItem(_ sender: UIBarButtonItem) {
+    dismiss(animated: true, completion: nil)
   }
   
-  @IBAction func tapPhotoItem(sender: UIBarButtonItem) {
-    startMediaBrowserFromViewController(self, usingDelegate: self)
+  @IBAction func tapPhotoItem(_ sender: UIBarButtonItem) {
+    if !startMediaBrowserFromViewController(self, usingDelegate: self) {
+      print("SourceType is not Available")
+    }
   }
   
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "playerSegue" {
-      let playerVC = segue.destinationViewController as! PlayerViewController
+      let playerVC = segue.destination as! PlayerViewController
       if let url = movieURL {
         playerVC.url = url
         playerVC.typeSpeed = typeSpeed
@@ -83,79 +85,82 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     activityIndicator.frame.origin.x = (self.view.frame.size.width / 2 - activityIndicator.frame.size.width / 2)
   }
   
-  func moveMovieToCameraRoll(fileURL: NSURL) {
+  func moveMovieToCameraRoll(_ fileURL: URL) {
     //print("CaptureManager.saveMovieToCameraRoll")
 
     // UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     activityIndicator.startAnimating()
-    self.view.userInteractionEnabled = false
+    self.view.isUserInteractionEnabled = false
     
     // Make sure we have time to finish saving the movie if the app is backgrounded during recording
-    if UIDevice.currentDevice().multitaskingSupported {
-      self.backgroundRecordingID = UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({})
+    if UIDevice.current.isMultitaskingSupported {
+      self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: {})
     }
     
-    PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-      PHAssetCreationRequest.creationRequestForAssetFromVideoAtFileURL(fileURL)
+    PHPhotoLibrary.shared().performChanges({ () -> Void in
+      PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: fileURL)
       }) { (success, error) -> Void in
-        if let nserror = error {
+        if let nserror = error as? NSError {
           print("ERROR: AssetsVC.moveMovieToCameraRoll - \(nserror.userInfo)")
         }
         if success {
           self.removeFile(fileURL)
         }
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        DispatchQueue.main.async(execute: { () -> Void in
           // UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-          self.view.userInteractionEnabled = true
+          self.view.isUserInteractionEnabled = true
           self.activityIndicator.stopAnimating()
         })
     }
   }
   
-  func copyMovieToCameraRoll(fileURL: NSURL) {
+  func copyMovieToCameraRoll(_ fileURL: URL) {
     //print("CaptureManager.saveMovieToCameraRoll")
 
     // UIApplication.sharedApplication().networkActivityIndicatorVisible = true
     activityIndicator.startAnimating()
-    self.view.userInteractionEnabled = false
+    self.view.isUserInteractionEnabled = false
     
     // Make sure we have time to finish saving the movie if the app is backgrounded during recording
-    if UIDevice.currentDevice().multitaskingSupported {
-      self.backgroundRecordingID = UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({})
+    if UIDevice.current.isMultitaskingSupported {
+      self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: {})
     }
     
-    PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-      PHAssetCreationRequest.creationRequestForAssetFromVideoAtFileURL(fileURL)
+    PHPhotoLibrary.shared().performChanges({ () -> Void in
+      PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: fileURL)
       }) { (success, error) -> Void in
-        if let nserror = error {
+        if let nserror = error as? NSError {
           print("ERROR: AssetsVC.copyMovieToCameraRoll - \(nserror.userInfo)")
         }
-        if UIDevice.currentDevice().multitaskingSupported {
-          UIApplication.sharedApplication().endBackgroundTask(self.backgroundRecordingID)
+        if UIDevice.current.isMultitaskingSupported {
+          UIApplication.shared.endBackgroundTask(self.backgroundRecordingID)
           self.backgroundRecordingID = UIBackgroundTaskInvalid
         }
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        DispatchQueue.main.async(execute: { () -> Void in
           // UIApplication.sharedApplication().networkActivityIndicatorVisible = false
           self.activityIndicator.stopAnimating()
-          self.view.userInteractionEnabled = true
+          self.view.isUserInteractionEnabled = true
         })
     }
   }
   
-  func removeFile(fileURL: NSURL) {
+ 
+
+  
+  func removeFile(_ fileURL: URL) {
     //print("AssetsVC.removeFile")
     
-    let fileManager = NSFileManager.defaultManager()
+    let fileManager = FileManager.default
     let filePath = fileURL.path
-    if fileManager.fileExistsAtPath(filePath!) {
+    if fileManager.fileExists(atPath: filePath) {
       do {
-        try fileManager.removeItemAtPath(filePath!)
+        try fileManager.removeItem(atPath: filePath)
         if let bytes = CameraViewController.deviceRemainingFreeSpaceInBytes() {
           let hMBytes = Int(bytes/10_0000_000)
           freeSpace = Float(hMBytes)/10
         }
-        if UIDevice.currentDevice().multitaskingSupported {
-          UIApplication.sharedApplication().endBackgroundTask(self.backgroundRecordingID)
+        if UIDevice.current.isMultitaskingSupported {
+          UIApplication.shared.endBackgroundTask(self.backgroundRecordingID)
           self.backgroundRecordingID = UIBackgroundTaskInvalid
         }
       } catch {
@@ -165,35 +170,35 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     }
   }
   
-  func startMediaBrowserFromViewController(viewController: UIViewController, usingDelegate delegate: protocol<UINavigationControllerDelegate, UIImagePickerControllerDelegate>) -> Bool {
+  func startMediaBrowserFromViewController(_ viewController: UIViewController, usingDelegate delegate: UINavigationControllerDelegate & UIImagePickerControllerDelegate) -> Bool {
     
-    if UIImagePickerController.isSourceTypeAvailable(.SavedPhotosAlbum) == false {
+    if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) == false {
       return false
     }
     
     let mediaUI = PickerViewController()
-    mediaUI.sourceType = .SavedPhotosAlbum
+    mediaUI.sourceType = .savedPhotosAlbum
     mediaUI.mediaTypes = [kUTTypeMovie as String]
     mediaUI.allowsEditing = true
     mediaUI.delegate = delegate
     
-    presentViewController(mediaUI, animated: true, completion: nil)
+    present(mediaUI, animated: true, completion: nil)
     return true
   }
   
-  func checkFreeSpace(asset: AssetItem) -> Bool {
+  func checkFreeSpace(_ asset: AssetItem) -> Bool {
     var success = false
     let assetSize = Float(asset.size) / 1_000_000_000
     if assetSize > freeSpace - 0.2 {
       let alert = UIAlertController(
         title: NSLocalizedString("No Disk Space", comment: "AssetsVC Error-Title: No Disk Space"),
         message: NSLocalizedString("Please, Clear Storage", comment: "AssetsVC Error-Message: Please, Clear Storage"),
-        preferredStyle: .Alert)
-      let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
+        preferredStyle: .alert)
+      let cancelAction = UIAlertAction(title: "OK", style: .default) { (action: UIAlertAction!) -> Void in
         
       }
       alert.addAction(cancelAction)
-      presentViewController(alert, animated: true, completion: nil)
+      present(alert, animated: true, completion: nil)
       
     } else {
       success = true
@@ -202,29 +207,29 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   }
   
   func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
       
     }
     alert.addAction(cancelAction)
-    self.presentViewController(alert, animated: true, completion: nil)
+    self.present(alert, animated: true, completion: nil)
   }
   
-  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
   }
   
-  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return assetItemsList.count
   }
   
-  override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     //print("AssetsVC.cellForRowAtIndexPath: \(indexPath.row)")
-    let cell = tableView.dequeueReusableCellWithIdentifier("AssetCell", forIndexPath: indexPath) as UITableViewCell
-    let asset = assetItemsList[indexPath.row]
+    let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell", for: indexPath) as UITableViewCell
+    let asset = assetItemsList[(indexPath as NSIndexPath).row]
     
-    let words = asset.title.componentsSeparatedByString(".")
+    let words = asset.title.components(separatedBy: ".")
     if words.count == 2 {
       cell.textLabel?.text = words[0]
     } else {
@@ -239,64 +244,64 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     return cell
   }
   
-  override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-    if editingStyle == UITableViewCellEditingStyle.Delete {
-      let asset = assetItemsList[indexPath.row]
+  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    if editingStyle == UITableViewCellEditingStyle.delete {
+      let asset = assetItemsList[(indexPath as NSIndexPath).row]
       let movieURL = asset.url
-      removeFile(movieURL)
-      assetItemsList.removeAtIndex(indexPath.row)
-      tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+      removeFile(movieURL as URL)
+      assetItemsList.remove(at: (indexPath as NSIndexPath).row)
+      tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
     }
   }
   
-  override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
     
     return true
   }
   
-  override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+  override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
     
-    let asset = assetItemsList[indexPath.row]
+    let asset = assetItemsList[(indexPath as NSIndexPath).row]
     let movieURL = asset.url
-    let optionMenu = UIAlertController(title: asset.title, message: nil, preferredStyle: .ActionSheet)
+    let optionMenu = UIAlertController(title: asset.title, message: nil, preferredStyle: .actionSheet)
     
     let moveAction = UIAlertAction(title: NSLocalizedString("Move to Photo", comment: "AssetsVC: Move to Photo"),
-      style: .Default, handler: {
+      style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
       
         if IAPHelper.iapHelper.setFullVersion {
           if self.checkFreeSpace(asset) {
-            self.moveMovieToCameraRoll(movieURL)
-            self.assetItemsList.removeAtIndex(indexPath.row)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            self.moveMovieToCameraRoll(movieURL as URL)
+            self.assetItemsList.remove(at: (indexPath as NSIndexPath).row)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
           }
         } else {
           self.showAlert()
         }
     })
   
-    let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
+    let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
       if IAPHelper.iapHelper.setFullVersion {
         if self.checkFreeSpace(asset) {
-          self.copyMovieToCameraRoll(movieURL)
+          self.copyMovieToCameraRoll(movieURL as URL)
         }
       } else {
         self.showAlert()
       }
     })
     let deleteAction = UIAlertAction(title: NSLocalizedString("Delete", comment: "AssetsVC: Delete"),
-      style: .Default, handler: {
+      style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Delete file
-      self.removeFile(movieURL)
-      self.assetItemsList.removeAtIndex(indexPath.row)
-      tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+      self.removeFile(movieURL as URL)
+      self.assetItemsList.remove(at: (indexPath as NSIndexPath).row)
+      tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
     })
     
     let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "AssetsVC: Cancel"),
-      style: .Cancel, handler: {
+      style: .cancel, handler: {
       (alert: UIAlertAction!) -> Void in
     })
     
@@ -308,20 +313,20 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     optionMenu.view.tintColor = UIColor(red: 128.0/255.0, green: 0, blue: 128.0/255.0, alpha: 1)
     
     if let popoverController = optionMenu.popoverPresentationController {
-      let cell = tableView.cellForRowAtIndexPath(indexPath)
+      let cell = tableView.cellForRow(at: indexPath)
       popoverController.sourceView = cell
       if let cell = cell {
         popoverController.sourceRect = cell.bounds
       }
     }
     
-    self.presentViewController(optionMenu, animated: true, completion: nil)
+    self.present(optionMenu, animated: true, completion: nil)
   }
   
-  override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+  override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
     
-    let asset = assetItemsList[indexPath.row]
-    movieURL = asset.url
+    let asset = assetItemsList[(indexPath as NSIndexPath).row]
+    movieURL = asset.url as URL!
     
     return indexPath
   }
@@ -330,7 +335,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
 // MARK: - UIScrollViewDelegate
 
 extension AssetsViewController {
-  override func scrollViewDidScroll(scrollView: UIScrollView) {
+  override func scrollViewDidScroll(_ scrollView: UIScrollView) {
     //print("\(scrollView.contentOffset)")
     activityIndicator.frame.origin.y = scrollView.contentOffset.y + 150
   }
@@ -341,15 +346,15 @@ extension AssetsViewController {
 extension AssetsViewController: UIImagePickerControllerDelegate {
   
   
-  func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
     
     let mediaType = info[UIImagePickerControllerMediaType] as! NSString
     
-    dismissViewControllerAnimated(true) {
+    dismiss(animated: true) {
       
       if mediaType == kUTTypeMovie {
-        self.movieURL = info[UIImagePickerControllerMediaURL] as! NSURL
-        self.performSegueWithIdentifier("playerSegue", sender: nil)
+        self.movieURL = info[UIImagePickerControllerMediaURL] as! URL
+        self.performSegue(withIdentifier: "playerSegue", sender: nil)
       }
     }
   }

@@ -25,7 +25,7 @@ protocol SettingsControllerDelegate: class {
 
 class SettingsViewController: UITableViewController {
   
-  private var fullVersionProduct: SKProduct?
+  fileprivate var fullVersionProduct: SKProduct?
   
   weak var delegate: SettingsControllerDelegate?
   var settings: Settings!
@@ -57,13 +57,13 @@ class SettingsViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    let modelName = UIDevice.currentDevice().modelName
+    let modelName = UIDevice.current.modelName
     
     if modelName == "iPhone 4s" {
       //qualityModeSegment.removeSegmentAtIndex(2, animated: false)
     }
     
-    fullVersionButton.enabled = false
+    fullVersionButton.isEnabled = false
 
     logotypeTextField.delegate = self
     
@@ -73,7 +73,7 @@ class SettingsViewController: UITableViewController {
     //settings.odometerMeters = 1_000_001
     
     requestIAPProducts()
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SettingsViewController.handlePurchaseNotification(_:)), name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.handlePurchaseNotification(_:)), name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
     checkStateRestoreButton()
     
     oldSettingNumberVideo = settings.maxNumberVideo
@@ -84,34 +84,34 @@ class SettingsViewController: UITableViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     
     return true
   }
   
   deinit {
-    NSNotificationCenter.defaultCenter().removeObserver(self, name: IAPHelper.IAPHelperPurchaseNotification, object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
   }
   
   // MARK: - Actions
   
-  @IBAction func tapBackButton(sender: UIBarButtonItem) {
+  @IBAction func tapBackButton(_ sender: UIBarButtonItem) {
     
     if settings.maxNumberVideo < numberAssetFiles  && IAPHelper.iapHelper.setFullVersion {
       
-      let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing video will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
-      let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+      let alert = UIAlertController(title: NSLocalizedString("Warning!", comment: "SettingVC Error-Title"), message: NSLocalizedString("Existing video will be deleted. Do you want to continue?", comment: "SettingVC Error-Message"), preferredStyle: .alert)
+      let agreeAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
         //print("OK")
         defer {
-          dispatch_async(dispatch_get_main_queue(), { () -> Void in
+          DispatchQueue.main.async(execute: { () -> Void in
             self.delegate?.saveSettings()
-            self.dismissViewControllerAnimated(false, completion: nil)
+            self.dismiss(animated: false, completion: nil)
           })
         }
       }
-      let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .Default) { (action: UIAlertAction!) -> Void in
+      let cancelAction = UIAlertAction(title: NSLocalizedString("NO", comment: "SettingVC Error-NO"), style: .default) { (action: UIAlertAction!) -> Void in
         defer {
-          dispatch_async(dispatch_get_main_queue(), { () -> Void in
+          DispatchQueue.main.async(execute: { () -> Void in
             self.settings.maxNumberVideo = self.oldSettingNumberVideo
             self.maxNumberFilesLabel.text = "\(self.oldSettingNumberVideo)"
             self.maxNumberFilesSlider.value = Float(self.oldSettingNumberVideo)
@@ -121,20 +121,20 @@ class SettingsViewController: UITableViewController {
       
       alert.addAction(agreeAction)
       alert.addAction(cancelAction)
-      presentViewController(alert, animated: true, completion: nil)
+      present(alert, animated: true, completion: nil)
     } else {
       if settings.maxRecordingTime > 5 && !IAPHelper.iapHelper.setFullVersion {
         settings.maxRecordingTime = 5
       }
       self.delegate?.saveSettings()
-      self.dismissViewControllerAnimated(true, completion: nil)
+      self.dismiss(animated: true, completion: nil)
     }
 
   }
 
-  @IBAction func selectQualityMode(sender: UISegmentedControl) {
+  @IBAction func selectQualityMode(_ sender: UISegmentedControl) {
     
-    if settings.typeCamera == .Back {
+    if settings.typeCamera == .back {
       settings.backQualityMode = QualityMode(rawValue:  sender.selectedSegmentIndex)!
     } else {
       settings.frontQualityMode = QualityMode(rawValue:  sender.selectedSegmentIndex)!
@@ -142,10 +142,10 @@ class SettingsViewController: UITableViewController {
 
   }
   
-  @IBAction func selectTypeCamera(sender: UISegmentedControl) {
+  @IBAction func selectTypeCamera(_ sender: UISegmentedControl) {
     settings.typeCamera = TypeCamera(rawValue: sender.selectedSegmentIndex)!
     
-    if settings.typeCamera == .Back {
+    if settings.typeCamera == .back {
       qualityModeSegment.selectedSegmentIndex = settings.backQualityMode.rawValue
     } else {
       qualityModeSegment.selectedSegmentIndex = settings.frontQualityMode.rawValue
@@ -153,15 +153,15 @@ class SettingsViewController: UITableViewController {
     
   }
   
-  @IBAction func selectAutofocusing(sender: UISwitch) {
-    settings.autofocusing = sender.on
+  @IBAction func selectAutofocusing(_ sender: UISwitch) {
+    settings.autofocusing = sender.isOn
   }
   
-  @IBAction func selectTextOnVideo(sender: UISwitch) {
-    settings.textOnVideo = sender.on
+  @IBAction func selectTextOnVideo(_ sender: UISwitch) {
+    settings.textOnVideo = sender.isOn
   }
   
-  @IBAction func setMinInterval(sender: UISlider) {
+  @IBAction func setMinInterval(_ sender: UISlider) {
     let partValue = sender.value/10
     let value = Int(partValue) * 10
     sender.value = Float(value)
@@ -169,23 +169,23 @@ class SettingsViewController: UITableViewController {
     settings.minIntervalLocations = value
   }
   
-  @IBAction func setTypeSpeed(sender: UISegmentedControl) {
+  @IBAction func setTypeSpeed(_ sender: UISegmentedControl) {
     settings.typeSpeed = TypeSpeed(rawValue: sender.selectedSegmentIndex)!
   }
   
-  @IBAction func setMaxRecordingTime(sender: UISlider) {
+  @IBAction func setMaxRecordingTime(_ sender: UISlider) {
     
     if !IAPHelper.iapHelper.setFullVersion {
       sender.value = 5.0
       if !alertMaxTime {
         alertMaxTime = true
-        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
           self.alertMaxTime = false
         }
         alert.addAction(cancelAction)
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
       }
 
     } else {
@@ -197,7 +197,7 @@ class SettingsViewController: UITableViewController {
     }
   }
   
-  @IBAction func setMaxNumberFiles(sender: UISlider) {
+  @IBAction func setMaxNumberFiles(_ sender: UISlider) {
     //print("valueChange")
     
     if Int(sender.value) > settings.maxNumberVideo && !IAPHelper.iapHelper.setFullVersion {
@@ -205,14 +205,14 @@ class SettingsViewController: UITableViewController {
       
       if !alertMaxVideo {
         alertMaxVideo = true
-        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .Alert)
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
           self.alertMaxVideo = false
         }
         
         alert.addAction(cancelAction)
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
       }
 
     } else {
@@ -224,7 +224,7 @@ class SettingsViewController: UITableViewController {
     
   }
   
-  @IBAction func setIntervalPictures(sender: UISlider) {
+  @IBAction func setIntervalPictures(_ sender: UISlider) {
     let partValue = sender.value/10
     let value = Int(partValue) * 10
     sender.value = Float(value)
@@ -233,23 +233,23 @@ class SettingsViewController: UITableViewController {
     settings.intervalPictures = value
   }
   
-  @IBAction func resetOdometer(sender: AnyObject) {
+  @IBAction func resetOdometer(_ sender: AnyObject) {
     settings.odometerMeters = 0
   }
   
-  @IBAction func buyFullVersion(sender: UIButton) {
+  @IBAction func buyFullVersion(_ sender: UIButton) {
     // print("Logo")
     guard let fullVersionProduct = fullVersionProduct else { return }
     IAPHelper.iapHelper.buyProduct(fullVersionProduct)
   }
 
   
-  @IBAction func restorePurchases(sender: UIButton) {
+  @IBAction func restorePurchases(_ sender: UIButton) {
     // print("Restore")
     IAPHelper.iapHelper.restorePurchases()
   }
   
-  @IBAction func setDefaultSettings(sender: AnyObject) {
+  @IBAction func setDefaultSettings(_ sender: AnyObject) {
     let new = Settings()
     
     settings.backQualityMode = new.backQualityMode
@@ -270,20 +270,20 @@ class SettingsViewController: UITableViewController {
 
     typeCameraSegment.selectedSegmentIndex = settings.typeCamera.rawValue
     
-    if settings.typeCamera == .Back {
+    if settings.typeCamera == .back {
       qualityModeSegment.selectedSegmentIndex = settings.backQualityMode.rawValue
     } else {
       qualityModeSegment.selectedSegmentIndex = settings.frontQualityMode.rawValue
     }
     
-    autofocusingSwitch.on = settings.autofocusing
+    autofocusingSwitch.isOn = settings.autofocusing
     minIntervalSlider.value = Float(settings.minIntervalLocations)
     typeSpeedSegment.selectedSegmentIndex = settings.typeSpeed.rawValue
     maxRecordingTimeSlider.value = Float(settings.maxRecordingTime)
     maxNumberFilesSlider.value = Float(settings.maxNumberVideo)
     intervalPicturesSlider.value = Float(settings.intervalPictures)
     logotypeTextField.text = settings.logotype
-    textOnVideoSwitch.on = settings.textOnVideo
+    textOnVideoSwitch.isOn = settings.textOnVideo
     
     minIntervalLabel.text = String(format: NSLocalizedString("%d m", comment: "SettingsVC Format for minIntervalLabel"), settings.minIntervalLocations)
     maxRecordingTimeLabel.text = String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), settings.maxRecordingTime)
@@ -303,21 +303,21 @@ class SettingsViewController: UITableViewController {
         }.first
       }
       
-      if self.fullVersionProduct != .None {
-        self.fullVersionButton.enabled = true
+      if self.fullVersionProduct != .none {
+        self.fullVersionButton.isEnabled = true
         
-        let priceFormatter = NSNumberFormatter()
-        priceFormatter.numberStyle = .CurrencyStyle
+        let priceFormatter = NumberFormatter()
+        priceFormatter.numberStyle = .currency
         priceFormatter.locale = self.fullVersionProduct?.priceLocale
         
         if let price = self.fullVersionProduct?.price {
-          if let strPrice = priceFormatter.stringFromNumber(price) {
+          if let strPrice = priceFormatter.string(from: price) {
             self.price = strPrice
           }
         }
         
         let title = NSLocalizedString("Full Version - ", comment: "SettingsVC: Full Version") + self.price
-        self.fullVersionButton.setTitle(title, forState: .Normal)
+        self.fullVersionButton.setTitle(title, for: UIControlState())
       }
       
       
@@ -327,7 +327,7 @@ class SettingsViewController: UITableViewController {
     
   }
   
-  func handlePurchaseNotification(notification: NSNotification) {
+  func handlePurchaseNotification(_ notification: Notification) {
     // print("handlePurchaseNotification")
     if let productID = notification.object as? String {
       
@@ -336,7 +336,7 @@ class SettingsViewController: UITableViewController {
       if productID == RecPurchase.FullVersion.productId {
         IAPHelper.iapHelper.setFullVersion = true
         IAPHelper.iapHelper.saveSettings(IAPHelper.FullVersionKey)
-        fullVersionButton.enabled = false
+        fullVersionButton.isEnabled = false
       } else {
         print("No such product")
       }
@@ -346,14 +346,14 @@ class SettingsViewController: UITableViewController {
   
   func checkStateRestoreButton() {
     
-    restorePurchasesButton.enabled = !(IAPHelper.iapHelper.setFullVersion)
+    restorePurchasesButton.isEnabled = !(IAPHelper.iapHelper.setFullVersion)
   
   }
   
 }
 
 extension SettingsViewController: UITextFieldDelegate {
-  func textFieldShouldReturn(textField: UITextField) -> Bool {
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     settings.logotype = textField.text!
     textField.resignFirstResponder()
     return true
@@ -368,7 +368,7 @@ public extension UIDevice {
     uname(&systemInfo)
     let machineMirror = Mirror(reflecting: systemInfo.machine)
     let identifier = machineMirror.children.reduce("") { identifier, element in
-      guard let value = element.value as? Int8 where value != 0 else { return identifier }
+      guard let value = element.value as? Int8 , value != 0 else { return identifier }
       return identifier + String(UnicodeScalar(UInt8(value)))
     }
     

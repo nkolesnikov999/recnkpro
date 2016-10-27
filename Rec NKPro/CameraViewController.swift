@@ -49,39 +49,39 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var isMicOn = true
   var freeSpace: Float = 0
   
-  var recordingTimer: NSTimer?
-  var photoTimer: NSTimer?
-  var updateTimeTimer: NSTimer?
-  var updateLocationTimer: NSTimer?
-  var updateBatteryAndDiskTimer: NSTimer?
-  var removeControlViewTimer: NSTimer?
+  var recordingTimer: Timer?
+  var photoTimer: Timer?
+  var updateTimeTimer: Timer?
+  var updateLocationTimer: Timer?
+  var updateBatteryAndDiskTimer: Timer?
+  var removeControlViewTimer: Timer?
   
   var callCenter: CTCallCenter!
   var assetItemsList: [AssetItem]!
   var picturesCount: Int = 0
   var odometer: Odometer!
   
-  let kUpdateTimeInterval: NSTimeInterval = 1.0
-  let kUpdateLocationInterval: NSTimeInterval = 3.0
-  let kUpdateBatteryAndDiskInterval: NSTimeInterval = 30.0
-  let kRemoveControlViewInterval: NSTimeInterval = 10.0
+  let kUpdateTimeInterval: TimeInterval = 1.0
+  let kUpdateLocationInterval: TimeInterval = 3.0
+  let kUpdateBatteryAndDiskInterval: TimeInterval = 30.0
+  let kRemoveControlViewInterval: TimeInterval = 10.0
   
   var iconsImage: UIImage? {
     didSet {
       var tmpImage: UIImage?
       if !isPhotoImage {
-        tmpImage = backButton.imageForState(.Normal)
+        tmpImage = backButton.image(for: UIControlState())
         isPhotoImage = true
       }
       
       if let image = iconsImage {
-        backButton.setImage(image, forState: .Normal)
+        backButton.setImage(image, for: UIControlState())
         delay(4) {
-          self.backButton.setImage(tmpImage, forState: .Normal)
+          self.backButton.setImage(tmpImage, for: UIControlState())
           self.isPhotoImage = false
         }
       } else {
-        backButton.setImage(tmpImage, forState: .Normal)
+        backButton.setImage(tmpImage, for: UIControlState())
       }
     }
   }
@@ -90,16 +90,16 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     didSet {
       if let picture = picture {
         PicturesList.pList.pictures.append(picture)
-        PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+        PicturesList.pList.pictures.sort(by: { $0.date.compare($1.date as Date) == ComparisonResult.orderedDescending })
         PicturesList.pList.savePictures()
         picturesCount = PicturesList.pList.pictures.count
       }
     }
   }
   
-  func delay(time: Double, completionBlock: () -> ()) {
-    let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * time))
-    dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+  func delay(_ time: Double, completionBlock: @escaping () -> ()) {
+    let dispatchTime = DispatchTime.now() + Double(Int64(Double(NSEC_PER_SEC) * time)) / Double(NSEC_PER_SEC)
+    DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
       completionBlock()
     }
   }
@@ -130,11 +130,11 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   //MARK: - View Loading
   
   class func deviceRemainingFreeSpaceInBytes() -> Int64? {
-    let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-    let defaultManager = NSFileManager.defaultManager()
+    let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+    let defaultManager = FileManager.default
     do {
-      let systemAttributes = try defaultManager.attributesOfFileSystemForPath((documentDirectoryPath.last as String?)!)
-      let freeSize = (systemAttributes[NSFileSystemFreeSize] as? NSNumber)?.longLongValue
+      let systemAttributes = try defaultManager.attributesOfFileSystem(forPath: (documentDirectoryPath.last as String?)!)
+      let freeSize = (systemAttributes[FileAttributeKey.systemFreeSize] as? NSNumber)?.int64Value
       return freeSize
     } catch {
       return nil
@@ -145,25 +145,25 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("CameraVC.viewDidLoad")
     super.viewDidLoad()
     
-    resolutionLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    resolutionLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     resolutionLabel.layer.cornerRadius = 10.0
     
-    textLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    textLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     textLabel.layer.cornerRadius = 10.0
     
-    timeLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    timeLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     timeLabel.layer.cornerRadius = 10.0
     
-    odometerLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    odometerLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     odometerLabel.layer.cornerRadius = 10.0
     
     // Keep track of changes to the device orientation so we can update the capture manager
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.addObserver(self, selector: #selector(CameraViewController.deviceOrientationDidChange), name: UIDeviceOrientationDidChangeNotification, object: nil)
-    notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationDidBecomeActive(_:)), name: UIApplicationDidBecomeActiveNotification, object: UIApplication.sharedApplication())
-    notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationWillResignActive(_:)), name: UIApplicationWillResignActiveNotification, object: UIApplication.sharedApplication())
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.deviceOrientationDidChange), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationDidBecomeActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive, object: UIApplication.shared)
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationWillResignActive(_:)), name: NSNotification.Name.UIApplicationWillResignActive, object: UIApplication.shared)
     
-    UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
+    UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     
     // Load settings if they are not we'll use defaults that was define in Settings
     loadSettings()
@@ -174,17 +174,17 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
     
     speedLabelNoData()
-    speedView.hidden = false
+    speedView.isHidden = false
     
     timeLabel.text = "2016/01/01 00:00:00"
     batteryLabel.text = "80"
     fillDiskLabel.text = "0.0"
     
     frameRateLabel.text = "0.0"
-    frameRateLabel.textColor = UIColor.redColor()
+    frameRateLabel.textColor = UIColor.red
 
-    recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
-    micButton.setImage(UIImage(named: isMicOn ? "Mic" : "NoMic"), forState: .Normal)
+    recordButton.setImage(UIImage(named: "StartNormal"), for: UIControlState())
+    micButton.setImage(UIImage(named: isMicOn ? "Mic" : "NoMic"), for: UIControlState())
 
     //controlView.hidden = true
     
@@ -223,12 +223,12 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
 
   
-  override func viewDidAppear(animated: Bool) {
+  override func viewDidAppear(_ animated: Bool) {
     //print("CameraVC.viewDidAppear")
     super.viewDidAppear(animated)
     
     // Disable the idle timer for CameraVC
-    UIApplication.sharedApplication().idleTimerDisabled = true
+    UIApplication.shared.isIdleTimerDisabled = true
     
     createOdometerLabel(settings.odometerMeters)
     timeLabel.text = ""
@@ -243,11 +243,11 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     setResolutionAndTextLabels()
     
     // Start update timers label
-    updateTimeTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateTimeInterval, target: self, selector: #selector(CameraViewController.timeLabelUpdate), userInfo: nil, repeats: true)
-    updateBatteryAndDiskTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateBatteryAndDiskInterval, target: self, selector: #selector(CameraViewController.updateBatteryAndDiskLabels), userInfo: nil, repeats: true)
+    updateTimeTimer = Timer.scheduledTimer(timeInterval: kUpdateTimeInterval, target: self, selector: #selector(CameraViewController.timeLabelUpdate), userInfo: nil, repeats: true)
+    updateBatteryAndDiskTimer = Timer.scheduledTimer(timeInterval: kUpdateBatteryAndDiskInterval, target: self, selector: #selector(CameraViewController.updateBatteryAndDiskLabels), userInfo: nil, repeats: true)
     removeControlViewTimer = nil
     
-    controlView.hidden = false
+    controlView.isHidden = false
     
     createMovieContents()
     picturesCount = PicturesList.pList.pictures.count
@@ -255,8 +255,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     if let captureManager = captureManager {
       captureManager.startUpdatingLocation()
       if !captureManager.isAudioInput {
-        micButton.setImage(UIImage(named: "NoMic"), forState: .Normal)
-        micButton.enabled = false
+        micButton.setImage(UIImage(named: "NoMic"), for: UIControlState())
+        micButton.isEnabled = false
       }
     } else {
       print("CaptureManager didn't create!")
@@ -264,7 +264,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
 
   }
   
-  override func viewWillDisappear(animated: Bool) {
+  override func viewWillDisappear(_ animated: Bool) {
     //print("CameraVC.viewWillDisappear")
     super.viewWillDisappear(animated)
     
@@ -276,7 +276,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     odometer.stop()
     
-    UIApplication.sharedApplication().idleTimerDisabled = false
+    UIApplication.shared.isIdleTimerDisabled = false
     
     //Stop update timer label
     stopTimer(&updateTimeTimer)
@@ -291,19 +291,19 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     cleanup()
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     //print("CameraVC.prefersStatusBarHidden")
     return true
   }
   
   
-  override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+  override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
     //print("CameraVC.supportedInterfaceOrientations")
-    return .All
+    return .all
   }
   
   
-  override func shouldAutorotate() -> Bool {
+  override var shouldAutorotate : Bool {
     //print("CameraVC.shouldAutorotate")
     if let cm = captureManager {
       return !cm.recording
@@ -314,10 +314,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   func cleanup() {
     //print("CameraVC.cleanup")
     
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
-    notificationCenter.removeObserver(self, name: UIApplicationDidBecomeActiveNotification, object: UIApplication.sharedApplication())
-    notificationCenter.removeObserver(self, name: UIApplicationWillResignActiveNotification, object: UIApplication.sharedApplication())
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+    notificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: UIApplication.shared)
+    notificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationWillResignActive, object: UIApplication.shared)
 
     
     // Stop and tear down the capture session
@@ -331,7 +331,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     stopTimer(&removeControlViewTimer)
   }
   
-  func applicationDidBecomeActive(notification: NSNotification) {
+  func applicationDidBecomeActive(_ notification: Notification) {
     //print("CameraVC.applicationDidBecomeActive")
     // For performance reasons, we manually pause/resume the session when saving a recording.
     // If we try to resume the session in the background it will fail. Resume the session here as well to ensure we will succeed.
@@ -342,7 +342,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
   }
   
-  func applicationWillResignActive(notification: NSNotification) {
+  func applicationWillResignActive(_ notification: Notification) {
     //print("CameraVC.applicationWillResignActive")
     if let cm = captureManager {
       if cm.recording {
@@ -357,7 +357,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   func deviceOrientationDidChange() {
     //print("CameraVC.deviceOrientationDidChange")
     
-    let orientation = UIDevice.currentDevice().orientation
+    let orientation = UIDevice.current.orientation
     
     //print("DEVICE ORIENTATION: \(orientation.rawValue)")
     
@@ -366,13 +366,13 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
         var angle: CGFloat = 0.0
         
         switch orientation {
-        case UIDeviceOrientation.LandscapeLeft:
+        case UIDeviceOrientation.landscapeLeft:
           angle = CGFloat(-M_PI_2)
-        case UIDeviceOrientation.LandscapeRight:
+        case UIDeviceOrientation.landscapeRight:
           angle = CGFloat(M_PI_2)
-        case UIDeviceOrientation.PortraitUpsideDown:
+        case UIDeviceOrientation.portraitUpsideDown:
           angle = CGFloat(M_PI)
-        case UIDeviceOrientation.Portrait:
+        case UIDeviceOrientation.portrait:
           angle = 0.0
         default :
           return
@@ -395,10 +395,10 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   //MARK: - IBActions
   
-  @IBAction func toggleRecording(sender: UIButton) {
+  @IBAction func toggleRecording(_ sender: UIButton) {
     //print("CameraVC.toggleRecording")
     // Wait for the recording to start/stop before re-enabling the record button.
-    recordButton.enabled = false
+    recordButton.isEnabled = false
     if let cm = captureManager {
       if cm.recording {
         // The recordingWill/DidStop delegate methods will fire asynchronously in response to this call
@@ -425,7 +425,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   func checkFilesStopRecordingDueSpaceLimit() {
     if assetItemsList.count <= 1 {
       drawControlView()
-      recordButton.enabled = false
+      recordButton.isEnabled = false
       if let cm = captureManager {
         if cm.recording {
           // The recordingWill/DidStop delegate methods will fire asynchronously in response to this call
@@ -436,16 +436,16 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       let alert = UIAlertController(
         title: NSLocalizedString("No Disk Space", comment: "CameraVC Error-Title: No Disk Space"),
         message: NSLocalizedString("Please, Clear Storage", comment: "CameraVC Error-Message: Please, Clear Storage"),
-        preferredStyle: .Alert)
-      let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
+        preferredStyle: .alert)
+      let cancelAction = UIAlertAction(title: "OK", style: .default) { (action: UIAlertAction!) -> Void in
         
       }
       alert.addAction(cancelAction)
-      presentViewController(alert, animated: true, completion: nil)
+      present(alert, animated: true, completion: nil)
     } else {
       let asset = assetItemsList[0]
-      removeFile(asset.url)
-      assetItemsList.removeAtIndex(0)
+      removeFile(asset.url as URL)
+      assetItemsList.remove(at: 0)
     }
   }
   
@@ -453,17 +453,17 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     while assetItemsList.count > settings.maxNumberVideo { // <=========
       let asset = assetItemsList[0]
-      removeFile(asset.url)
-      assetItemsList.removeAtIndex(0)
+      removeFile(asset.url as URL)
+      assetItemsList.remove(at: 0)
     }
     
   }
   
-  @IBAction func changeOpacity(sender: UISlider) {
+  @IBAction func changeOpacity(_ sender: UISlider) {
     layer?.opacity = sender.value
     
-    NSUserDefaults.standardUserDefaults().setValue(sender.value, forKey: LayerOpacityValueKey)
-    NSUserDefaults.standardUserDefaults().synchronize()
+    UserDefaults.standard.setValue(sender.value, forKey: LayerOpacityValueKey)
+    UserDefaults.standard.synchronize()
     
     if let capture = captureManager {
       if capture.recording && removeControlViewTimer != nil {
@@ -472,7 +472,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
   }
   
-  @IBAction func tapGesture(sender: UITapGestureRecognizer) {
+  @IBAction func tapGesture(_ sender: UITapGestureRecognizer) {
     // print("TAP")
     if let cm = captureManager {
       if cm.recording {
@@ -486,24 +486,24 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
 
   
-  func photoLong(sender: UITapGestureRecognizer) {
+  func photoLong(_ sender: UITapGestureRecognizer) {
     //print("LONG Tap")
-    if sender.state == .Began {
+    if sender.state == .began {
       //print("LongTapBegan")
       if picturesCount < maxNumberPictures || IAPHelper.iapHelper.setFullVersion {
-        photoTimer = NSTimer.scheduledTimerWithTimeInterval(Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
+        photoTimer = Timer.scheduledTimer(timeInterval: Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
         self.flashView.alpha = 1
-        UIView.animateWithDuration(0.2) {
+        UIView.animate(withDuration: 0.2, animations: {
           self.flashView.alpha = 0
-        }
+        }) 
       }
       takeAutoPhoto()
     }
   }
   
-  func photoTap(sender: UITapGestureRecognizer) {
+  func photoTap(_ sender: UITapGestureRecognizer) {
     //print("Photo Tap")
-    if sender.state == .Ended {
+    if sender.state == .ended {
       
       if photoTimer != nil {
         // print("Stop Auto")
@@ -516,9 +516,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
         showAlert()
       } else {
         self.flashView.alpha = 1
-        UIView.animateWithDuration(0.2) {
+        UIView.animate(withDuration: 0.2, animations: {
           self.flashView.alpha = 0
-        }
+        }) 
         photoView.image = UIImage(named: "CameraPhoto")
         delay(0.5) {
           self.photoView.image = UIImage(named: "Camera")
@@ -554,12 +554,12 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
 
   
-  @IBAction func changeCamera(sender: AnyObject) {
+  @IBAction func changeCamera(_ sender: AnyObject) {
     
-    if settings.typeCamera == .Back {
-      settings.typeCamera = .Front
+    if settings.typeCamera == .back {
+      settings.typeCamera = .front
     } else {
-      settings.typeCamera = .Back
+      settings.typeCamera = .back
     }
     if let cm = captureManager {
       if cm.recording {
@@ -569,25 +569,25 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       cm.typeCamera = settings.typeCamera
     }
     setResolutionAndTextLabels()
-    NSUserDefaults.standardUserDefaults().setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
-    NSUserDefaults.standardUserDefaults().synchronize()
+    UserDefaults.standard.setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
+    UserDefaults.standard.synchronize()
   }
   
-  @IBAction func toggleMic(sender: UIButton) {
+  @IBAction func toggleMic(_ sender: UIButton) {
     if isMicOn {
-      micButton.setImage(UIImage(named: "NoMic"), forState: .Normal)
+      micButton.setImage(UIImage(named: "NoMic"), for: UIControlState())
       isMicOn = false
       // print("NO MIC")
     } else {
-      micButton.setImage(UIImage(named: "Mic"), forState: .Normal)
+      micButton.setImage(UIImage(named: "Mic"), for: UIControlState())
       isMicOn = true
       // print("MIC")
     }
     if let cm = captureManager {
       cm.isMicOn = isMicOn
     }
-    NSUserDefaults.standardUserDefaults().setValue(isMicOn, forKey: MicOnKey)
-    NSUserDefaults.standardUserDefaults().synchronize()
+    UserDefaults.standard.setValue(isMicOn, forKey: MicOnKey)
+    UserDefaults.standard.synchronize()
   }
 }
 
@@ -597,40 +597,40 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func recordingWillStart() {
     //print("CameraVC.recordingWillStart")
-    dispatch_async(dispatch_get_main_queue()) { () -> Void in
-      self.recordButton.enabled = false
-      self.settingsButton.enabled = false
-      self.backButton.enabled = false
-      self.recordButton.setImage(UIImage(named: "StartHighlight"), forState: .Normal)
-      self.micButton.enabled = false
+    DispatchQueue.main.async { () -> Void in
+      self.recordButton.isEnabled = false
+      self.settingsButton.isEnabled = false
+      self.backButton.isEnabled = false
+      self.recordButton.setImage(UIImage(named: "StartHighlight"), for: UIControlState())
+      self.micButton.isEnabled = false
       
       // Make sure we have time to finish saving the movie if the app is backgrounded during recording
-      if UIDevice.currentDevice().multitaskingSupported {
-        self.backgroundRecordingID = UIApplication.sharedApplication().beginBackgroundTaskWithExpirationHandler({})
+      if UIDevice.current.isMultitaskingSupported {
+        self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: {})
       }
     }
   }
   
   func recordingDidStart() {
     //print("CameraVC.recordingDidStart")
-    dispatch_async(dispatch_get_main_queue()) { () -> Void in
-      self.recordingTimer = NSTimer.scheduledTimerWithTimeInterval(Double(self.settings.maxRecordingTime) * 60.0, target: self, selector: #selector(CameraViewController.stopRecordigByTimer), userInfo: nil, repeats: false)
+    DispatchQueue.main.async { () -> Void in
+      self.recordingTimer = Timer.scheduledTimer(timeInterval: Double(self.settings.maxRecordingTime) * 60.0, target: self, selector: #selector(CameraViewController.stopRecordigByTimer), userInfo: nil, repeats: false)
       
       
       // Enable the stop button now that the recording has started
-      self.recordButton.enabled = true
-      self.recordButton.setImage(UIImage(named: "StopNormal"), forState: .Normal)
+      self.recordButton.isEnabled = true
+      self.recordButton.setImage(UIImage(named: "StopNormal"), for: UIControlState())
       self.resetControlViewTimer()
     }
   }
   
   func recordingWillStop() {
     //print("CameraVC.recordingWillStop")
-    dispatch_async(dispatch_get_main_queue()) { () -> Void in
+    DispatchQueue.main.async { () -> Void in
       // Disable until saving to the camera roll is complete
       
-      self.recordButton.enabled = false
-      self.recordButton.setImage(UIImage(named: "StopHighlight"), forState: .Normal)
+      self.recordButton.isEnabled = false
+      self.recordButton.setImage(UIImage(named: "StopHighlight"), for: UIControlState())
       // Pause the capture session so that saving will be as fast as possible.
       // We resume the sesssion in recordingDidStop:
       self.captureManager?.pauseCaptureSession()
@@ -641,20 +641,20 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func recordingDidStop() {
     //print("CameraVC.recordingDidStop")
-    dispatch_async(dispatch_get_main_queue()) { () -> Void in
+    DispatchQueue.main.async { () -> Void in
      
         // Enable record and update mode buttons
         self.updateBatteryAndDiskLabels()
-        self.recordButton.enabled = true
-        self.recordButton.setImage(UIImage(named: "StartNormal"), forState: .Normal)
-        self.settingsButton.enabled = true
-        self.backButton.enabled = true
+        self.recordButton.isEnabled = true
+        self.recordButton.setImage(UIImage(named: "StartNormal"), for: UIControlState())
+        self.settingsButton.isEnabled = true
+        self.backButton.isEnabled = true
       
         // for previewLayer
         self.captureManager?.resumeCaptureSession()
         
-        if UIDevice.currentDevice().multitaskingSupported {
-          UIApplication.sharedApplication().endBackgroundTask(self.backgroundRecordingID)
+        if UIDevice.current.isMultitaskingSupported {
+          UIApplication.shared.endBackgroundTask(self.backgroundRecordingID)
           self.backgroundRecordingID = UIBackgroundTaskInvalid
         }
       
@@ -674,7 +674,7 @@ extension CameraViewController : CaptureManagerDelegate {
       
       if let cm = self.captureManager {
         if cm.isAudioInput {
-          self.micButton.enabled = true
+          self.micButton.isEnabled = true
         }
       }
       
@@ -683,11 +683,11 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
-  func newLocationUpdate(speed: String) {
+  func newLocationUpdate(_ speed: String) {
     //print("CameraVC.newLocationUpdate")
     // Use this method to update the label which indicates the current speed
     
-    let words = speed.componentsSeparatedByString(" ")
+    let words = speed.components(separatedBy: " ")
     if words.count == 2 {
       speedLabel.text = words[0]
       unitsSpeedLabel.text = words[1]
@@ -696,41 +696,41 @@ extension CameraViewController : CaptureManagerDelegate {
     resetLocationTimer()
   }
   
-  func distanceUpdate(location: CLLocation) {
+  func distanceUpdate(_ location: CLLocation) {
     if let distance = odometer.distanceUpdate(location) {
       createOdometerLabel(distance)
       settings.odometerMeters = distance
     }
   }
   
-  func createOdometerLabel(distance: Int) {
-    if settings.typeSpeed == .Km {
+  func createOdometerLabel(_ distance: Int) {
+    if settings.typeSpeed == .km {
       odometerLabel.text = String(format: "%06.1f", Float(distance)/1000.0)
     } else {
       odometerLabel.text = String(format: "%06.1f", Float(distance)/1609.344)
     }
   }
   
-  func showError(error: NSError) {
+  func showError(_ error: NSError) {
     //print("CameraVC.showError")
     //print("_ERROR_: \(error), \(error.userInfo)")
     
-    let alert = UIAlertController(title: error.localizedDescription, message: error.localizedFailureReason, preferredStyle: .Alert)
-    let cancelAction = UIAlertAction(title: "OK", style: .Default) { (action: UIAlertAction!) -> Void in
+    let alert = UIAlertController(title: error.localizedDescription, message: error.localizedFailureReason, preferredStyle: .alert)
+    let cancelAction = UIAlertAction(title: "OK", style: .default) { (action: UIAlertAction!) -> Void in
       exit(0)
     }
     alert.addAction(cancelAction)
-    presentViewController(alert, animated: true, completion: nil)
+    present(alert, animated: true, completion: nil)
   }
   
   func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .default) { (action: UIAlertAction!) -> Void in
     }
     
     alert.addAction(cancelAction)
-    presentViewController(alert, animated: true, completion: nil)
+    present(alert, animated: true, completion: nil)
   }
   
   //MARK: - Utilites
@@ -742,17 +742,17 @@ extension CameraViewController : CaptureManagerDelegate {
       textLabel.text = NSLocalizedString("NT", comment: "CameraVC textLabel: NT")
     }
     
-    var mode: QualityMode = .Low
+    var mode: QualityMode = .low
     
-    if settings.typeCamera == .Back {
+    if settings.typeCamera == .back {
       mode = settings.backQualityMode
     } else {
       mode = settings.frontQualityMode
     }
     
-    if mode == .High {
+    if mode == .high {
       resolutionLabel.text = "720p"
-    } else if mode == .Medium {
+    } else if mode == .medium {
       resolutionLabel.text = "480p"
     } else {
       resolutionLabel.text = "288p"
@@ -761,20 +761,20 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func timeLabelUpdate() {
     //print("CameraVC.timeUpdate")
-    let dateFormater = NSDateFormatter()
+    let dateFormater = DateFormatter()
     dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
-    let timeString = dateFormater.stringFromDate(NSDate())
+    let timeString = dateFormater.string(from: Date())
     timeLabel.text = timeString
     captureManager?.time = timeString
     
     if let cm = captureManager {
       frameRateLabel.text = String(format: "%.1f", cm.frc.frameRate)
       if cm.frc.frameRate < 13 {
-        frameRateLabel.textColor = UIColor.redColor()
+        frameRateLabel.textColor = UIColor.red
       } else if cm.frc.frameRate < 24 {
-        frameRateLabel.textColor = UIColor.yellowColor()
+        frameRateLabel.textColor = UIColor.yellow
       } else {
-        frameRateLabel.textColor = UIColor.greenColor()
+        frameRateLabel.textColor = UIColor.green
       }
     }
   }
@@ -784,7 +784,7 @@ extension CameraViewController : CaptureManagerDelegate {
     //print("CameraVC.resetLocationTimer")
     stopTimer(&updateLocationTimer)
     if updateLocationTimer == nil {
-      updateLocationTimer = NSTimer.scheduledTimerWithTimeInterval(kUpdateLocationInterval, target: self, selector: #selector(CameraViewController.speedLabelNoData), userInfo: nil, repeats: true)
+      updateLocationTimer = Timer.scheduledTimer(timeInterval: kUpdateLocationInterval, target: self, selector: #selector(CameraViewController.speedLabelNoData), userInfo: nil, repeats: true)
     }
   }
   
@@ -792,11 +792,11 @@ extension CameraViewController : CaptureManagerDelegate {
     //print("CameraVC.resetControlViewTimer")
     stopTimer(&removeControlViewTimer)
     if removeControlViewTimer == nil {
-      removeControlViewTimer = NSTimer.scheduledTimerWithTimeInterval(kRemoveControlViewInterval, target: self, selector: #selector(CameraViewController.removeControlView), userInfo: nil, repeats: false)
+      removeControlViewTimer = Timer.scheduledTimer(timeInterval: kRemoveControlViewInterval, target: self, selector: #selector(CameraViewController.removeControlView), userInfo: nil, repeats: false)
     }
   }
   
-  func stopTimer(inout timer: NSTimer?) {
+  func stopTimer(_ timer: inout Timer?) {
     //print("CameraVC.stopTimer")
     if timer != nil {
       timer!.invalidate()
@@ -814,18 +814,18 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func updateBatteryAndDiskLabels() {
     
-    let device = UIDevice.currentDevice()
-    device.batteryMonitoringEnabled = true
+    let device = UIDevice.current
+    device.isBatteryMonitoringEnabled = true
     let barLeft = device.batteryLevel
-    device.batteryMonitoringEnabled = false
+    device.isBatteryMonitoringEnabled = false
     let batteryLevel = Int(barLeft*100)
     batteryLabel.text = "\(batteryLevel)"
     if batteryLevel > 80 {
-      batteryLabel.textColor = UIColor.greenColor()
+      batteryLabel.textColor = UIColor.green
     } else if batteryLevel > 20 {
-      batteryLabel.textColor = UIColor.yellowColor()
+      batteryLabel.textColor = UIColor.yellow
     } else {
-      batteryLabel.textColor = UIColor.redColor()
+      batteryLabel.textColor = UIColor.red
     }
     
     if let bytes = CameraViewController.deviceRemainingFreeSpaceInBytes() {
@@ -833,11 +833,11 @@ extension CameraViewController : CaptureManagerDelegate {
       freeSpace = Float(hMBytes)/10
       fillDiskLabel.text = "\(freeSpace)"
       if freeSpace < 1 {
-        fillDiskLabel.textColor = UIColor.redColor()
+        fillDiskLabel.textColor = UIColor.red
       } else if freeSpace < 5 {
-        fillDiskLabel.textColor = UIColor.yellowColor()
+        fillDiskLabel.textColor = UIColor.yellow
       } else {
-        fillDiskLabel.textColor = UIColor.greenColor()
+        fillDiskLabel.textColor = UIColor.green
       }
       if mustRecord && freeSpace < 0.3 {
         checkFilesStopRecordingDueSpaceLimit()
@@ -848,33 +848,33 @@ extension CameraViewController : CaptureManagerDelegate {
   func removeControlView() {
     //print("CameraVC.removeControlView")
     controlViewConstraint.constant = -80.0
-    UIView.animateWithDuration(0.5) { () -> Void in
+    UIView.animate(withDuration: 0.5, animations: { () -> Void in
       self.view.layoutIfNeeded()
-    }
+    }) 
     stopTimer(&removeControlViewTimer)
   }
   
   func drawControlView() {
     //print("CameraVC.drawControlView")
     controlViewConstraint.constant = 0
-    UIView.animateWithDuration(0.5) { () -> Void in
+    UIView.animate(withDuration: 0.5, animations: { () -> Void in
       self.view.layoutIfNeeded()
-    }
+    }) 
     resetControlViewTimer()
   }
   
-  func transitionCaptureOrientationFromDeviceOrientation(orientation: UIDeviceOrientation) -> AVCaptureVideoOrientation? {
+  func transitionCaptureOrientationFromDeviceOrientation(_ orientation: UIDeviceOrientation) -> AVCaptureVideoOrientation? {
     //print("CameraVC.transitionCaptureOrientationFromDeviceOrientation")
     
     switch orientation {
-    case .LandscapeLeft:
-      return .LandscapeRight
-    case .LandscapeRight:
-      return .LandscapeLeft
-    case .PortraitUpsideDown:
-      return .PortraitUpsideDown
-    case .Portrait:
-      return .Portrait
+    case .landscapeLeft:
+      return .landscapeRight
+    case .landscapeRight:
+      return .landscapeLeft
+    case .portraitUpsideDown:
+      return .portraitUpsideDown
+    case .portrait:
+      return .portrait
     default:
       return nil
     }
@@ -885,15 +885,15 @@ extension CameraViewController : CaptureManagerDelegate {
       
       setSessionPresetAndSelectedQuality()
       
-      let orientation = UIDevice.currentDevice().orientation
+      let orientation = UIDevice.current.orientation
       var angle: CGFloat = 0.0
       
       switch orientation {
-      case UIDeviceOrientation.LandscapeLeft:
+      case UIDeviceOrientation.landscapeLeft:
         angle = CGFloat(-M_PI_2)
-      case UIDeviceOrientation.LandscapeRight:
+      case UIDeviceOrientation.landscapeRight:
         angle = CGFloat(M_PI_2)
-      case UIDeviceOrientation.PortraitUpsideDown:
+      case UIDeviceOrientation.portraitUpsideDown:
         angle = CGFloat(M_PI)
       default :
         angle = 0.0
@@ -909,7 +909,7 @@ extension CameraViewController : CaptureManagerDelegate {
         //A string defining how the video is displayed within an AVCaptureVideoPreviewLayer bounds rect.
         layer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
-        if let storedOpacity = NSUserDefaults.standardUserDefaults().valueForKey(LayerOpacityValueKey)?.floatValue {
+        if let storedOpacity = (UserDefaults.standard.value(forKey: LayerOpacityValueKey) as AnyObject).floatValue {
           layer.opacity = storedOpacity
           layerOpacitySlider.value = storedOpacity
         }
@@ -923,9 +923,9 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func setSessionPresetAndSelectedQuality() {
-    var value: QualityMode = .Low
+    var value: QualityMode = .low
     
-    if settings.typeCamera == .Back {
+    if settings.typeCamera == .back {
       value = settings.backQualityMode
     } else {
       value = settings.frontQualityMode
@@ -933,49 +933,49 @@ extension CameraViewController : CaptureManagerDelegate {
     
     if let session = captureManager?.captureSession {
       switch value {
-      case .High:
-        if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) && settings.typeCamera == .Back {
+      case .high:
+        if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) && settings.typeCamera == .back {
           session.sessionPreset = AVCaptureSessionPreset1280x720
           captureManager?.scaleText = 2
-          value = .High
+          value = .high
         } else if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
           session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 1
-          value = .Medium
+          value = .medium
         } else {
           session.sessionPreset = AVCaptureSessionPresetLow
           captureManager?.scaleText = 0
-          value = .Low
+          value = .low
         }
-      case .Medium:
+      case .medium:
         if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
           session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 1
-          value = .Medium
+          value = .medium
         } else {
           session.sessionPreset = AVCaptureSessionPresetLow
           captureManager?.scaleText = 0
-          value = .Low
+          value = .low
         }
-      case .Low:
+      case .low:
         session.sessionPreset = AVCaptureSessionPresetLow
         captureManager?.scaleText = 0
-        value = .Low
+        value = .low
       }
       
-      if settings.typeCamera == .Back {
+      if settings.typeCamera == .back {
         settings.backQualityMode = value
-        NSUserDefaults.standardUserDefaults().setValue(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
+        UserDefaults.standard.setValue(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
       } else {
         settings.frontQualityMode = value
-        NSUserDefaults.standardUserDefaults().setValue(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
+        UserDefaults.standard.setValue(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
       }
       
-      NSUserDefaults.standardUserDefaults().synchronize()
+      UserDefaults.standard.synchronize()
     }
   }
   
-  func treatPhoneCall(call: CTCall) {
+  func treatPhoneCall(_ call: CTCall) {
     //print("CALL: \(call.callState)")
     if let cm = captureManager {
       if cm.recording {
@@ -993,62 +993,42 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func loadSettings() {
     
-    if let storedQuality = NSUserDefaults.standardUserDefaults().valueForKey(FrontQualityModeKey)?.integerValue {
-      settings.frontQualityMode = QualityMode(rawValue: storedQuality)!
+    let frontStoredQuality = UserDefaults.standard.integer(forKey: FrontQualityModeKey)
+    if let mode = QualityMode(rawValue: frontStoredQuality) {
+      settings.frontQualityMode = mode
     }
     
-    if let storedQuality = NSUserDefaults.standardUserDefaults().valueForKey(BackQualityModeKey)?.integerValue {
-      settings.backQualityMode = QualityMode(rawValue: storedQuality)!
+    let backStoredQuality = UserDefaults.standard.integer(forKey: BackQualityModeKey)
+    if let mode = QualityMode(rawValue: backStoredQuality) {
+      settings.backQualityMode = mode
     }
     
-    if let storedTypeCamera = NSUserDefaults.standardUserDefaults().valueForKey(TypeCameraKey)?.integerValue {
-      settings.typeCamera = TypeCamera(rawValue: storedTypeCamera)!
-    }
-
-    if let storedAutofocusing = NSUserDefaults.standardUserDefaults().valueForKey(AutofocusingKey)?.boolValue {
-      settings.autofocusing = storedAutofocusing
+    let storedTypeCamera = UserDefaults.standard.integer(forKey: TypeCameraKey)
+    if let type = TypeCamera(rawValue: storedTypeCamera) {
+      settings.typeCamera = type
     }
     
-    if let storedTextOnVideo = NSUserDefaults.standardUserDefaults().valueForKey(TextOnVideoKey)?.boolValue {
-      settings.textOnVideo = storedTextOnVideo
+    settings.autofocusing = UserDefaults.standard.bool(forKey: AutofocusingKey)
+    settings.textOnVideo = UserDefaults.standard.bool(forKey: TextOnVideoKey)
+    
+    if let storedLogotype = UserDefaults.standard.string(forKey: LogotypeKey) {
+      settings.logotype = storedLogotype
     }
     
-    if let storedLogotype = NSUserDefaults.standardUserDefaults().objectForKey(LogotypeKey) {
-      settings.logotype = storedLogotype as! String
+    settings.minIntervalLocations = UserDefaults.standard.integer(forKey: MinIntervalLocationsKey)
+    
+    let storedTypeSpeed = UserDefaults.standard.integer(forKey: TypeSpeedKey)
+    if let typeSpeed = TypeSpeed(rawValue: storedTypeSpeed) {
+      settings.typeSpeed = typeSpeed
     }
     
-    if let storedMinIntervalLocations = NSUserDefaults.standardUserDefaults().valueForKey(MinIntervalLocationsKey)?.integerValue {
-      settings.minIntervalLocations = storedMinIntervalLocations
-    }
+    settings.maxRecordingTime = UserDefaults.standard.integer(forKey: MaxRecordingTimeKey)
+    settings.maxNumberVideo = UserDefaults.standard.integer(forKey: MaxNumberVideoKey)
+    settings.intervalPictures = UserDefaults.standard.integer(forKey: IntevalPictureKey)
+    settings.odometerMeters = UserDefaults.standard.integer(forKey: OdometerMetersKey)
     
-    if let storedTypeSpeed = NSUserDefaults.standardUserDefaults().valueForKey(TypeSpeedKey)?.integerValue {
-      settings.typeSpeed = TypeSpeed(rawValue: storedTypeSpeed)!
-    }
+    isMicOn = UserDefaults.standard.bool(forKey: MicOnKey)
     
-    if let storeMaxRecordingTime = NSUserDefaults.standardUserDefaults().valueForKey(MaxRecordingTimeKey)?.integerValue {
-      settings.maxRecordingTime = storeMaxRecordingTime
-    }
-    
-    if let storedMaxNumberVideo = NSUserDefaults.standardUserDefaults().valueForKey(MaxNumberVideoKey)?.integerValue {
-      settings.maxNumberVideo = storedMaxNumberVideo
-    } else if let storedMaxNumberFiles = NSUserDefaults.standardUserDefaults().valueForKey("MaxNumberFilesKey")?.integerValue {
-      if IAPHelper.iapHelper.setFullVersion {
-        settings.maxNumberVideo = storedMaxNumberFiles
-      }
-    }
-    
-    if let storedIntervalPicture = NSUserDefaults.standardUserDefaults().valueForKey(IntevalPictureKey)?.integerValue {
-      settings.intervalPictures = storedIntervalPicture
-    }
-    
-    if let storedOdometerMeters = NSUserDefaults.standardUserDefaults().valueForKey(OdometerMetersKey)?.integerValue {
-      settings.odometerMeters = storedOdometerMeters
-    }
-    
-    if let storedMicOn = NSUserDefaults.standardUserDefaults().valueForKey(MicOnKey)?.boolValue {
-      isMicOn = storedMicOn
-    }
-
   }
   
   func saveSettings() {
@@ -1065,29 +1045,29 @@ extension CameraViewController : CaptureManagerDelegate {
     
     checkMaxNumberFiles() // <===========
     
-    NSUserDefaults.standardUserDefaults().setValue(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.autofocusing, forKey: AutofocusingKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.minIntervalLocations, forKey: MinIntervalLocationsKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.maxNumberVideo, forKey: MaxNumberVideoKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.intervalPictures, forKey: IntevalPictureKey)
-    NSUserDefaults.standardUserDefaults().setValue(settings.textOnVideo, forKey: TextOnVideoKey)
-    NSUserDefaults.standardUserDefaults().setObject(settings.logotype, forKey: LogotypeKey)
+    UserDefaults.standard.set(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
+    UserDefaults.standard.set(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
+    UserDefaults.standard.set(settings.typeCamera.rawValue, forKey: TypeCameraKey)
+    UserDefaults.standard.set(settings.autofocusing, forKey: AutofocusingKey)
+    UserDefaults.standard.set(settings.minIntervalLocations, forKey: MinIntervalLocationsKey)
+    UserDefaults.standard.set(settings.typeSpeed.rawValue, forKey: TypeSpeedKey)
+    UserDefaults.standard.set(settings.maxRecordingTime, forKey: MaxRecordingTimeKey)
+    UserDefaults.standard.set(settings.maxNumberVideo, forKey: MaxNumberVideoKey)
+    UserDefaults.standard.set(settings.intervalPictures, forKey: IntevalPictureKey)
+    UserDefaults.standard.set(settings.textOnVideo, forKey: TextOnVideoKey)
+    UserDefaults.standard.set(settings.logotype, forKey: LogotypeKey)
     
-    NSUserDefaults.standardUserDefaults().synchronize()
+    UserDefaults.standard.synchronize()
   }
   
   func createMovieContents() {
     //print("AssetsVC.createMovieContents")
     assetItemsList = [AssetItem]()
     
-    let fileManager = NSFileManager.defaultManager()
+    let fileManager = FileManager.default
     
     do {
-      let list = try fileManager.contentsOfDirectoryAtPath(NSTemporaryDirectory())
+      let list = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
       for item in list {
         if item.hasSuffix(".mov") {
           
@@ -1103,14 +1083,14 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
-  func removeFile(fileURL: NSURL) {
+  func removeFile(_ fileURL: URL) {
     //print("CameraVC.removeFile")
     
-    let fileManager = NSFileManager.defaultManager()
+    let fileManager = FileManager.default
     let filePath = fileURL.path
-    if fileManager.fileExistsAtPath(filePath!) {
+    if fileManager.fileExists(atPath: filePath) {
       do {
-        try fileManager.removeItemAtPath(filePath!)
+        try fileManager.removeItem(atPath: filePath)
       } catch {
         let nserror = error as NSError
         print("ERROR: AssetsVC.removeFile - \(nserror.userInfo)")
@@ -1122,9 +1102,9 @@ extension CameraViewController : CaptureManagerDelegate {
   
   // MARK: - Navigation
   
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "settingsSegue" {
-      if let destVC = segue.destinationViewController as? UINavigationController {
+      if let destVC = segue.destination as? UINavigationController {
         if let settingsVC = destVC.viewControllers.first as? SettingsViewController {
           settingsVC.settings = settings
           settingsVC.numberAssetFiles = assetItemsList.count
@@ -1134,7 +1114,7 @@ extension CameraViewController : CaptureManagerDelegate {
     }
     
     if segue.identifier == "assetsSegue" {
-      if let tabBarController = segue.destinationViewController as? UITabBarController {
+      if let tabBarController = segue.destination as? UITabBarController {
         if let navVC = tabBarController.viewControllers?[0] as? UINavigationController {
           if let destVC = navVC.viewControllers[0] as? AssetsViewController {
             destVC.assetItemsList = assetItemsList

@@ -11,16 +11,16 @@ import CoreLocation
 
 class Picture: NSObject, NSCoding {
   
-  var date: NSDate
-  var photoPath: NSURL!
+  var date: Date
+  var photoPath: URL!
   var thumb80: UIImage!
   var address: String = " "
   var location: CLLocation?
   
   var title: String {
-    let dateFormater = NSDateFormatter()
+    let dateFormater = DateFormatter()
     dateFormater.dateFormat = "yyMMdd_HHmmssSS"
-    return dateFormater.stringFromDate(date)
+    return dateFormater.string(from: date)
   }
   
   // MARK: Archiving Paths
@@ -32,7 +32,7 @@ class Picture: NSObject, NSCoding {
   let locationKey = "locationKey"
   
   
-  init?(image: UIImage, date: NSDate, location: CLLocation?) {
+  init?(image: UIImage, date: Date, location: CLLocation?) {
     self.date = date
     self.location = location
     self.thumb80 = image.thumbnailOfSize(CGSize(width: 80, height: 80))
@@ -40,7 +40,7 @@ class Picture: NSObject, NSCoding {
     super.init()
     
     self.photoPath = createURLFromDate(date)
-    if !saveImage(image, path: photoPath.path!) {
+    if !saveImage(image, path: photoPath.path) {
       return nil
     }
     findAddress(location)
@@ -50,11 +50,11 @@ class Picture: NSObject, NSCoding {
   // MARK: NSCoding
   
   required init(coder aDecoder: NSCoder) {
-    self.date = aDecoder.decodeObjectForKey(dateKey) as! NSDate
-    self.photoPath = aDecoder.decodeObjectForKey(photoPathKey) as!  NSURL
-    self.thumb80 = aDecoder.decodeObjectForKey(thumb80Key) as! UIImage
-    self.location = aDecoder.decodeObjectForKey(locationKey) as? CLLocation
-    self.address = aDecoder.decodeObjectForKey(addressKey) as! String
+    self.date = aDecoder.decodeObject(forKey: dateKey) as! Date
+    self.photoPath = aDecoder.decodeObject(forKey: photoPathKey) as!  URL
+    self.thumb80 = aDecoder.decodeObject(forKey: thumb80Key) as! UIImage
+    self.location = aDecoder.decodeObject(forKey: locationKey) as? CLLocation
+    self.address = aDecoder.decodeObject(forKey: addressKey) as! String
     super.init()
     if address == " " {
       findAddress(self.location)
@@ -62,20 +62,20 @@ class Picture: NSObject, NSCoding {
   }
   
   
-  func encodeWithCoder(aCoder: NSCoder) {
-    aCoder.encodeObject(date, forKey: dateKey)
-    aCoder.encodeObject(photoPath, forKey: photoPathKey)
-    aCoder.encodeObject(thumb80, forKey: thumb80Key)
-    aCoder.encodeObject(address, forKey: addressKey)
-    aCoder.encodeObject(location, forKey: locationKey)
+  func encode(with aCoder: NSCoder) {
+    aCoder.encode(date, forKey: dateKey)
+    aCoder.encode(photoPath, forKey: photoPathKey)
+    aCoder.encode(thumb80, forKey: thumb80Key)
+    aCoder.encode(address, forKey: addressKey)
+    aCoder.encode(location, forKey: locationKey)
   }
   
   // MARK: Utilities
   
-  func saveImage(image: UIImage, path: String ) -> Bool{
+  func saveImage(_ image: UIImage, path: String ) -> Bool{
     var result = false
     if let pngImageData = UIImageJPEGRepresentation(image, 1.0) {
-      result = pngImageData.writeToFile(path, atomically: true)
+      result = (try? pngImageData.write(to: URL(fileURLWithPath: path), options: [.atomic])) != nil
     }
     return result
   }
@@ -83,8 +83,8 @@ class Picture: NSObject, NSCoding {
   
   func loadImage() -> UIImage? {
     //guard let path = photoPath.path else { return nil }
-    let directory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    guard let path = directory.URLByAppendingPathComponent(title).path else { return nil }
+    let directory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    let path = directory.appendingPathComponent(title).path
     
     let image = UIImage(contentsOfFile: path)
     if image == nil {
@@ -97,13 +97,13 @@ class Picture: NSObject, NSCoding {
   }
   
   
-  func createURLFromDate(date: NSDate) -> NSURL {
+  func createURLFromDate(_ date: Date) -> URL {
     //print("Picture.createURLFromDate")
-    let directory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    return directory.URLByAppendingPathComponent(title)
+    let directory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    return directory.appendingPathComponent(title)
   }
   
-  func findAddress(location: CLLocation?) {
+  func findAddress(_ location: CLLocation?) {
     guard let location = location else { return }
     
     let geoCoder = CLGeocoder()

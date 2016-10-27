@@ -22,7 +22,7 @@ class TabBarViewController: UITabBarController {
     }
     
 
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     
     return true
   }

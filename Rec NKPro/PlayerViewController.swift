@@ -14,16 +14,27 @@ import MapKit
 import AVFoundation
 import CoreMedia
 import iAd
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
 
 class PlayerViewController : UIViewController {
   
   enum MapMode : Int {
-    case None = 0
-    case Centered = 1
-    case Distance = 2
+    case none = 0
+    case centered = 1
+    case distance = 2
   }
   
-  var url: NSURL!
+  var url: URL!
   var player: AVPlayer!
   var typeSpeed: TypeSpeed!
   var asset: AVAsset!
@@ -31,21 +42,21 @@ class PlayerViewController : UIViewController {
   var location: CLLocation?
   
   // Reader variables
-  private var reader: AVAssetReader!
-  private var readerMetadataOutput: AVAssetReaderTrackOutput!
-  private var metadataAdaptor: AVAssetReaderOutputMetadataAdaptor!
-  private var readerQueue: dispatch_queue_t!
+  fileprivate var reader: AVAssetReader!
+  fileprivate var readerMetadataOutput: AVAssetReaderTrackOutput!
+  fileprivate var metadataAdaptor: AVAssetReaderOutputMetadataAdaptor!
+  fileprivate var readerQueue: DispatchQueue!
   
   // Output variable
-  private var metadataOutput: AVPlayerItemMetadataOutput!
+  fileprivate var metadataOutput: AVPlayerItemMetadataOutput!
   
   // Location variables
-  private var metadatas = [Metadata]()
-  private var currentPin: MKPointAnnotation!
-  private var playerMapMode: MapMode = .Centered
-  private var startPoint: Metadata!
-  private var endPoint: Metadata!
-  private var distancePolyline: MKPolyline?
+  fileprivate var metadatas = [Metadata]()
+  fileprivate var currentPin: MKPointAnnotation!
+  fileprivate var playerMapMode: MapMode = .centered
+  fileprivate var startPoint: Metadata!
+  fileprivate var endPoint: Metadata!
+  fileprivate var distancePolyline: MKPolyline?
   
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var playerStack: UIStackView!
@@ -59,26 +70,26 @@ class PlayerViewController : UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     mapTypeButton.layer.cornerRadius = 10
-    mapTypeButton.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    mapTypeButton.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     
     //trackStatusLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
     //trackStatusLabel.layer.cornerRadius = 10.0
     
-    self.centeredButton.enabled = false
-    self.distanceButton.enabled = false
+    self.centeredButton.isEnabled = false
+    self.distanceButton.isEnabled = false
     
     defineStackAxis()
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.addObserver(self, selector: #selector(PlayerViewController.defineStackAxis), name: UIDeviceOrientationDidChangeNotification, object: nil)
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.addObserver(self, selector: #selector(PlayerViewController.defineStackAxis), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     //notificationCenter.addObserver(self, selector: "didPlayToEndTime", name: AVPlayerItemDidPlayToEndTimeNotification, object: nil)
 
   }
   
-  override func viewWillDisappear(animated: Bool) {
+  override func viewWillDisappear(_ animated: Bool) {
     //print("CameraVC.viewWillDisappear")
     super.viewWillDisappear(animated)
     
-    PicturesList.pList.pictures.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+    PicturesList.pList.pictures.sort(by: { $0.date.compare($1.date as Date) == ComparisonResult.orderedDescending })
     PicturesList.pList.savePictures()
   }
   
@@ -87,23 +98,23 @@ class PlayerViewController : UIViewController {
   }
   
   func defineStackAxis() {
-    let orientation = UIDevice.currentDevice().orientation
+    let orientation = UIDevice.current.orientation
     if orientation.isPortrait {
-      playerStack.axis = .Vertical
+      playerStack.axis = .vertical
     }
     if orientation.isLandscape {
-      playerStack.axis = .Horizontal
+      playerStack.axis = .horizontal
     }
   }
   
   deinit {
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     player = nil
     url = nil
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     return true
   }
   
@@ -111,35 +122,35 @@ class PlayerViewController : UIViewController {
     // print("setupVariables")
     
     // Initialize reader queue to perform all reading related operations on a background queue
-    readerQueue = dispatch_queue_create("net.nkpro.fixdrive.reader.queue", DISPATCH_QUEUE_SERIAL)
+    readerQueue = DispatchQueue(label: "net.nkpro.fixdrive.reader.queue", attributes: [])
     
     // Initialize metadata output with location identifier to get delegate callbacks with location metadata groups
-    let metadataQueue = dispatch_queue_create("net.nkpro.fixdrive.metadata.queue", DISPATCH_QUEUE_SERIAL)
+    let metadataQueue = DispatchQueue(label: "net.nkpro.fixdrive.metadata.queue", attributes: [])
     
     metadataOutput = AVPlayerItemMetadataOutput(identifiers: [AVMetadataIdentifierQuickTimeMetadataLocationISO6709, FixdriveSpeedIdentifier, FixdriveTimeIdentifier])
     metadataOutput.setDelegate(self, queue: metadataQueue)
     
     setCentered()
     
-    asset = AVURLAsset(URL: url)
+    asset = AVURLAsset(url: url)
     let playerItem = AVPlayerItem(asset: asset)
     
     // Add metadata output to player item to get delegate callbacks during playback
-    playerItem.addOutput(metadataOutput)
+    playerItem.add(metadataOutput)
     
     player = AVPlayer(playerItem: playerItem)
     
     //player.videoGravity = AVLayerVideoGravityResizeAspect
     mapView.delegate = self
-    mapView.mapType = .Standard
+    mapView.mapType = .standard
     
     readMetadataFromAsset(asset) { (metadataAvailable) -> Void in
       // Draw path on map only if we have location metadata
       if metadataAvailable {
         self.drawPathOnMap()
         self.trackStatusLabel.text = ""
-        self.centeredButton.enabled = true
-        self.distanceButton.enabled = true
+        self.centeredButton.isEnabled = true
+        self.distanceButton.isEnabled = true
       } else {
         //print("The input movie \(asset.URL) does not contain location metadata")
         self.trackStatusLabel.text = NSLocalizedString("No Data", comment: "PlayerVC: No Data")
@@ -150,13 +161,13 @@ class PlayerViewController : UIViewController {
   
   // MARK: - Actions
     
-  @IBAction func setPointOnMap(sender: UITapGestureRecognizer) {
+  @IBAction func setPointOnMap(_ sender: UITapGestureRecognizer) {
     // print("TAP: setPointOnMap")
-    if sender.state == .Ended {
-      let point = sender.locationInView(mapView)
-      let locCoord = mapView.convertPoint(point, toCoordinateFromView: mapView)
+    if sender.state == .ended {
+      let point = sender.location(in: mapView)
+      let locCoord = mapView.convert(point, toCoordinateFrom: mapView)
       let newLocation = CLLocation(latitude: locCoord.latitude, longitude: locCoord.longitude)
-      if playerMapMode == .Distance {
+      if playerMapMode == .distance {
         setDistancePoint(newLocation)
       } else {
         userDidSeekToNewPosition(newLocation)
@@ -164,57 +175,57 @@ class PlayerViewController : UIViewController {
     }
   }
   
-  @IBAction func exit(sender: UIButton!) {
+  @IBAction func exit(_ sender: UIButton!) {
     player.pause()
-    dismissViewControllerAnimated(false, completion: nil)
+    dismiss(animated: false, completion: nil)
   }
   
   
-  @IBAction func setMapType(sender: UIButton) {
-    if mapView.mapType == .Standard {
-      mapView.mapType = .Satellite
+  @IBAction func setMapType(_ sender: UIButton) {
+    if mapView.mapType == .standard {
+      mapView.mapType = .satellite
       mapTypeButton.setTitle(NSLocalizedString("Standard", comment: "PlayerVC: Standard"),
-        forState: .Normal)
+        for: UIControlState())
     } else {
-      mapView.mapType = .Standard
+      mapView.mapType = .standard
       mapTypeButton.setTitle(NSLocalizedString("Satellite", comment: "PlayerVC: Satellite"),
-        forState: .Normal)
+        for: UIControlState())
     }
   }
   
-  @IBAction func tapCenteredButton(sender: UIButton) {
+  @IBAction func tapCenteredButton(_ sender: UIButton) {
 
     switch playerMapMode {
-    case .None:
-      playerMapMode = .Centered
+    case .none:
+      playerMapMode = .centered
       setCentered()
-    case .Distance:
-      playerMapMode = .Centered
+    case .distance:
+      playerMapMode = .centered
       resetDistanceMode()
       setCentered()
-    case .Centered:
-      playerMapMode = .None
+    case .centered:
+      playerMapMode = .none
       setUncentered()
     }
     
   }
   
-  @IBAction func tapDistanceButton(sender: UIButton) {
+  @IBAction func tapDistanceButton(_ sender: UIButton) {
     switch playerMapMode {
-    case .None:
-      playerMapMode = .Distance
+    case .none:
+      playerMapMode = .distance
       setDistanceMode()
-    case .Centered:
-      playerMapMode = .Distance
+    case .centered:
+      playerMapMode = .distance
       setUncentered()
       setDistanceMode()
-    case .Distance:
-      playerMapMode = .None
+    case .distance:
+      playerMapMode = .none
       resetDistanceMode()
     }
   }
   
-  @IBAction func takePhoto(sender: UIButton) {
+  @IBAction func takePhoto(_ sender: UIButton) {
     
     if PicturesList.pList.pictures.count >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
       // show alert
@@ -226,13 +237,13 @@ class PlayerViewController : UIViewController {
       let date = photoDate(time)
       // print("Date: \(date)")
       let imageGenerator = AVAssetImageGenerator(asset: asset)
-      let imageTimeValue = NSValue(CMTime: time)
+      let imageTimeValue = NSValue(time: time)
       
       imageGenerator.appliesPreferredTrackTransform = true
-      imageGenerator.generateCGImagesAsynchronouslyForTimes([imageTimeValue], completionHandler: { (requestedTime, image, actualTime, result, error) -> Void in
+      imageGenerator.generateCGImagesAsynchronously(forTimes: [imageTimeValue], completionHandler: { (requestedTime, image, actualTime, result, error) -> Void in
         if let cgImage = image {
-          self.uiImage = UIImage(CGImage: cgImage)
-          dispatch_async(dispatch_get_main_queue()){
+          self.uiImage = UIImage(cgImage: cgImage)
+          DispatchQueue.main.async{
             self.photoImage.image = self.uiImage.thumbnailOfSize(CGSize(width: 60, height: 60))
           }
           if let picture = Picture(image: self.uiImage, date: date, location: self.location) {
@@ -245,42 +256,42 @@ class PlayerViewController : UIViewController {
     }
   }
   
-  @IBAction func openZoomingController(sender: AnyObject) {
+  @IBAction func openZoomingController(_ sender: AnyObject) {
     if uiImage != nil {
       player.pause()
-      self.performSegueWithIdentifier("zoomSegue", sender: nil)
+      self.performSegue(withIdentifier: "zoomSegue", sender: nil)
     }
   }
   
-  func photoDate(timestamp: CMTime) -> NSDate {
+  func photoDate(_ timestamp: CMTime) -> Date {
     
     if let timeFirst = metadatas.first?.time {
-      let dateFormater = NSDateFormatter()
+      let dateFormater = DateFormatter()
       dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
-      if let date = dateFormater.dateFromString(timeFirst) {
+      if let date = dateFormater.date(from: timeFirst) {
         let delta = CMTimeGetSeconds(timestamp)
 
-        return date.dateByAddingTimeInterval(delta)
+        return date.addingTimeInterval(delta)
       }
     }
-    return NSDate()
+    return Date()
   }
   
-  func setDistancePoint(newLocation: CLLocation) {
+  func setDistancePoint(_ newLocation: CLLocation) {
     var updatedMetadata: Metadata? = nil
     var closestDistance: CLLocationDistance = DBL_MAX
     
     // Find the closest location on the path to which we can seek
     for metadata in metadatas {
-      let distance = newLocation.distanceFromLocation(metadata.location!)
+      let distance = newLocation.distance(from: metadata.location!)
       if distance < closestDistance {
         updatedMetadata = metadata
         closestDistance = distance
       }
     }
     
-    let distanceToStart = updatedMetadata?.location?.distanceFromLocation(startPoint.location!)
-    let distanceToEnd = updatedMetadata?.location?.distanceFromLocation(endPoint.location!)
+    let distanceToStart = updatedMetadata?.location?.distance(from: startPoint.location!)
+    let distanceToEnd = updatedMetadata?.location?.distance(from: endPoint.location!)
     
     if distanceToStart < distanceToEnd {
       mapView.removeAnnotation(startPoint)
@@ -293,11 +304,11 @@ class PlayerViewController : UIViewController {
     }
     
     if let distancePolyline = distancePolyline {
-      mapView.removeOverlay(distancePolyline)
+      mapView.remove(distancePolyline)
     }
     
-    if let startIndex = metadatas.indexOf(startPoint) {
-      if let endIndex = metadatas.indexOf(endPoint) {
+    if let startIndex = metadatas.index(of: startPoint) {
+      if let endIndex = metadatas.index(of: endPoint) {
         dataFromPointsWithIndexes(startIndex: startIndex, endIndex: endIndex)
         
         var pointsToUse = [CLLocationCoordinate2D]()
@@ -312,14 +323,14 @@ class PlayerViewController : UIViewController {
         // Draw the extracted path as an overlay on the map view
         distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
         if let distancePolyline = distancePolyline {
-          mapView.addOverlay(distancePolyline, level: .AboveRoads)
+          mapView.add(distancePolyline, level: .aboveRoads)
         }
       }
     }
     
   }
   
-  func userDidSeekToNewPosition(newLocation: CLLocation) {
+  func userDidSeekToNewPosition(_ newLocation: CLLocation) {
     // print("userDidSeekToNewPosition")
     
     var updatedMetadata: Metadata? = nil
@@ -327,7 +338,7 @@ class PlayerViewController : UIViewController {
     
     // Find the closest location on the path to which we can seek
     for metadata in metadatas {
-      let distance = newLocation.distanceFromLocation(metadata.location!)
+      let distance = newLocation.distance(from: metadata.location!)
       if distance < closestDistance {
         updatedMetadata = metadata
         closestDistance = distance
@@ -335,11 +346,11 @@ class PlayerViewController : UIViewController {
     }
     
     if let updatedMetadata = updatedMetadata {
-      dispatch_async(dispatch_get_main_queue(), { () -> Void in
+      DispatchQueue.main.async(execute: { () -> Void in
         // Seek to timestamp of the updated location.
         let updatedTimeRange = updatedMetadata.timestamp!
         
-        self.player.seekToTime(updatedTimeRange.start, completionHandler: { (finished) -> Void in
+        self.player.seek(to: updatedTimeRange.start, completionHandler: { (finished) -> Void in
           // Start centering the map at the current location
           // self.setCentered()
           // Move the pin to updated location.
@@ -353,14 +364,14 @@ class PlayerViewController : UIViewController {
   
   // MARK: - Asset reading
   
-  func readMetadataFromAsset(asset: AVAsset, completionHandler: ((Bool) -> Void)) {
+  func readMetadataFromAsset(_ asset: AVAsset, completionHandler: @escaping ((Bool) -> Void)) {
     // print("readMetadataFromAsset")
     
-    asset.loadValuesAsynchronouslyForKeys(["tracks"]) { () -> Void in
+    asset.loadValuesAsynchronously(forKeys: ["tracks"]) { () -> Void in
       // Dispatch all the reading work to a background queue, so we do not block the main thread
-      dispatch_async(self.readerQueue, { () -> Void in
+      self.readerQueue.async(execute: { () -> Void in
         var error: NSError?
-        var success = (asset.statusOfValueForKey("tracks", error: &error) == .Loaded)
+        var success = (asset.statusOfValue(forKey: "tracks", error: &error) == .loaded)
         
         // Set up the AVAssetReader reading samples or flag an error
         if success {
@@ -384,14 +395,14 @@ class PlayerViewController : UIViewController {
         }
         
         // The completion handler involves changes to the map view, which should be performed on the main thread
-        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.async { () -> Void in
           completionHandler(metadataAvailable)
         }
       })
     }
   }
   
-  func setUpReaderForAsset(asset: AVAsset) -> Bool {
+  func setUpReaderForAsset(_ asset: AVAsset) -> Bool {
     // print("setUpReaderForAsset")
     
     var success = true
@@ -409,7 +420,7 @@ class PlayerViewController : UIViewController {
     var locationTrack: AVAssetTrack? = nil
     if success {
       // Go through the metadata tracks in the asset to find the track with location metadata
-      let metadataTracks = asset.tracksWithMediaType(AVMediaTypeMetadata)
+      let metadataTracks = asset.tracks(withMediaType: AVMediaTypeMetadata)
       for track in metadataTracks {
         
         for formatDescription in track.formatDescriptions {
@@ -420,7 +431,7 @@ class PlayerViewController : UIViewController {
           identifiers = CMMetadataFormatDescriptionGetIdentifiers(formatDescription as! CMMetadataFormatDescription)
           
           if let identifiers = identifiers {
-            if identifiers.containsObject(AVMetadataIdentifierQuickTimeMetadataLocationISO6709) {
+            if identifiers.contains(AVMetadataIdentifierQuickTimeMetadataLocationISO6709) {
               locationTrack = track
               break
             }
@@ -435,7 +446,7 @@ class PlayerViewController : UIViewController {
     if success {
       readerMetadataOutput = AVAssetReaderTrackOutput(track: locationTrack!, outputSettings: nil)
       metadataAdaptor = AVAssetReaderOutputMetadataAdaptor(assetReaderTrackOutput: readerMetadataOutput)
-      reader.addOutput(readerMetadataOutput)
+      reader.add(readerMetadataOutput)
     }
     
     return success
@@ -471,7 +482,9 @@ class PlayerViewController : UIViewController {
       startPoint = metadatas.first
       endPoint = metadatas.last
     } else {
-      print("ERROR: startReadingLocationMetadata - \(player.error?.userInfo)")
+      if let error = player.error as? NSError {
+        print("ERROR: startReadingLocationMetadata - \(error.userInfo)")
+      }
     }
     
     return success
@@ -483,7 +496,7 @@ class PlayerViewController : UIViewController {
     // print("drawPathOnMap")
     
     let numberOfPoints = metadatas.count
-    var pointsToUse = [CLLocationCoordinate2D](count: numberOfPoints, repeatedValue: CLLocationCoordinate2D())
+    var pointsToUse = [CLLocationCoordinate2D](repeating: CLLocationCoordinate2D(), count: numberOfPoints)
     
     // Extract all the coordinates to draw from the locationPoints array
     for i in 0 ..< numberOfPoints {
@@ -493,7 +506,7 @@ class PlayerViewController : UIViewController {
     
     // Draw the extracted path as an overlay on the map view
     let polyline = MKPolyline(coordinates: &pointsToUse, count: numberOfPoints)
-    mapView.addOverlay(polyline, level: .AboveRoads)
+    mapView.add(polyline, level: .aboveRoads)
     
     // Set initial coordinate to the starting coordinate of the path
     mapView.centerCoordinate = metadatas.first!.location!.coordinate
@@ -501,7 +514,7 @@ class PlayerViewController : UIViewController {
     var distance: Double = 0.0
     
     if numberOfPoints > 0 {
-      distance = max(metadatas.first!.location!.distanceFromLocation(metadatas.last!.location!) * 1.5, 800.0)
+      distance = max(metadatas.first!.location!.distance(from: metadatas.last!.location!) * 1.5, 800.0)
     }
     
     // Set initial region to some region around the starting coordinate
@@ -517,8 +530,8 @@ class PlayerViewController : UIViewController {
     mapView.removeAnnotation(currentPin)
     mapView.addAnnotations([startPoint, endPoint])
     
-    if let startIndex = metadatas.indexOf(startPoint) {
-      if let endIndex = metadatas.indexOf(endPoint) {
+    if let startIndex = metadatas.index(of: startPoint) {
+      if let endIndex = metadatas.index(of: endPoint) {
         dataFromPointsWithIndexes(startIndex: startIndex, endIndex: endIndex)
         
         var pointsToUse = [CLLocationCoordinate2D]()
@@ -533,7 +546,7 @@ class PlayerViewController : UIViewController {
         // Draw the extracted path as an overlay on the map view
         distancePolyline = MKPolyline(coordinates: &pointsToUse, count: pointsToUse.count)
         if let distancePolyline = distancePolyline {
-          mapView.addOverlay(distancePolyline, level: .AboveRoads)
+          mapView.add(distancePolyline, level: .aboveRoads)
         }
       }
     }
@@ -543,13 +556,13 @@ class PlayerViewController : UIViewController {
   
   func removeDistancePath() {
     if let distancePolyline = distancePolyline {
-      mapView.removeOverlay(distancePolyline)
+      mapView.remove(distancePolyline)
     }
     mapView.removeAnnotations([startPoint, endPoint])
     mapView.addAnnotation(currentPin)
   }
   
-  func locationFromMetadataGroup(group: AVTimedMetadataGroup) -> CLLocation? {
+  func locationFromMetadataGroup(_ group: AVTimedMetadataGroup) -> CLLocation? {
     // print("locationFromMetadataGroup")
     
     var location: CLLocation? = nil
@@ -562,8 +575,8 @@ class PlayerViewController : UIViewController {
         if itemString == AVMetadataIdentifierQuickTimeMetadataLocationISO6709 {
           if let locationDescription = item.stringValue {
             // Extract from a string in iso6709 notation
-            let latitude = (locationDescription as NSString).substringToIndex(8)
-            let longitude = (locationDescription as NSString).substringWithRange(NSMakeRange(8, 9))
+            let latitude = (locationDescription as NSString).substring(to: 8)
+            let longitude = (locationDescription as NSString).substring(with: NSMakeRange(8, 9))
             location = CLLocation(latitude: (latitude as NSString).doubleValue, longitude: (longitude as NSString).doubleValue)
           }
          break
@@ -574,7 +587,7 @@ class PlayerViewController : UIViewController {
     return location
   }
   
-  func speedFromMetadataGroup(group: AVTimedMetadataGroup) -> String? {
+  func speedFromMetadataGroup(_ group: AVTimedMetadataGroup) -> String? {
     // print("speedFromMetadataGroup")
     
     var speed: String? = nil
@@ -596,7 +609,7 @@ class PlayerViewController : UIViewController {
     return speed
   }
   
-  func timeFromMetadataGroup(group: AVTimedMetadataGroup) -> String? {
+  func timeFromMetadataGroup(_ group: AVTimedMetadataGroup) -> String? {
     // print("timeFromMetadataGroup")
     
     var time: String? = nil
@@ -620,14 +633,14 @@ class PlayerViewController : UIViewController {
   
   
   
-  func updateCurrentLocation(location: CLLocation) {
+  func updateCurrentLocation(_ location: CLLocation) {
     // print("updateCurrentLocation")
     // Update current pin to the new location
-    dispatch_async(dispatch_get_main_queue()) { () -> Void in
+    DispatchQueue.main.async { () -> Void in
       if let currentPin = self.currentPin {
         currentPin.coordinate = location.coordinate
-        if self.playerMapMode == .Centered {
-          self.mapView.setCenterCoordinate(currentPin.coordinate, animated: true)
+        if self.playerMapMode == .centered {
+          self.mapView.setCenter(currentPin.coordinate, animated: true)
           self.mapView.addAnnotation(currentPin)
         }
       }
@@ -636,10 +649,10 @@ class PlayerViewController : UIViewController {
   
   func setCentered() {
     // print("setCentered")
-    centeredButton.setImage(UIImage(named: "CenteredHi"), forState: .Normal)
-    dispatch_async(dispatch_get_main_queue()) { () -> Void in
+    centeredButton.setImage(UIImage(named: "CenteredHi"), for: UIControlState())
+    DispatchQueue.main.async { () -> Void in
       if let currentPin = self.currentPin {
-        self.mapView.setCenterCoordinate(currentPin.coordinate, animated: true)
+        self.mapView.setCenter(currentPin.coordinate, animated: true)
       }
     }
   }
@@ -647,29 +660,29 @@ class PlayerViewController : UIViewController {
   func setUncentered() {
     // print("setUncentered")
 
-    centeredButton.setImage(UIImage(named: "Centered"), forState: .Normal)
+    centeredButton.setImage(UIImage(named: "Centered"), for: UIControlState())
   }
   
   func setDistanceMode() {
-    distanceButton.setImage(UIImage(named: "DistanceHi"), forState: .Normal)
+    distanceButton.setImage(UIImage(named: "DistanceHi"), for: UIControlState())
     
     drawDistancePath()
   }
   
   func resetDistanceMode() {
-    distanceButton.setImage(UIImage(named: "Distance"), forState: .Normal)
+    distanceButton.setImage(UIImage(named: "Distance"), for: UIControlState())
     trackStatusLabel.text = ""
     removeDistancePath()
   }
   
-  func distanceString(distance: String) -> String {
+  func distanceString(_ distance: String) -> String {
     var unitSpeedStr = ""
     var kSpeed: Float = 0
     
     let mphStr = NSLocalizedString("mph", comment: "PlayerVC: mph")
     let kmhStr = NSLocalizedString("km/h", comment: "PlayerVC: km/h")
     
-    if typeSpeed == .Mi {
+    if typeSpeed == .mi {
       //print("mph")
       kSpeed = 2.236936
       unitSpeedStr = mphStr
@@ -683,7 +696,7 @@ class PlayerViewController : UIViewController {
     return "\(Int(floatSpeed)) \(unitSpeedStr)"
   }
   
-  func dataFromPointsWithIndexes(startIndex startIndex: Int, endIndex: Int) {
+  func dataFromPointsWithIndexes(startIndex: Int, endIndex: Int) {
     var distance: Double = 0
     var index = startIndex
     var metadata = metadatas[index]
@@ -713,7 +726,7 @@ class PlayerViewController : UIViewController {
     let mphStr = NSLocalizedString("mph", comment: "PlayerVC: mph")
     let kmhStr = NSLocalizedString("km/h", comment: "PlayerVC: km/h")
     
-    if typeSpeed == .Mi {
+    if typeSpeed == .mi {
       //print("mph")
       kSpeed = 2.236936
       unitSpeedStr = mphStr
@@ -737,7 +750,7 @@ class PlayerViewController : UIViewController {
     
       //print("+++\(speed)+++")
       index += 1
-      let delta = metadata.location!.distanceFromLocation(metadatas[index].location!)
+      let delta = metadata.location!.distance(from: metadatas[index].location!)
       if delta > Double(Odometer.accuracity) {
         distance += delta
         metadata = metadatas[index]
@@ -764,22 +777,22 @@ class PlayerViewController : UIViewController {
   }
   
   func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .Alert)
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .default) { (action: UIAlertAction!) -> Void in
       //self.alertMaxVideo = false
     }
     
     alert.addAction(cancelAction)
-    presentViewController(alert, animated: true, completion: nil)
+    present(alert, animated: true, completion: nil)
   }
 
   
   // MARK: - Navigation
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     // print("prepareForSegue")
     if segue.identifier == "showMovie" {
-      if let playerVC = segue.destinationViewController as? AVPlayerViewController {
+      if let playerVC = segue.destination as? AVPlayerViewController {
         setupVariables()
         playerVC.player = player
         //playerVC.player?.play()
@@ -787,7 +800,7 @@ class PlayerViewController : UIViewController {
       }
     }
     if segue.identifier == "zoomSegue" {
-      if let destVC = segue.destinationViewController as? ZoomedPhotoViewController {
+      if let destVC = segue.destination as? ZoomedPhotoViewController {
         destVC.image = uiImage
       }
     }
@@ -799,9 +812,9 @@ class PlayerViewController : UIViewController {
 
 extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
   
-  func metadataOutput(output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], fromPlayerItemTrack track: AVPlayerItemTrack) {
+  func metadataOutput(_ output: AVPlayerItemMetadataOutput, didOutputTimedMetadataGroups groups: [AVTimedMetadataGroup], from track: AVPlayerItemTrack) {
     // print("metadataOutput_didOutputTimedMetadataGroups")
-    if playerMapMode != .Distance {
+    if playerMapMode != .distance {
       // Go through the list of timed metadata groups and update location
       for group in groups {
         if let newLocation = locationFromMetadataGroup(group) {
@@ -820,7 +833,7 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
             timeSpeedStr += distanceString(speedStr)
           }
         }
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
           self.trackStatusLabel.text = timeSpeedStr
         }
       }
@@ -832,10 +845,10 @@ extension PlayerViewController: AVPlayerItemMetadataOutputPushDelegate {
 
 extension PlayerViewController: MKMapViewDelegate {
   
-  func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     // print("mapView_viewForAnnotation")
     
-    var pin = mapView.dequeueReusableAnnotationViewWithIdentifier("currentPin")
+    var pin = mapView.dequeueReusableAnnotationView(withIdentifier: "currentPin")
 
     if pin == nil {
       pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "currentPin")
@@ -847,12 +860,12 @@ extension PlayerViewController: MKMapViewDelegate {
     return pin
   }
   
-  func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     // print("mapView_rendererForOverlay")
     
     let polylineRenderer = MKPolylineRenderer(overlay: overlay)
     polylineRenderer.lineWidth = 5.0
-    if playerMapMode == .Distance {
+    if playerMapMode == .distance {
       polylineRenderer.strokeColor = UIColor(red: 0.2, green: 0.98, blue: 0.5, alpha: 0.8)
     } else {
       polylineRenderer.strokeColor = UIColor(red: 0.2, green: 0.5, blue: 0.98, alpha: 0.8)

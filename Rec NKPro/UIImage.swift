@@ -24,9 +24,9 @@ import UIKit
 
 extension UIImage {
   
-  func thumbnailOfSize(rect: CGSize) -> UIImage {
+  func thumbnailOfSize(_ rect: CGSize) -> UIImage {
     
-    let finalsize = CGSizeMake(rect.width, rect.height)
+    let finalsize = CGSize(width: rect.width, height: rect.height)
     let scaleX = finalsize.width/self.size.width
     let scaleY = finalsize.height/self.size.height
     
@@ -44,14 +44,14 @@ extension UIImage {
       yRect = (finalsize.height - heightRect) / 2
     }
     
-    let rect = CGRectMake( xRect, yRect, widthRect, heightRect)
+    let rect = CGRect( x: xRect, y: yRect, width: widthRect, height: heightRect)
     //print("RECT: \(rect)")
     
     UIGraphicsBeginImageContextWithOptions(finalsize, false, 0)
-    drawInRect(rect)
+    draw(in: rect)
     let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    return thumbnail
+    return thumbnail!
   }
   
 }

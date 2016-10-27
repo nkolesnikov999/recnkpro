@@ -8,19 +8,19 @@
 
 import UIKit
 
-let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-let archiveURL = DocumentsDirectory.URLByAppendingPathComponent("pictures")
+let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+let archiveURL = DocumentsDirectory.appendingPathComponent("pictures")
 
 class PicturesList {
   
   static let pList = PicturesList()
   
-  var savePicturesQueue: dispatch_queue_t!
+  var savePicturesQueue: DispatchQueue!
   var pictures: [Picture]
   
   init() {
-    savePicturesQueue = dispatch_queue_create("net.nkpro.fixdrive.savePictures.queue", DISPATCH_QUEUE_CONCURRENT)
-    if let pictures = NSKeyedUnarchiver.unarchiveObjectWithFile(archiveURL.path!) as? [Picture] {
+    savePicturesQueue = DispatchQueue(label: "net.nkpro.fixdrive.savePictures.queue", attributes: DispatchQueue.Attributes.concurrent)
+    if let pictures = NSKeyedUnarchiver.unarchiveObject(withFile: archiveURL.path) as? [Picture] {
       self.pictures = pictures
     } else {
       self.pictures = [Picture]()
@@ -28,8 +28,8 @@ class PicturesList {
   }
   
   func savePictures() {
-    dispatch_async(savePicturesQueue) {
-      let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.pictures, toFile: archiveURL.path!)
+    savePicturesQueue.async {
+      let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.pictures, toFile: archiveURL.path)
       if !isSuccessfulSave {
         print("Failed to save pictures...")
       } else {

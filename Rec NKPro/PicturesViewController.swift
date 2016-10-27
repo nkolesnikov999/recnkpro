@@ -12,9 +12,9 @@ import Photos
 class PicturesViewController: UITableViewController {
   
   enum AlertMessage: Int {
-    case FullVersion = 0
-    case PhotoSaved = 1
-    case PhotoNoSaved = 2
+    case fullVersion = 0
+    case photoSaved = 1
+    case photoNoSaved = 2
   }
 
   var image: UIImage?
@@ -23,15 +23,15 @@ class PicturesViewController: UITableViewController {
     super.viewDidLoad()
     
     // Do any additional setup after loading the view.
-    navigationItem.rightBarButtonItem = editButtonItem()
+    navigationItem.rightBarButtonItem = editButtonItem
   }
   
-  override func viewWillAppear(animated: Bool) {
+  override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     tableView.reloadData()
   }
   
-  override func viewDidDisappear(animated: Bool) {
+  override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     PicturesList.pList.savePictures()
   }
@@ -41,28 +41,28 @@ class PicturesViewController: UITableViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     
     return true
   }
   
-  override func shouldAutorotate() -> Bool {
+  override var shouldAutorotate : Bool {
     return true
   }
   
-  @IBAction func tapCamera(sender: UIBarButtonItem) {
-    dismissViewControllerAnimated(true, completion: nil)
+  @IBAction func tapCamera(_ sender: UIBarButtonItem) {
+    dismiss(animated: true, completion: nil)
   }
   
-  func removeImage(picture: Picture) {
+  func removeImage(_ picture: Picture) {
     
-    let directory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    guard let path = directory.URLByAppendingPathComponent(picture.title).path else { return }
+    let directory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    let path = directory.appendingPathComponent(picture.title).path
     
-    let fileManager = NSFileManager.defaultManager()
-    if fileManager.fileExistsAtPath(path) {
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: path) {
       do {
-        try fileManager.removeItemAtPath(path)
+        try fileManager.removeItem(atPath: path)
         //print("Image deleted")
       } catch {
         let nserror = error as NSError
@@ -72,9 +72,9 @@ class PicturesViewController: UITableViewController {
 
   }
   
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "pictureSegue" {
-      if let destVC = segue.destinationViewController as? ZoomedPhotoViewController {
+      if let destVC = segue.destination as? ZoomedPhotoViewController {
         if let image = image {
           destVC.image = image
         }
@@ -82,13 +82,13 @@ class PicturesViewController: UITableViewController {
     }
   }
 
-  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return PicturesList.pList.pictures.count
   }
   
-  override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier("PictureCell", forIndexPath: indexPath) as UITableViewCell
-    let picture = PicturesList.pList.pictures[indexPath.row]
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "PictureCell", for: indexPath) as UITableViewCell
+    let picture = PicturesList.pList.pictures[(indexPath as NSIndexPath).row]
     
     cell.textLabel?.text = picture.title
     cell.detailTextLabel?.text = picture.address
@@ -100,44 +100,44 @@ class PicturesViewController: UITableViewController {
     return cell
   }
 
-  override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+  override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
     
-    let picture = PicturesList.pList.pictures[indexPath.row]
+    let picture = PicturesList.pList.pictures[(indexPath as NSIndexPath).row]
     image = picture.loadImage()
     
     return indexPath
   }
   
-  override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-    if editingStyle == UITableViewCellEditingStyle.Delete {
-      let picture = PicturesList.pList.pictures[indexPath.row]
-      PicturesList.pList.pictures.removeAtIndex(indexPath.row)
-      tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    if editingStyle == UITableViewCellEditingStyle.delete {
+      let picture = PicturesList.pList.pictures[(indexPath as NSIndexPath).row]
+      PicturesList.pList.pictures.remove(at: (indexPath as NSIndexPath).row)
+      tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
       removeImage(picture)
       //PicturesList.pList.savePictures()
     }
   }
   
-  override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
     
     return true
   }
   
-  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
   }
   
-  override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+  override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
     
-    let picture = PicturesList.pList.pictures[indexPath.row]
+    let picture = PicturesList.pList.pictures[(indexPath as NSIndexPath).row]
     let image = picture.loadImage()
-    let optionMenu = UIAlertController(title: picture.title, message: nil, preferredStyle: .ActionSheet)
+    let optionMenu = UIAlertController(title: picture.title, message: nil, preferredStyle: .actionSheet)
     
     let shareAction = UIAlertAction(title: NSLocalizedString("Share", comment: "AssetsVC: Share"),
-                                     style: .Default, handler: {
+                                     style: .default, handler: {
                                       (alert: UIAlertAction!) -> Void in
                                       if IAPHelper.iapHelper.setFullVersion {
-                                        let dateString = self.dateStringFrom(picture.date)
+                                        let dateString = self.dateStringFrom(picture.date as Date)
                                         var locationMessage = ""
                                         if let location = picture.location {
                                           locationMessage = self.coordinateStringFrom(location)
@@ -145,34 +145,34 @@ class PicturesViewController: UITableViewController {
                                         let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
                                         if let image = image {
                                         let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
-                                          activityVC.excludedActivityTypes = [UIActivityTypeSaveToCameraRoll]
+                                          activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
                                           if let popoverController = activityVC.popoverPresentationController {
-                                            let cell = tableView.cellForRowAtIndexPath(indexPath)
+                                            let cell = tableView.cellForRow(at: indexPath)
                                             popoverController.sourceView = cell
                                             if let cell = cell {
                                               popoverController.sourceRect = cell.bounds
                                             }
                                           }
                                           defer {
-                                            self.presentViewController(activityVC, animated: true, completion: nil)
+                                            self.present(activityVC, animated: true, completion: nil)
                                           }
                                         }
                                       } else {
-                                        self.showAlert(.FullVersion)
+                                        self.showAlert(.fullVersion)
                                       }
     })
     
     let moveAction = UIAlertAction(title: NSLocalizedString("Move to Photo", comment: "AssetsVC: Move to Photo"),
-                                   style: .Default, handler: {
+                                   style: .default, handler: {
                                     (alert: UIAlertAction!) -> Void in
                                     if IAPHelper.iapHelper.setFullVersion {
                                       if let newImage = image {
-                                        PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-                                          let assetRequest = PHAssetCreationRequest.creationRequestForAssetFromImage(newImage)
+                                        PHPhotoLibrary.shared().performChanges({ () -> Void in
+                                          let assetRequest = PHAssetCreationRequest.creationRequestForAsset(from: newImage)
                                           if let location = picture.location {
                                             assetRequest.location = location
                                           }
-                                          assetRequest.creationDate = picture.date
+                                          assetRequest.creationDate = picture.date as Date
                                         }) { (success, error) -> Void in
                                           if let nserror = error {
                                             print("ERROR: PictureVC.SavePhoto - \(nserror)")
@@ -180,72 +180,72 @@ class PicturesViewController: UITableViewController {
                                           if success {
                                             //print("Image saved")
                                             self.removeImage(picture)
-                                            PicturesList.pList.pictures.removeAtIndex(indexPath.row)
+                                            PicturesList.pList.pictures.remove(at: (indexPath as NSIndexPath).row)
                                             //PicturesList.pList.savePictures()
-                                            dispatch_async(dispatch_get_main_queue()) {
-                                              tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+                                            DispatchQueue.main.async {
+                                              tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
                                             }
                                           } else {
                                             //print("Image didn't save")
-                                            dispatch_async(dispatch_get_main_queue()) {
-                                              self.showAlert(.PhotoNoSaved)
+                                            DispatchQueue.main.async {
+                                              self.showAlert(.photoNoSaved)
                                             }
                                           }
                                         }
                                       }
 
                                     } else {
-                                      self.showAlert(.FullVersion)
+                                      self.showAlert(.fullVersion)
                                     }
     })
     
-    let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .Default, handler: {
+    let copyAction = UIAlertAction(title: NSLocalizedString("Copy to Photo", comment: "AssetsVC: Copy to Photo"),      style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Copy file
       if IAPHelper.iapHelper.setFullVersion {
         
         if let newImage = image {
-          PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
-            let assetRequest = PHAssetCreationRequest.creationRequestForAssetFromImage(newImage)
+          PHPhotoLibrary.shared().performChanges({ () -> Void in
+            let assetRequest = PHAssetCreationRequest.creationRequestForAsset(from: newImage)
             if let location = picture.location {
               assetRequest.location = location
               //print("location: \(location)")
             }
-            assetRequest.creationDate = picture.date
+            assetRequest.creationDate = picture.date as Date
           }) { (success, error) -> Void in
             if let nserror = error {
               print("ERROR: PictureVC.SavePhoto - \(nserror)")
             }
             if success {
               //print("Image saved")
-              dispatch_async(dispatch_get_main_queue()) {
-                self.showAlert(.PhotoSaved)
+              DispatchQueue.main.async {
+                self.showAlert(.photoSaved)
               }
             } else {
               //print("Image didn't save")
-              dispatch_async(dispatch_get_main_queue()) {
-                self.showAlert(.PhotoNoSaved)
+              DispatchQueue.main.async {
+                self.showAlert(.photoNoSaved)
               }
             }
           }
         }
         
       } else {
-        self.showAlert(.FullVersion)
+        self.showAlert(.fullVersion)
       }
     })
     let deleteAction = UIAlertAction(title: NSLocalizedString("Delete", comment: "AssetsVC: Delete"),
-                                     style: .Default, handler: {
+                                     style: .default, handler: {
                                       (alert: UIAlertAction!) -> Void in
                                       // Delete file
                                       self.removeImage(picture)
-                                      PicturesList.pList.pictures.removeAtIndex(indexPath.row)
+                                      PicturesList.pList.pictures.remove(at: (indexPath as NSIndexPath).row)
                                       //PicturesList.pList.savePictures()
-                                      tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+                                      tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
     })
     
     let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "AssetsVC: Cancel"),
-                                     style: .Cancel, handler: {
+                                     style: .cancel, handler: {
                                       (alert: UIAlertAction!) -> Void in
     })
     
@@ -258,24 +258,24 @@ class PicturesViewController: UITableViewController {
     optionMenu.view.tintColor = UIColor(red: 128.0/255.0, green: 0, blue: 128.0/255.0, alpha: 1)
     
     if let popoverController = optionMenu.popoverPresentationController {
-      let cell = tableView.cellForRowAtIndexPath(indexPath)
+      let cell = tableView.cellForRow(at: indexPath)
       popoverController.sourceView = cell
       if let cell = cell {
         popoverController.sourceRect = cell.bounds
       }
     }
     
-    self.presentViewController(optionMenu, animated: true, completion: nil)
+    self.present(optionMenu, animated: true, completion: nil)
   }
   
-  func dateStringFrom(date: NSDate) -> String {
-    let dateFormater = NSDateFormatter()
+  func dateStringFrom(_ date: Date) -> String {
+    let dateFormater = DateFormatter()
     dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
-    let timeString = dateFormater.stringFromDate(date)
+    let timeString = dateFormater.string(from: date)
     return "\(timeString)\n"
   }
   
-  func coordinateStringFrom(location: CLLocation) -> String {
+  func coordinateStringFrom(_ location: CLLocation) -> String {
     var latitudeStr = ""
     var longitudeStr = ""
     if location.coordinate.latitude >= 0 {
@@ -293,26 +293,26 @@ class PicturesViewController: UITableViewController {
     return "\(latitudeStr), \(longitudeStr)\n"
   }
   
-  func showAlert(alert: AlertMessage) {
+  func showAlert(_ alert: AlertMessage) {
     
     var message = ""
     
     switch alert {
-    case .FullVersion:
+    case .fullVersion:
       message = NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "PictureVC FullVersion")
-    case .PhotoSaved:
+    case .photoSaved:
       message = NSLocalizedString("Photo has been copied", comment: "PictureVC PhotoSaved")
-    case .PhotoNoSaved:
+    case .photoNoSaved:
       message = NSLocalizedString("Photo hasn't been copied", comment: "PictureVC PhotoNoSaved")
     }
     
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .Alert)
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
       
     }
     alert.addAction(cancelAction)
-    self.presentViewController(alert, animated: true, completion: nil)
+    self.present(alert, animated: true, completion: nil)
   }
   
 }

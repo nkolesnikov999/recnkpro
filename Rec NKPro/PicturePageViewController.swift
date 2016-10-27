@@ -42,16 +42,16 @@ class PicturePageViewController: UIPageViewController {
       // 2
       setViewControllers(
         viewControllers,
-        direction: .Forward,
+        direction: .forward,
         animated: false,
         completion: nil
       )
     }
   }
   
-  func viewPictureController(index: Int) -> PictureViewController? {
+  func viewPictureController(_ index: Int) -> PictureViewController? {
     if let storyboard = storyboard,
-      page = storyboard.instantiateViewControllerWithIdentifier("PictureViewController")
+      let page = storyboard.instantiateViewController(withIdentifier: "PictureViewController")
         as? PictureViewController {
       if picturesList.count > 0 {
         page.picture = picturesList[index]
@@ -67,10 +67,10 @@ class PicturePageViewController: UIPageViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  func indexChanged(index: Int) {
+  func indexChanged(_ index: Int) {
     
       // what direction are we moving in?
-      let direction: UIPageViewControllerNavigationDirection = index < oldIndex ? .Reverse : .Forward
+      let direction: UIPageViewControllerNavigationDirection = index < oldIndex ? .reverse : .forward
       // set the new page, animated!
       if let pictureVC = viewPictureController(index) {
         if index != oldIndex {
@@ -83,28 +83,28 @@ class PicturePageViewController: UIPageViewController {
 }
 
 extension PicturePageViewController: UIPageViewControllerDataSource {
-  func pageViewController(pageViewController: UIPageViewController,
-                          viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
+  func pageViewController(_ pageViewController: UIPageViewController,
+                          viewControllerBefore viewController: UIViewController) -> UIViewController? {
     
     if let viewController = viewController as? PictureViewController {
       var index = viewController.pictureIndex
       guard index != NSNotFound && index != 0 else { return nil }
-      index = index - 1
-      return viewPictureController(index)
+      index = index! - 1
+      return viewPictureController(index!)
     }
     return nil
   }
   
   // 2
-  func pageViewController(pageViewController: UIPageViewController,
-                          viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
+  func pageViewController(_ pageViewController: UIPageViewController,
+                          viewControllerAfter viewController: UIViewController) -> UIViewController? {
     if picturesList.count == 0 { return nil }
     if let viewController = viewController as? PictureViewController {
       var index = viewController.pictureIndex
       guard index != NSNotFound else { return nil }
-      index = index + 1
+      index = index! + 1
       guard index != picturesList.count else {return nil}
-      return viewPictureController(index)
+      return viewPictureController(index!)
     }
     return nil
   }
@@ -112,7 +112,7 @@ extension PicturePageViewController: UIPageViewControllerDataSource {
 
 extension PicturePageViewController: UIPageViewControllerDelegate {
   
-  func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+  func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
     if let currentTutorialPage = pageViewController.viewControllers![0] as? PictureViewController {
       currentIndex = currentTutorialPage.pictureIndex
       mainDelegate?.currentIndex = currentTutorialPage.pictureIndex

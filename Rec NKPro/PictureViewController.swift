@@ -27,27 +27,27 @@ class PictureViewController: UIViewController {
     addresLabel.text = " "
     
     if let picture = self.picture {
-      let dateFormater = NSDateFormatter()
+      let dateFormater = DateFormatter()
       dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
-      dateLabel.text = dateFormater.stringFromDate(picture.date)
+      dateLabel.text = dateFormater.string(from: picture.date as Date)
       addresLabel.text = picture.address
       //print("Address: \(picture.address)")
       image = picture.loadImage()
     }
     
     if pictureIndex == 0 {
-      beforeLabel.hidden = true
+      beforeLabel.isHidden = true
     }
     
     let count = PicturesList.pList.pictures.count
     if pictureIndex == count - 1 || count == 0 {
-      afterLabel.hidden = true
+      afterLabel.isHidden = true
     }
     
     // Do any additional setup after loading the view.
   }
   
-  override func viewWillAppear(animated: Bool) {
+  override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     if let image = self.image {
       pictureView.image = image.thumbnailOfSize(CGSize(width: pictureView.bounds.width, height: pictureView.bounds.height))
@@ -61,17 +61,17 @@ class PictureViewController: UIViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  @IBAction func openZoomingController(sender: AnyObject) {
+  @IBAction func openZoomingController(_ sender: AnyObject) {
     if image != nil {
-      self.performSegueWithIdentifier("zoomSegue", sender: nil)
+      self.performSegue(withIdentifier: "zoomSegue", sender: nil)
     }
   }
   
    // MARK: - Navigation
   
-   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "zoomSegue" {
-      if let destVC = segue.destinationViewController as? ZoomedPhotoViewController {
+      if let destVC = segue.destination as? ZoomedPhotoViewController {
         destVC.image = image
       }
     }

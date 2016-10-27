@@ -34,9 +34,9 @@ protocol CaptureManagerDelegate : class {
   func recordingWillStop()
   func recordingDidStop()
   func setupPreviewLayer()
-  func newLocationUpdate(speed: String)
-  func showError(error: NSError)
-  func distanceUpdate(location: CLLocation)
+  func newLocationUpdate(_ speed: String)
+  func showError(_ error: NSError)
+  func distanceUpdate(_ location: CLLocation)
 }
 
 class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -73,7 +73,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var time: String = "" {
     didSet {
       if textOnVideo {
-        dispatch_async(imageCreateQueue!) {
+        imageCreateQueue!.async {
          self.imageFromText()
         }
       }
@@ -123,7 +123,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var ciInputImage: CIImage!
   var ciFilter: CIFilter!
   
-  var movieURL: NSURL!
+  var movieURL: URL!
   var assetWriter: AVAssetWriter?
   var assetWriterAudioIn: AVAssetWriterInput?
   var assetWriterVideoIn: AVAssetWriterInput?
@@ -140,8 +140,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
   }
   
-  var movieWritingQueue: dispatch_queue_t?
-  var imageCreateQueue: dispatch_queue_t?
+  var movieWritingQueue: DispatchQueue?
+  var imageCreateQueue: DispatchQueue?
   
   var recording = false
   var readyToRecordAudio = false
@@ -172,8 +172,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
     frc = FrameRateCalculator()
     
-    let eaglContext = EAGLContext(API: EAGLRenderingAPI.OpenGLES2)
-    ciContext = CIContext(EAGLContext: eaglContext)
+    let eaglContext = EAGLContext(api: EAGLRenderingAPI.openGLES2)
+    ciContext = CIContext(eaglContext: eaglContext!)
     colorSpace = CGColorSpaceCreateDeviceRGB()
     
     ciFilter = CIFilter(name: "CISourceOverCompositing")
@@ -183,37 +183,37 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   //MARK: - Asset writing
   
-  func writeSampleBuffer(sampleBuffer: CMSampleBufferRef, mediaType: String) {
+  func writeSampleBuffer(_ sampleBuffer: CMSampleBuffer, mediaType: String) {
     //print("CaptureManager.writeSampleBuffer")
     if let assetWriter = self.assetWriter {
-      if assetWriter.status == AVAssetWriterStatus.Unknown {
+      if assetWriter.status == AVAssetWriterStatus.unknown {
         // If the asset writer status is unknown, implies writing hasn't started yet, hence start writing with start time as the buffer's presentation timestamp
         if assetWriter.startWriting() {
           // print("SourceTime: \(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))")
-          assetWriter.startSessionAtSourceTime(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+          assetWriter.startSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         } else {
           if let error = assetWriter.error {
             //print("ERROR1: CaptureManager.writeSampleBuffer")
-            delegate?.showError(error)
+            delegate?.showError(error as NSError)
           }
         }
       }
       
-      if assetWriter.status == AVAssetWriterStatus.Writing {
+      if assetWriter.status == AVAssetWriterStatus.writing {
         // If the asset writer status is writing, append sample buffer to its corresponding asset writer input
         if mediaType == AVMediaTypeVideo {
           if let assetWriterVideoIn = self.assetWriterVideoIn {
-            if assetWriterVideoIn.readyForMoreMediaData {
+            if assetWriterVideoIn.isReadyForMoreMediaData {
               addingTextToPixelBuffer(sampleBuffer)
             }
           }
         } else if mediaType == AVMediaTypeAudio {
           if let assetWriterAudioIn = self.assetWriterAudioIn {
-            if assetWriterAudioIn.readyForMoreMediaData {
-              if !assetWriterAudioIn.appendSampleBuffer(sampleBuffer) {
+            if assetWriterAudioIn.isReadyForMoreMediaData {
+              if !assetWriterAudioIn.append(sampleBuffer) {
                 if let error = assetWriter.error {
                   //print("ERROR3: CaptureManager.writeSampleBuffer")
-                  delegate?.showError(error)
+                  delegate?.showError(error as NSError)
                 }
               }
             }
@@ -223,14 +223,14 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
   }
   
-  func addingTextToPixelBuffer(sampleBuffer: CMSampleBufferRef) {
+  func addingTextToPixelBuffer(_ sampleBuffer: CMSampleBuffer) {
     
     let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
     
     let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
     
     let options : [String : AnyObject]? = nil // [kCIImageColorSpace : colorSpace!]
-    let inputBackImage = CIImage(CVPixelBuffer: pixelBuffer! as CVPixelBuffer, options: options)
+    let inputBackImage = CIImage(cvPixelBuffer: pixelBuffer! as CVPixelBuffer, options: options)
     
     var outputImage: CIImage?
     
@@ -249,12 +249,12 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       if err == 0 {
         if let buffer = renderedOutputPixelBuffer {
           if let image = outputImage {
-            self.ciContext.render(image, toCVPixelBuffer: buffer, bounds: image.extent, colorSpace: self.colorSpace)
+            self.ciContext.render(image, to: buffer, bounds: image.extent, colorSpace: self.colorSpace)
             
             //print("IMAGE_SIZE: \(image.extent)")
             
             if let adaptor = self.assetWriterInputPixelBufferAdaptor {
-              if !adaptor.appendPixelBuffer(buffer, withPresentationTime: timestamp) {
+              if !adaptor.append(buffer, withPresentationTime: timestamp) {
                 print("Timestamp error: \(timestamp) <=======================")
               } else {
                 // print("Timestamp: \(timestamp)")
@@ -270,8 +270,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   func imageFromText() {
       // Setup the font specific variables
-      let textColor = UIColor.redColor()
-      let backColor = UIColor.clearColor()
+      let textColor = UIColor.red
+      let backColor = UIColor.clear
       
       var textSize: CGFloat = 10
       
@@ -302,7 +302,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       //print("TEXT: \(text)")
       
-      let size = text.sizeWithAttributes(textFontAttributes)
+      let size = text.size(attributes: textFontAttributes)
       
       if self.widthVideo != 0 && self.heightVideo != 0 {
         
@@ -317,63 +317,63 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         if self.widthVideo < 320 {
           margin = 10
           switch self.referenceOrientation! {
-          case .LandscapeRight, .Portrait:
-            if self.typeCamera == .Front {
-              CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
-              CGContextRotateCTM(context, CGFloat(M_PI))
+          case .landscapeRight, .portrait:
+            if self.typeCamera == .front {
+              context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
+              context?.rotate(by: CGFloat(M_PI))
             } else {
-              CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
-              CGContextRotateCTM(context, CGFloat(0))
+              context?.translateBy(x: margin, y: self.heightVideo-size.height - margin)
+              context?.rotate(by: CGFloat(0))
             }
-          case .LandscapeLeft, .PortraitUpsideDown:
-            if self.typeCamera == .Front {
-              CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
-              CGContextRotateCTM(context, CGFloat(0))
+          case .landscapeLeft, .portraitUpsideDown:
+            if self.typeCamera == .front {
+              context?.translateBy(x: margin, y: self.heightVideo-size.height - margin)
+              context?.rotate(by: CGFloat(0))
             } else {
-              CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
-              CGContextRotateCTM(context, CGFloat(M_PI))
+              context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
+              context?.rotate(by: CGFloat(M_PI))
             }
           }
           
         } else {
           switch self.referenceOrientation! {
-          case .Portrait:
-            CGContextTranslateCTM(context, self.widthVideo-size.height - margin, self.heightVideo - margin)
-            CGContextRotateCTM(context, CGFloat(-M_PI_2))
-          case .PortraitUpsideDown:
-            CGContextTranslateCTM(context, size.height + margin, margin)
-            CGContextRotateCTM(context, CGFloat(M_PI_2))
-          case .LandscapeRight:
-            if self.typeCamera == .Front {
-              CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
-              CGContextRotateCTM(context, CGFloat(M_PI))
+          case .portrait:
+            context?.translateBy(x: self.widthVideo-size.height - margin, y: self.heightVideo - margin)
+            context?.rotate(by: CGFloat(-M_PI_2))
+          case .portraitUpsideDown:
+            context?.translateBy(x: size.height + margin, y: margin)
+            context?.rotate(by: CGFloat(M_PI_2))
+          case .landscapeRight:
+            if self.typeCamera == .front {
+              context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
+              context?.rotate(by: CGFloat(M_PI))
             } else {
-              CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
-              CGContextRotateCTM(context, CGFloat(0))
+              context?.translateBy(x: margin, y: self.heightVideo-size.height - margin)
+              context?.rotate(by: CGFloat(0))
             }
-          case .LandscapeLeft:
-            if self.typeCamera == .Front {
-              CGContextTranslateCTM(context, margin, self.heightVideo-size.height - margin)
-              CGContextRotateCTM(context, CGFloat(0))
+          case .landscapeLeft:
+            if self.typeCamera == .front {
+              context?.translateBy(x: margin, y: self.heightVideo-size.height - margin)
+              context?.rotate(by: CGFloat(0))
             } else {
-              CGContextTranslateCTM(context, self.widthVideo - margin, size.height + margin)
-              CGContextRotateCTM(context, CGFloat(M_PI))
+              context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
+              context?.rotate(by: CGFloat(M_PI))
             }
           }
         }
         // draw in context, you can use also drawInRect:withFont:
-        text.drawAtPoint(CGPointMake(0, 0), withAttributes: textFontAttributes)
+        text.draw(at: CGPoint(x: 0, y: 0), withAttributes: textFontAttributes)
         // transfer image
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        self.ciInputImage = CIImage(CGImage: image.CGImage!)
+        self.ciInputImage = CIImage(cgImage: (image?.cgImage!)!)
         //print("ciInputImage")
       }
 
   }
   
-  func setupAssetWriterAudioInput(currentFormatDescription: CMFormatDescriptionRef) -> Bool {
+  func setupAssetWriterAudioInput(_ currentFormatDescription: CMFormatDescription) -> Bool {
     //print("CaptureManager.setupAssetWriterAudioInput")
     // Create audio output settings dictionary which would be used to configure asset writer input
     let currentASBD = CMAudioFormatDescriptionGetStreamBasicDescription(currentFormatDescription)
@@ -381,23 +381,23 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     let currentChannelLayout = CMAudioFormatDescriptionGetChannelLayout(currentFormatDescription, &aclSize)
     
     // AVChannelLayoutKey must be specified, but if we don't know any better give an empty data and let AVAssetWriter decide.
-    var currentChannelLayoutData = NSData()
+    var currentChannelLayoutData = Data()
     if currentChannelLayout != nil && aclSize > 0 {
-      currentChannelLayoutData = NSData(bytes: currentChannelLayout, length: aclSize)
+      currentChannelLayoutData = Data(bytes: UnsafeRawPointer(currentChannelLayout!), count: aclSize)
     }
     
-    let audioCompressionSettings: [String : AnyObject]? = [AVFormatIDKey : NSNumber(unsignedInt: kAudioFormatMPEG4AAC), AVSampleRateKey : NSNumber(double: currentASBD.memory.mSampleRate), AVEncoderBitRatePerChannelKey : NSNumber(integer: 64000), AVNumberOfChannelsKey : NSNumber(unsignedInt: currentASBD.memory.mChannelsPerFrame), AVChannelLayoutKey : currentChannelLayoutData]
+    let audioCompressionSettings: [String : AnyObject]? = [AVFormatIDKey : NSNumber(value: kAudioFormatMPEG4AAC as UInt32), AVSampleRateKey : NSNumber(value: currentASBD!.pointee.mSampleRate as Double), AVEncoderBitRatePerChannelKey : NSNumber(value: 64000 as Int), AVNumberOfChannelsKey : NSNumber(value: currentASBD!.pointee.mChannelsPerFrame as UInt32), AVChannelLayoutKey : currentChannelLayoutData as AnyObject]
     
     if let assetWriter = self.assetWriter {
-      if assetWriter.canApplyOutputSettings(audioCompressionSettings, forMediaType: AVMediaTypeAudio) {
+      if assetWriter.canApply(outputSettings: audioCompressionSettings, forMediaType: AVMediaTypeAudio) {
         // Intialize asset writer audio input with the above created settings dictionary
         assetWriterAudioIn = AVAssetWriterInput(mediaType: AVMediaTypeAudio, outputSettings: audioCompressionSettings)
         
         if let assetWriterAudioIn = self.assetWriterAudioIn {
           assetWriterAudioIn.expectsMediaDataInRealTime = true
           // Add asset writer input to asset writer
-          if assetWriter.canAddInput(assetWriterAudioIn) {
-            assetWriter.addInput(assetWriterAudioIn)
+          if assetWriter.canAdd(assetWriterAudioIn) {
+            assetWriter.add(assetWriterAudioIn)
           } else {
             print("Couldn't add asset writer audio input.")
             return false
@@ -418,7 +418,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     return true
   }
   
-  func setupAssetWriterVideoInput(currentFormatDescription: CMFormatDescriptionRef) -> Bool {
+  func setupAssetWriterVideoInput(_ currentFormatDescription: CMFormatDescription) -> Bool {
     //print("CaptureManager.setupAssetWriterVideoInput")
     // Create video output settings dictionary which would be used to configure asset writer input
     var bitsPerPixel: CGFloat = 0
@@ -440,12 +440,12 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
     bitsPerSecond = UInt(numPixels) * UInt(bitsPerPixel)
     
-    let videoCompressionProperties = [AVVideoAverageBitRateKey : NSNumber(unsignedLong: bitsPerSecond), AVVideoMaxKeyFrameIntervalKey : NSNumber(integer: 30)]
+    let videoCompressionProperties = [AVVideoAverageBitRateKey : NSNumber(value: bitsPerSecond as UInt), AVVideoMaxKeyFrameIntervalKey : NSNumber(value: 30 as Int)]
     
-    let videoCompressionSettings: [String : AnyObject]? = [AVVideoCodecKey : AVVideoCodecH264, AVVideoWidthKey : NSNumber(int: dimensions.width), AVVideoHeightKey : NSNumber(int: dimensions.height), AVVideoCompressionPropertiesKey : videoCompressionProperties]
+    let videoCompressionSettings: [String : AnyObject]? = [AVVideoCodecKey : AVVideoCodecH264 as AnyObject, AVVideoWidthKey : NSNumber(value: dimensions.width as Int32), AVVideoHeightKey : NSNumber(value: dimensions.height as Int32), AVVideoCompressionPropertiesKey : videoCompressionProperties as AnyObject]
     
     if let assetWriter = self.assetWriter {
-      if assetWriter.canApplyOutputSettings(videoCompressionSettings, forMediaType: AVMediaTypeVideo) {
+      if assetWriter.canApply(outputSettings: videoCompressionSettings, forMediaType: AVMediaTypeVideo) {
         // Intialize asset writer video input with the above created settings dictionary
         assetWriterVideoIn = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: videoCompressionSettings)
         if let assetWriterVideoIn = self.assetWriterVideoIn {
@@ -454,16 +454,16 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
           
           // create a pixel buffer adaptor for the asset writer; we need to obtain pixel buffers for rendering later from its pixel buffer pool
           let sourcePixelBufferAttributes: [String : AnyObject]? =
-          [kCVPixelBufferPixelFormatTypeKey as String : NSNumber(unsignedInt: kCVPixelFormatType_32BGRA),
-            kCVPixelBufferWidthKey as String : NSNumber(int: dimensions.width),
-            kCVPixelBufferHeightKey as String : NSNumber(int: dimensions.height),
+          [kCVPixelBufferPixelFormatTypeKey as String : NSNumber(value: kCVPixelFormatType_32BGRA as UInt32),
+            kCVPixelBufferWidthKey as String : NSNumber(value: dimensions.width as Int32),
+            kCVPixelBufferHeightKey as String : NSNumber(value: dimensions.height as Int32),
             kCVPixelFormatOpenGLESCompatibility as String : kCFBooleanTrue]
           
           assetWriterInputPixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: assetWriterVideoIn, sourcePixelBufferAttributes: sourcePixelBufferAttributes)
           
           // Add asset writer input to asset writer
-          if assetWriter.canAddInput(assetWriterVideoIn) {
-            assetWriter.addInput(assetWriterVideoIn)
+          if assetWriter.canAdd(assetWriterVideoIn) {
+            assetWriter.add(assetWriterVideoIn)
           } else {
             print("Couldn't add asset writer video input.")
             return false
@@ -493,7 +493,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     let specifications = [[kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String: AVMetadataIdentifierQuickTimeMetadataLocationISO6709, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String: kCMMetadataDataType_QuickTimeMetadataLocation_ISO6709 as String], [kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String : FixdriveSpeedIdentifier, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String : kCMMetadataBaseDataType_UTF8 as String], [kCMMetadataFormatDescriptionMetadataSpecificationKey_Identifier as String : FixdriveTimeIdentifier, kCMMetadataFormatDescriptionMetadataSpecificationKey_DataType as String : kCMMetadataBaseDataType_UTF8 as String]]
     
     // Create metadata format description with the above created specifications which will be used to configure asset writer input
-    let err = CMMetadataFormatDescriptionCreateWithMetadataSpecifications(kCFAllocatorDefault, kCMMetadataFormatType_Boxed, specifications, &metadataFormatDescription)
+    let err = CMMetadataFormatDescriptionCreateWithMetadataSpecifications(kCFAllocatorDefault, kCMMetadataFormatType_Boxed, specifications as CFArray, &metadataFormatDescription)
     
     if err == 0 {
       // Intialize asset writer video input with the above created specifications
@@ -504,8 +504,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         assetWriterMetadataAdaptor = AVAssetWriterInputMetadataAdaptor(assetWriterInput: assetWriterMetadataIn)
         
         if let assetWriter = self.assetWriter {
-          if assetWriter.canAddInput(assetWriterMetadataIn) {
-            assetWriter.addInput(assetWriterMetadataIn)
+          if assetWriter.canAdd(assetWriterMetadataIn) {
+            assetWriter.add(assetWriterMetadataIn)
           } else {
             print("Couldn't add asset writer metadata input.")
             return false
@@ -532,7 +532,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     // locationManager.startUpdatingLocation()
     setAutofocusing()
     
-    dispatch_async(movieWritingQueue!) { () -> Void in
+    movieWritingQueue!.async { () -> Void in
       if self.recordingWillBeStarted || self.recording { return }
       
       self.recordingWillBeStarted = true
@@ -542,11 +542,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       // Create a new movieURL
       
-      self.movieURL = NSURL.fileURLWithPath(NSString(format: "%@%@", NSTemporaryDirectory(), "\(self.createDateString()).mov") as String)
+      self.movieURL = URL(fileURLWithPath: NSString(format: "%@%@", NSTemporaryDirectory(), "\(self.createDateString()).mov") as String)
       
       // Create an asset writer
       do {
-        try self.assetWriter = AVAssetWriter(URL: self.movieURL, fileType: AVFileTypeQuickTimeMovie)
+        try self.assetWriter = AVAssetWriter(outputURL: self.movieURL, fileType: AVFileTypeQuickTimeMovie)
       } catch {
         //print("ERROR: CaptureManager.startRecording")
         let nserror = error as NSError
@@ -577,14 +577,14 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     // recordingDidStop is called from saveMovieToCameraRoll
     self.delegate?.recordingWillStop()
     
-    dispatch_async(movieWritingQueue!) { () -> Void in
+    movieWritingQueue!.async { () -> Void in
       if self.recordingWillBeStopped || !self.recording { return }
       self.recordingWillBeStopped = true
       if let writer = writer {
-        writer.finishWritingWithCompletionHandler({ () -> Void in
+        writer.finishWriting(completionHandler: { () -> Void in
           let completionStatus = writer.status
           switch (completionStatus) {
-          case AVAssetWriterStatus.Completed:
+          case AVAssetWriterStatus.completed:
             // Save the movie stored in the temp folder into camera roll.
             self.readyToRecordVideo = false
             self.readyToRecordAudio = false
@@ -599,10 +599,10 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             self.frc.reset()
             //
             
-          case AVAssetWriterStatus.Failed:
+          case AVAssetWriterStatus.failed:
             if let error = writer.error {
               //print("ERROR: CaptureManager.stopRecording")
-              self.delegate?.showError(error)
+              self.delegate?.showError(error as NSError)
             }
           default:
             break
@@ -626,10 +626,10 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   //MARK: - Capture
   
-  func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!) {
+  func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
     
     // print("CaptureManager.captureOutput_sampleBuffer")
-    dispatch_async(movieWritingQueue!) { () -> Void in
+    movieWritingQueue!.async { () -> Void in
       if self.assetWriter != nil {
         let wasReadyToRecord = self.inputsReadyToRecord
         if (connection == self.videoConnection) {
@@ -671,9 +671,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
   }
   
-  func videoDeviceWithPosition(position: AVCaptureDevicePosition) -> AVCaptureDevice? {
+  func videoDeviceWithPosition(_ position: AVCaptureDevicePosition) -> AVCaptureDevice? {
     //print("CaptureManager.videoDeviceWithPosition")
-    let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as! [AVCaptureDevice]
+    let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! [AVCaptureDevice]
     for device in devices {
       if device.position == position {
         return device
@@ -684,14 +684,14 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   func audioDevice() -> AVCaptureDevice? {
     //print("CaptureManager.audioDevice")
-    let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeAudio) as! [AVCaptureDevice]
+    let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeAudio) as! [AVCaptureDevice]
     if devices.count > 0 {
       return devices.first
     }
     return nil
   }
   
-  func setupCaptureSession() -> Bool {
+  func setupCaptureSession() {
     //print("CaptureManager.setupCaptureSession")
     // Create capture session
     captureSession = AVCaptureSession()
@@ -710,7 +710,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         if session .canAddOutput(audioOut) {
           session.addOutput(audioOut)
         }
-        audioConnection = audioOut.connectionWithMediaType(AVMediaTypeAudio)
+        audioConnection = audioOut.connection(withMediaType: AVMediaTypeAudio)
       } catch {
         print("Could not init audio device")
       }
@@ -719,20 +719,18 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
      setVideoInputOutput(session)
     }
-    
-    return true
   }
   
   func setupAndStartCaptureSession() {
     //print("CaptureManager.setupAndStartCaptureSession")
     // Create serial queue for movie writing
-    movieWritingQueue = dispatch_queue_create("net.nkpro.fixdrive.movie.queue", DISPATCH_QUEUE_SERIAL)
-    imageCreateQueue = dispatch_queue_create("net.nkpro.fixdrive.image.queue", DISPATCH_QUEUE_SERIAL)
+    movieWritingQueue = DispatchQueue(label: "net.nkpro.fixdrive.movie.queue", attributes: [])
+    imageCreateQueue = DispatchQueue(label: "net.nkpro.fixdrive.image.queue", attributes: [])
     
     if let session = captureSession {
       
-      NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CaptureManager.captureSessionStoppedRunningNotification(_:)), name: AVCaptureSessionDidStopRunningNotification, object: session)
-      if !session.running {
+      NotificationCenter.default.addObserver(self, selector: #selector(CaptureManager.captureSessionStoppedRunningNotification(_:)), name: NSNotification.Name.AVCaptureSessionDidStopRunning, object: session)
+      if !session.isRunning {
         session.startRunning()
       }
       
@@ -744,7 +742,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   func pauseCaptureSession() {
     //print("CaptureManager.pauseCaptureSession")
     if let session = captureSession {
-      if session.running {
+      if session.isRunning {
         session.stopRunning()
       }
     }
@@ -753,16 +751,16 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   func resumeCaptureSession() {
     //print("CaptureManager.resumeCaptureSession")
     if let session = captureSession {
-      if !session.running {
+      if !session.isRunning {
         session.startRunning()
       }
     }
     
   }
   
-  func captureSessionStoppedRunningNotification(notification: NSNotification) {
+  func captureSessionStoppedRunningNotification(_ notification: Notification) {
     //print("CaptureManager.captureSessionStoppedRunningNotification")
-    dispatch_async(movieWritingQueue!) { () -> Void in
+    movieWritingQueue!.async { () -> Void in
       if self.recording {
         self.stopRecording()
       }
@@ -773,7 +771,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     //print("CaptureManager.stopAndTearDownCaptureSession")
     if let session = captureSession {
       session.stopRunning()
-      NSNotificationCenter.defaultCenter().removeObserver(self, name: AVCaptureSessionDidStopRunningNotification, object: session)
+      NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVCaptureSessionDidStopRunning, object: session)
       locationManager.stopUpdatingLocation()
       //print("LM STOP")
     }
@@ -801,12 +799,12 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
   }
   
-  func setVideoInputOutput(session: AVCaptureSession) {
+  func setVideoInputOutput(_ session: AVCaptureSession) {
     var position: AVCaptureDevicePosition!
-    if typeCamera == .Front {
-      position = .Front
+    if typeCamera == .front {
+      position = .front
     } else {
-      position = .Back
+      position = .back
     }
     
     videoDevice = videoDeviceWithPosition(position)
@@ -824,7 +822,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
     videoOut = AVCaptureVideoDataOutput()
     videoOut.alwaysDiscardsLateVideoFrames = true
-    let videoSettings: [NSObject : AnyObject]! = [kCVPixelBufferPixelFormatTypeKey : NSNumber(unsignedInt: kCVPixelFormatType_32BGRA)]
+    let videoSettings: [AnyHashable: Any]! = [kCVPixelBufferPixelFormatTypeKey as AnyHashable : NSNumber(value: kCVPixelFormatType_32BGRA as UInt32)]
     videoOut.videoSettings = videoSettings
     //let videoCaptureQueue = dispatch_queue_create("net.nkpro.fixdrive.video.queue", DISPATCH_QUEUE_SERIAL)
     videoOut.setSampleBufferDelegate(self, queue: movieWritingQueue)
@@ -833,7 +831,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       session.addOutput(videoOut)
     }
     
-    videoConnection = videoOut.connectionWithMediaType(AVMediaTypeVideo)
+    videoConnection = videoOut.connection(withMediaType: AVMediaTypeVideo)
     videoOrientation = videoConnection?.videoOrientation
     
     photoOut = AVCaptureStillImageOutput()
@@ -842,7 +840,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       session.addOutput(photoOut)
     }
     
-    photoConnection = photoOut.connectionWithMediaType(AVMediaTypeVideo)
+    photoConnection = photoOut.connection(withMediaType: AVMediaTypeVideo)
     //photoConnection?.videoOrientation = referenceOrientation
     
  
@@ -856,17 +854,17 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     guard let photoConnection = self.photoConnection else { return }
     
     
-      self.photoOut.captureStillImageAsynchronouslyFromConnection(photoConnection) {
+      self.photoOut.captureStillImageAsynchronously(from: photoConnection) {
         imageDataSampleBuffer, error in
         if let error = error {
           print(error.localizedDescription)
         } else {
-          dispatch_async(self.imageCreateQueue!) {
+          self.imageCreateQueue!.async {
           self.setupHeightAndWidth(imageDataSampleBuffer)
           let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
           
           
-          if let inputImage = UIImage(data: imageData) {
+          if let inputImage = UIImage(data: imageData!) {
             let inputBackImage = CIImage(image: inputImage)
             var outputImage: CIImage?
             if self.textOnVideo {
@@ -885,16 +883,16 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             let context = CIContext(options:nil)
             
             // 2
-            let cgimg = context.createCGImage(savedCIImage, fromRect: savedCIImage.extent)
+            let cgimg = context.createCGImage(savedCIImage, from: savedCIImage.extent)
             
             // 3
-            let newImage = UIImage(CGImage: cgimg, scale: 1.0, orientation: inputImage.imageOrientation)
+            let newImage = UIImage(cgImage: cgimg!, scale: 1.0, orientation: inputImage.imageOrientation)
             
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
               self.delegate?.iconsImage = newImage.thumbnailOfSize(CGSize(width: 48, height: 48))
             }
 
-            let picture = Picture(image: newImage, date: NSDate(), location: self.location)
+            let picture = Picture(image: newImage, date: Date(), location: self.location)
             self.delegate?.picture = picture
             
           }
@@ -904,7 +902,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
   }
     
-  func setupHeightAndWidth(sampleBuffer: CMSampleBuffer!) {
+  func setupHeightAndWidth(_ sampleBuffer: CMSampleBuffer!) {
     
     //dispatch_async(imageCreateQueue!) {
       if let buffer = sampleBuffer, let formatDescription = CMSampleBufferGetFormatDescription(buffer) {
@@ -921,9 +919,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   func setAutofocusing() {
     if let device = videoDevice {
-      var mode: AVCaptureFocusMode = .AutoFocus
+      var mode: AVCaptureFocusMode = .autoFocus
       if autofocusing! {
-        mode = .ContinuousAutoFocus
+        mode = .continuousAutoFocus
       }
       if device.isFocusModeSupported(mode) {
         do {
@@ -939,7 +937,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   //MARK: - Utilities
     
-  func cmTimeForNSDate(date: NSDate) -> CMTime {
+  func cmTimeForNSDate(_ date: Date) -> CMTime {
     //print("CaptureManager.cmTimeForNSDate")
     let now = CMClockGetTime(CMClockGetHostTimeClock())
     let elapsed = -(date.timeIntervalSinceNow) // this will be a negative number if date was in the past (it should be).
@@ -949,7 +947,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     return eventTime
   }
   
-  func movieTimeForLocationTime(date: NSDate) -> CMTime {
+  func movieTimeForLocationTime(_ date: Date) -> CMTime {
     //print("CaptureManager.movieTimeForLocationTime")
     let locationTime = cmTimeForNSDate(date)
     let locationMovieTime = CMSyncConvertTime(locationTime, CMClockGetHostTimeClock(), captureSession!.masterClock)
@@ -957,24 +955,24 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     return locationMovieTime;
   }
   
-  func angleOffsetFromPortraitOrientationToOrientation(orientation: AVCaptureVideoOrientation, video: Bool) -> CGFloat {
+  func angleOffsetFromPortraitOrientationToOrientation(_ orientation: AVCaptureVideoOrientation, video: Bool) -> CGFloat {
     //print("CaptureManager.angleOffsetFromPortraitOrientationToOrientation")
     var angle: CGFloat = 0.0
     
-    if typeCamera == .Back || video {
+    if typeCamera == .back || video {
     
       switch (orientation)
       {
-      case AVCaptureVideoOrientation.Portrait:
+      case AVCaptureVideoOrientation.portrait:
         angle = 0.0
         break
-      case AVCaptureVideoOrientation.PortraitUpsideDown:
+      case AVCaptureVideoOrientation.portraitUpsideDown:
         angle = CGFloat(M_PI)
         break
-      case AVCaptureVideoOrientation.LandscapeRight:
+      case AVCaptureVideoOrientation.landscapeRight:
         angle = -CGFloat(M_PI_2)
         break
-      case AVCaptureVideoOrientation.LandscapeLeft:
+      case AVCaptureVideoOrientation.landscapeLeft:
         angle = CGFloat(M_PI_2)
         break
       }
@@ -983,16 +981,16 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       switch (orientation)
       {
-      case AVCaptureVideoOrientation.Portrait:
+      case AVCaptureVideoOrientation.portrait:
         angle = CGFloat(M_PI)
         break
-      case AVCaptureVideoOrientation.PortraitUpsideDown:
+      case AVCaptureVideoOrientation.portraitUpsideDown:
         angle = 0.0
         break
-      case AVCaptureVideoOrientation.LandscapeRight:
+      case AVCaptureVideoOrientation.landscapeRight:
         angle = -CGFloat(M_PI_2)
         break
-      case AVCaptureVideoOrientation.LandscapeLeft:
+      case AVCaptureVideoOrientation.landscapeLeft:
         angle = CGFloat(M_PI_2)
         break
       }
@@ -1004,9 +1002,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
   }
   
-  func transformFromCurrentVideoOrientationToOrientation(orientation: AVCaptureVideoOrientation) -> CGAffineTransform {
+  func transformFromCurrentVideoOrientationToOrientation(_ orientation: AVCaptureVideoOrientation) -> CGAffineTransform {
     //print("CaptureManager.transformFromCurrentVideoOrientationToOrientation")
-    var transform = CGAffineTransformIdentity
+    var transform = CGAffineTransform.identity
     
     // Calculate offsets from an arbitrary reference orientation (portrait)
     let orientationAngleOffset = angleOffsetFromPortraitOrientationToOrientation(orientation, video: false)
@@ -1014,7 +1012,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     
     // Find the difference in angle between the passed in orientation and the current video orientation
     let angleOffset = orientationAngleOffset - videoOrientationAngleOffset
-    transform = CGAffineTransformMakeRotation(angleOffset);
+    transform = CGAffineTransform(rotationAngle: angleOffset);
     
     return transform
     
@@ -1022,14 +1020,14 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   func createDateString() -> String {
     //print("CaptureManager.createDateString")
-    let dateFormater = NSDateFormatter()
+    let dateFormater = DateFormatter()
     //dateFormater.dateFormat = "yy/MM/dd HH:mm:ss"
     dateFormater.dateFormat = "yyMMdd_HHmmssSS"
     
-    return dateFormater.stringFromDate(NSDate())
+    return dateFormater.string(from: Date())
   }
   
-  func distanceFromInterva(interval: Int) -> CLLocationDistance {
+  func distanceFromInterva(_ interval: Int) -> CLLocationDistance {
     if interval == 0 {
       return kCLDistanceFilterNone
     } else {
@@ -1043,7 +1041,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
 
 extension CaptureManager : CLLocationManagerDelegate {
   
-  func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     //print("CaptureManager.locationManager_didUpdateLocations")
     
     for newLocation in locations {
@@ -1062,7 +1060,7 @@ extension CaptureManager : CLLocationManagerDelegate {
       
       var kSpeed: Float = 3.6
       var strSpeed = NSLocalizedString("km/h", comment: "CaptureManager: km/h")
-      if self.typeSpeed == .Mi {
+      if self.typeSpeed == .mi {
         kSpeed = 2.236936
         strSpeed = NSLocalizedString("mph", comment: "CaptureManager: mph")
       }
@@ -1098,9 +1096,9 @@ extension CaptureManager : CLLocationManagerDelegate {
       self.delegate?.newLocationUpdate(speedStr)
       //print("SPEED: \(speedStr)")
       
-      dispatch_async(movieWritingQueue!, { () -> Void in
+      movieWritingQueue!.async(execute: { () -> Void in
         if let assetWriter = self.assetWriter {
-          if assetWriter.status == AVAssetWriterStatus.Writing {
+          if assetWriter.status == AVAssetWriterStatus.writing {
             
             let metadataItem = AVMutableMetadataItem()
             metadataItem.identifier = AVMetadataIdentifierQuickTimeMetadataLocationISO6709
@@ -1114,27 +1112,27 @@ extension CaptureManager : CLLocationManagerDelegate {
             let speedItem = AVMutableMetadataItem()
             speedItem.identifier = FixdriveSpeedIdentifier
             speedItem.dataType = kCMMetadataBaseDataType_UTF8 as String
-            speedItem.value = String(format: "%07.2f", locationSpeed)
+            speedItem.value = String(format: "%07.2f", locationSpeed) as (NSCopying & NSObjectProtocol)?
             
             // Annotation time item
             let timeItem = AVMutableMetadataItem()
             timeItem.identifier = FixdriveTimeIdentifier
             timeItem.dataType = kCMMetadataBaseDataType_UTF8 as String
-            timeItem.value = self.time
+            timeItem.value = self.time as (NSCopying & NSObjectProtocol)?
             
             
             // Convert location time to movie time
-            let locationMovieTime = CMTimeConvertScale(self.movieTimeForLocationTime(newLocation.timestamp), 1000, CMTimeRoundingMethod.Default)
+            let locationMovieTime = CMTimeConvertScale(self.movieTimeForLocationTime(newLocation.timestamp), 1000, CMTimeRoundingMethod.default)
             let newGroup = AVTimedMetadataGroup(items: [metadataItem, speedItem, timeItem], timeRange: CMTimeRangeMake(locationMovieTime, kCMTimeInvalid))
             
             if let assetWriterMetadataIn = self.assetWriterMetadataIn, let assetWriterMetadataAdaptor = self.assetWriterMetadataAdaptor {
-              if assetWriterMetadataIn.readyForMoreMediaData {
-                if assetWriterMetadataAdaptor.appendTimedMetadataGroup(newGroup) {
+              if assetWriterMetadataIn.isReadyForMoreMediaData {
+                if assetWriterMetadataAdaptor.append(newGroup) {
                   // print("LOC_UPDATE")
                 } else {
                   if let error = assetWriter.error {
                     print("ERROR: CaptureManager.locationManager_didUpdateLocations")
-                    self.delegate?.showError(error)
+                    self.delegate?.showError(error as NSError)
                   }
                 }
               }

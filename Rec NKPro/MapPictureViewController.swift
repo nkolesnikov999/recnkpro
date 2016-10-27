@@ -33,17 +33,17 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     super.viewDidLoad()
     
     mapTypeButton.layer.cornerRadius = 10
-    mapTypeButton.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).CGColor
+    mapTypeButton.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     
     navigationItem.title = NSLocalizedString("Map", comment: "MapPictureVC - Title")
-    navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: #selector(MapPictureViewController.shareClicked))
+    navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(MapPictureViewController.shareClicked))
     
     defineStackAxis()
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.addObserver(self, selector: #selector(MapPictureViewController.defineStackAxis), name: UIDeviceOrientationDidChangeNotification, object: nil)
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.addObserver(self, selector: #selector(MapPictureViewController.defineStackAxis), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     
     mapView.delegate = self
-    mapView.mapType = .Standard
+    mapView.mapType = .standard
     loadData()
     mapView.addAnnotations(pictureLocations)
     if let index = pictureLocations.first?.pictureIndex {
@@ -54,8 +54,8 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
   }
   
   deinit {
-    let notificationCenter = NSNotificationCenter.defaultCenter()
-    notificationCenter.removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
   }
   
   override func didReceiveMemoryWarning() {
@@ -63,28 +63,28 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     // Dispose of any resources that can be recreated.
   }
   
-  override func prefersStatusBarHidden() -> Bool {
+  override var prefersStatusBarHidden : Bool {
     
     return true
   }
   
-  @IBAction func changeMapType(sender: UIButton) {
-    if mapView.mapType == .Standard {
-      mapView.mapType = .Satellite
+  @IBAction func changeMapType(_ sender: UIButton) {
+    if mapView.mapType == .standard {
+      mapView.mapType = .satellite
       mapTypeButton.setTitle(NSLocalizedString("Standard", comment: "PlayerVC: Standard"),
-                             forState: .Normal)
+                             for: UIControlState())
     } else {
-      mapView.mapType = .Standard
+      mapView.mapType = .standard
       mapTypeButton.setTitle(NSLocalizedString("Satellite", comment: "PlayerVC: Satellite"),
-                             forState: .Normal)
+                             for: UIControlState())
     }
   }
   
-  @IBAction func setPointOnMap(sender: UITapGestureRecognizer) {
+  @IBAction func setPointOnMap(_ sender: UITapGestureRecognizer) {
     // print("TAP: setPointOnMap")
-    if sender.state == .Ended {
-      let point = sender.locationInView(mapView)
-      let locCoord = mapView.convertPoint(point, toCoordinateFromView: mapView)
+    if sender.state == .ended {
+      let point = sender.location(in: mapView)
+      let locCoord = mapView.convert(point, toCoordinateFrom: mapView)
       let newLocation = CLLocation(latitude: locCoord.latitude, longitude: locCoord.longitude)
       setNewPosition(newLocation)
     }
@@ -96,7 +96,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
       if PicturesList.pList.pictures.count != 0 {
         let picture = PicturesList.pList.pictures[currentIndex]
         let image = picture.loadImage()
-        let dateString = dateStringFrom(picture.date)
+        let dateString = dateStringFrom(picture.date as Date)
         var locationMessage = ""
         if let location = picture.location {
           locationMessage = coordinateStringFrom(location)
@@ -104,9 +104,9 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
         let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
         if let image = image {
           let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
-          activityVC.excludedActivityTypes = [UIActivityTypeSaveToCameraRoll]
+          activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
           defer {
-            self.presentViewController(activityVC, animated: true, completion: nil)
+            self.present(activityVC, animated: true, completion: nil)
           }
         }
       }
@@ -115,14 +115,14 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     }
   }
   
-  func dateStringFrom(date: NSDate) -> String {
-    let dateFormater = NSDateFormatter()
+  func dateStringFrom(_ date: Date) -> String {
+    let dateFormater = DateFormatter()
     dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
-    let timeString = dateFormater.stringFromDate(date)
+    let timeString = dateFormater.string(from: date)
     return "\(timeString)\n"
   }
   
-  func coordinateStringFrom(location: CLLocation) -> String {
+  func coordinateStringFrom(_ location: CLLocation) -> String {
     var latitudeStr = ""
     var longitudeStr = ""
     if location.coordinate.latitude >= 0 {
@@ -144,22 +144,22 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     
     let message = NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "PictureVC FullVersion")
     
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .Alert)
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .Default) { (action: UIAlertAction!) -> Void in
+    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
       
     }
     alert.addAction(cancelAction)
-    self.presentViewController(alert, animated: true, completion: nil)
+    self.present(alert, animated: true, completion: nil)
   }
 
   func defineStackAxis() {
-    let orientation = UIDevice.currentDevice().orientation
+    let orientation = UIDevice.current.orientation
     if orientation.isPortrait {
-      mapPictureStack.axis = .Vertical
+      mapPictureStack.axis = .vertical
     }
     if orientation.isLandscape {
-      mapPictureStack.axis = .Horizontal
+      mapPictureStack.axis = .horizontal
     }
   }
   
@@ -178,7 +178,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     }
   }
   
-  func updateCurrentLocation(index: Int) {
+  func updateCurrentLocation(_ index: Int) {
     // print("updateCurrentLocation")
     // Update current pin to the new location
     
@@ -186,7 +186,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     var annotationIndex = 0
     for pLocation in pictureLocations {
       if pLocation.pictureIndex == index {
-        mapView.setCenterCoordinate(pLocation.coordinate, animated: true)
+        mapView.setCenter(pLocation.coordinate, animated: true)
         currentAnnotationIndex = annotationIndex
         break
       } else {
@@ -198,7 +198,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     updateAnnotationView(currentAnnotationIndex)
   }
   
-  func updateAnnotationView(index: Int?) {
+  func updateAnnotationView(_ index: Int?) {
     if let index = index {
       let annotation = pictureLocations[index]
       mapView.removeAnnotation(annotation)
@@ -206,13 +206,13 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
     }
   }
   
-  func setNewPosition(newLocation: CLLocation) {
+  func setNewPosition(_ newLocation: CLLocation) {
     var updatedPicture: PictureAnnotation? = nil
     var closestDistance: CLLocationDistance = DBL_MAX
     
     // Find the closest location on the path to which we can seek
     for pLocation in pictureLocations {
-      let distance = newLocation.distanceFromLocation(pLocation.location!)
+      let distance = newLocation.distance(from: pLocation.location!)
       if distance < closestDistance {
         updatedPicture = pLocation
         closestDistance = distance
@@ -228,9 +228,9 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
   
   // MARK: - Navigation
   
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "picturePageSegue" {
-      if let destVC = segue.destinationViewController as? PicturePageViewController {
+      if let destVC = segue.destination as? PicturePageViewController {
         destVC.mainDelegate = self
         pageVC = destVC
       }
@@ -243,7 +243,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
 
 extension MapPictureViewController: MKMapViewDelegate {
   
-  func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     // print("mapView_viewForAnnotation")
     
     if annotation is PictureAnnotation {
@@ -259,7 +259,7 @@ extension MapPictureViewController: MKMapViewDelegate {
         }
       }
       let identifier = "starAnnotation"
-      var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
+      var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
       if pinView == nil {
         
         //Create a plain MKAnnotationView if using a custom image...
