@@ -66,6 +66,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   let kUpdateBatteryAndDiskInterval: TimeInterval = 30.0
   let kRemoveControlViewInterval: TimeInterval = 10.0
   
+  let titleAlert = NSLocalizedString("Message", comment: "SettingVC Error-Title")
+  let messageAlert = NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message")
+  
   var iconsImage: UIImage? {
     didSet {
       var tmpImage: UIImage?
@@ -460,7 +463,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   @IBAction func changeOpacity(_ sender: UISlider) {
-    layer?.opacity = sender.value
+    layer?.opacity = sender.value / 10
     
     UserDefaults.standard.setValue(sender.value, forKey: LayerOpacityValueKey)
     UserDefaults.standard.synchronize()
@@ -513,7 +516,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
         // show alert
         // print("ALERT")
-        showAlert()
+        showAlert(title: titleAlert, message: messageAlert)
       } else {
         self.flashView.alpha = 1
         UIView.animate(withDuration: 0.2, animations: {
@@ -535,7 +538,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
       // show alert
       // print("ALERT")
-      showAlert()
+      showAlert(title: titleAlert, message: messageAlert)
       // stop auto
       if photoTimer != nil {
         // print("Stop Auto")
@@ -556,21 +559,25 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   @IBAction func changeCamera(_ sender: AnyObject) {
     
-    if settings.typeCamera == .back {
-      settings.typeCamera = .front
-    } else {
-      settings.typeCamera = .back
-    }
-    if let cm = captureManager {
-      if cm.recording {
-        cm.stopRecording()
-        changingCamera = true
+    //if settings.typeCamera == .back && settings.backQualityMode == .high {
+    //  print("ALERT: First Change resolution for back camera")
+    //} else {
+      if settings.typeCamera == .back {
+        settings.typeCamera = .front
+      } else {
+        settings.typeCamera = .back
       }
-      cm.typeCamera = settings.typeCamera
-    }
-    setResolutionAndTextLabels()
-    UserDefaults.standard.setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
-    UserDefaults.standard.synchronize()
+      if let cm = captureManager {
+        if cm.recording {
+          cm.stopRecording()
+          changingCamera = true
+        }
+        cm.typeCamera = settings.typeCamera
+      }
+      setResolutionAndTextLabels()
+      UserDefaults.standard.setValue(settings.typeCamera.rawValue, forKey: TypeCameraKey)
+      UserDefaults.standard.synchronize()
+    //}
   }
   
   @IBAction func toggleMic(_ sender: UIButton) {
@@ -723,8 +730,8 @@ extension CameraViewController : CaptureManagerDelegate {
     present(alert, animated: true, completion: nil)
   }
   
-  func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .alert)
+  func showAlert(title: String, message: String) {
+    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
     
     let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .default) { (action: UIAlertAction!) -> Void in
     }
@@ -751,11 +758,11 @@ extension CameraViewController : CaptureManagerDelegate {
     }
     
     if mode == .high {
-      resolutionLabel.text = "720p"
+      resolutionLabel.text = "1080p"
     } else if mode == .medium {
-      resolutionLabel.text = "480p"
+      resolutionLabel.text = "720p"
     } else {
-      resolutionLabel.text = "288p"
+      resolutionLabel.text = "480p"
     }
   }
   
@@ -882,44 +889,45 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func setupPreviewLayer() {
     if let session = captureManager?.captureSession {
-      
-      setSessionPresetAndSelectedQuality()
-      
-      let orientation = UIDevice.current.orientation
-      var angle: CGFloat = 0.0
-      
-      switch orientation {
-      case UIDeviceOrientation.landscapeLeft:
-        angle = CGFloat(-M_PI_2)
-      case UIDeviceOrientation.landscapeRight:
-        angle = CGFloat(M_PI_2)
-      case UIDeviceOrientation.portraitUpsideDown:
-        angle = CGFloat(M_PI)
-      default :
-        angle = 0.0
-      }
-      
-      if let captureOrient = transitionCaptureOrientationFromDeviceOrientation(orientation) {
-        captureManager?.referenceOrientation = captureOrient
-      }
-      if layer == nil {
-        layer = AVCaptureVideoPreviewLayer(session: session)
-      }
-      if let layer = self.layer {
-        //A string defining how the video is displayed within an AVCaptureVideoPreviewLayer bounds rect.
-        layer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
-        if let storedOpacity = (UserDefaults.standard.value(forKey: LayerOpacityValueKey) as AnyObject).floatValue {
-          layer.opacity = storedOpacity
-          layerOpacitySlider.value = storedOpacity
+        setSessionPresetAndSelectedQuality()
+        
+        let orientation = UIDevice.current.orientation
+        var angle: CGFloat = 0.0
+        
+        switch orientation {
+        case UIDeviceOrientation.landscapeLeft:
+          angle = CGFloat(-M_PI_2)
+        case UIDeviceOrientation.landscapeRight:
+          angle = CGFloat(M_PI_2)
+        case UIDeviceOrientation.portraitUpsideDown:
+          angle = CGFloat(M_PI)
+        default :
+          angle = 0.0
         }
-        layer.transform = CATransform3DIdentity
-        layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
-        layer.frame = previewView.frame
         
-        previewView.layer.addSublayer(layer)
+        if let captureOrient = transitionCaptureOrientationFromDeviceOrientation(orientation) {
+          captureManager?.referenceOrientation = captureOrient
+        }
+        if layer == nil {
+          layer = AVCaptureVideoPreviewLayer(session: session)
+        }
+        if let layer = self.layer {
+          //A string defining how the video is displayed within an AVCaptureVideoPreviewLayer bounds rect.
+          layer.videoGravity = AVLayerVideoGravityResizeAspectFill
+          
+          let storedOpacity = UserDefaults.standard.float(forKey: LayerOpacityValueKey)
+          if storedOpacity != 0 {
+            layer.opacity = storedOpacity/10
+            layerOpacitySlider.value = storedOpacity
+          }
+          layer.transform = CATransform3DIdentity
+          layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
+          layer.frame = previewView.frame
+          
+          previewView.layer.addSublayer(layer)
+        }
       }
-    }
   }
   
   func setSessionPresetAndSelectedQuality() {
@@ -934,31 +942,31 @@ extension CameraViewController : CaptureManagerDelegate {
     if let session = captureManager?.captureSession {
       switch value {
       case .high:
-        if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) && settings.typeCamera == .back {
-          session.sessionPreset = AVCaptureSessionPreset1280x720
+        if session.canSetSessionPreset(AVCaptureSessionPreset1920x1080) {
+          session.sessionPreset = AVCaptureSessionPreset1920x1080
           captureManager?.scaleText = 2
           value = .high
-        } else if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
-          session.sessionPreset = AVCaptureSessionPreset640x480
+        } else if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) {
+          session.sessionPreset = AVCaptureSessionPreset1280x720
           captureManager?.scaleText = 1
           value = .medium
         } else {
-          session.sessionPreset = AVCaptureSessionPresetLow
+          session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 0
           value = .low
         }
       case .medium:
-        if session.canSetSessionPreset(AVCaptureSessionPreset640x480) {
-          session.sessionPreset = AVCaptureSessionPreset640x480
+        if session.canSetSessionPreset(AVCaptureSessionPreset1280x720) {
+          session.sessionPreset = AVCaptureSessionPreset1280x720
           captureManager?.scaleText = 1
           value = .medium
         } else {
-          session.sessionPreset = AVCaptureSessionPresetLow
+          session.sessionPreset = AVCaptureSessionPreset640x480
           captureManager?.scaleText = 0
           value = .low
         }
       case .low:
-        session.sessionPreset = AVCaptureSessionPresetLow
+        session.sessionPreset = AVCaptureSessionPreset640x480
         captureManager?.scaleText = 0
         value = .low
       }
@@ -1050,8 +1058,6 @@ extension CameraViewController : CaptureManagerDelegate {
       
       UserDefaults.standard.synchronize()
     }
-    
-    
     
   }
   

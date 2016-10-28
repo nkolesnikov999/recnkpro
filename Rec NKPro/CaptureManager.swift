@@ -28,6 +28,7 @@ protocol CaptureManagerDelegate : class {
   
   var iconsImage: UIImage? {get set}
   var picture: Picture? { get set }
+  var settings: Settings { get set}
   
   func recordingWillStart()
   func recordingDidStart()
@@ -37,6 +38,7 @@ protocol CaptureManagerDelegate : class {
   func newLocationUpdate(_ speed: String)
   func showError(_ error: NSError)
   func distanceUpdate(_ location: CLLocation)
+  func showAlert(title: String, message: String)
 }
 
 class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -45,7 +47,13 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   var typeCamera: TypeCamera! {
     didSet {
-      changeTypeCamera()
+      if typeCamera == .front && delegate?.settings.backQualityMode == .high {
+        print("ALERT: Change resolution for back camera")
+        delegate?.settings.typeCamera = .back
+        self.delegate?.showAlert(title: "Warning", message: "Change resolution for back camera")
+      } else {
+        changeTypeCamera()
+      }
     }
   }
   
@@ -277,10 +285,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       
       switch self.scaleText {
       case 0:
-        textSize = 12
-      case 1:
         textSize = 22
-      case 2:
+      case 1, 2:
         if self.heightVideo > 640 || self.widthVideo > 640 {
           textSize = 44
         } else {
@@ -312,31 +318,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
         
         let context = UIGraphicsGetCurrentContext()
         
-        var margin: CGFloat = 20
+        let margin: CGFloat = 20
         
-        if self.widthVideo < 320 {
-          margin = 10
-          switch self.referenceOrientation! {
-          case .landscapeRight, .portrait:
-            if self.typeCamera == .front {
-              context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
-              context?.rotate(by: CGFloat(M_PI))
-            } else {
-              context?.translateBy(x: margin, y: self.heightVideo-size.height - margin)
-              context?.rotate(by: CGFloat(0))
-            }
-          case .landscapeLeft, .portraitUpsideDown:
-            if self.typeCamera == .front {
-              context?.translateBy(x: margin, y: self.heightVideo-size.height - margin)
-              context?.rotate(by: CGFloat(0))
-            } else {
-              context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
-              context?.rotate(by: CGFloat(M_PI))
-            }
-          }
-          
-        } else {
-          switch self.referenceOrientation! {
+        switch self.referenceOrientation! {
           case .portrait:
             context?.translateBy(x: self.widthVideo-size.height - margin, y: self.heightVideo - margin)
             context?.rotate(by: CGFloat(-M_PI_2))
@@ -359,7 +343,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
               context?.translateBy(x: self.widthVideo - margin, y: size.height + margin)
               context?.rotate(by: CGFloat(M_PI))
             }
-          }
         }
         // draw in context, you can use also drawInRect:withFont:
         text.draw(at: CGPoint(x: 0, y: 0), withAttributes: textFontAttributes)
@@ -780,8 +763,6 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   func changeTypeCamera() {
     
-    delegate?.setupPreviewLayer()
-    
     if let session = captureSession {
       session.stopRunning()
       session.beginConfiguration()
@@ -797,6 +778,8 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       session.commitConfiguration()
       session.startRunning()
     }
+    
+    delegate?.setupPreviewLayer()
   }
   
   func setVideoInputOutput(_ session: AVCaptureSession) {

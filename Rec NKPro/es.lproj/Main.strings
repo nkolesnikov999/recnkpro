@@ -39,13 +39,13 @@
 "Fnl-Ca-9ge.headerTitle" = "Ubicación";
 
 /* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[0] = "288p"; ObjectID = "GYt-8r-HXd"; */
-"GYt-8r-HXd.segmentTitles[0]" = "288p";
+"GYt-8r-HXd.segmentTitles[0]" = "480";
 
 /* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[1] = "480p"; ObjectID = "GYt-8r-HXd"; */
-"GYt-8r-HXd.segmentTitles[1]" = "480p";
+"GYt-8r-HXd.segmentTitles[1]" = "720";
 
 /* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[2] = "720p"; ObjectID = "GYt-8r-HXd"; */
-"GYt-8r-HXd.segmentTitles[2]" = "720p";
+"GYt-8r-HXd.segmentTitles[2]" = "1080";
 
 /* Class = "UILabel"; text = "Text On Video:"; ObjectID = "HVc-iE-b3d"; */
 "HVc-iE-b3d.text" = "En el texto del vídeo:";

@@ -349,7 +349,7 @@
                                                             </imageView>
                                                         </subviews>
                                                     </stackView>
-                                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="vae-3r-AqZ">
+                                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="1" maxValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="vae-3r-AqZ">
                                                         <rect key="frame" x="-2" y="30" width="251" height="31"/>
                                                         <color key="minimumTrackTintColor" red="1" green="0.89391629750000001" blue="0.11041354220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <color key="maximumTrackTintColor" red="0.95294117647058818" green="0.94117647058823528" blue="0.62745098039215685" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -483,9 +483,9 @@
                                                         <constraint firstAttribute="width" constant="180" id="PgQ-3t-hDp"/>
                                                     </constraints>
                                                     <segments>
-                                                        <segment title="288p"/>
                                                         <segment title="480p"/>
                                                         <segment title="720p"/>
+                                                        <segment title="1080p"/>
                                                     </segments>
                                                     <connections>
                                                         <action selector="selectQualityMode:" destination="u8v-CQ-GHX" eventType="valueChanged" id="Msw-Yc-s0d"/>
