@@ -261,6 +261,7 @@ class SettingsViewController: UITableViewController {
     settings.maxNumberVideo = new.maxNumberVideo
     settings.intervalPictures = new.intervalPictures
     settings.textOnVideo = new.textOnVideo
+    settings.isMicOn = new.isMicOn
 
     setAllControls()
     tableView.reloadData()

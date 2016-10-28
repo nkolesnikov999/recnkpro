@@ -19,6 +19,7 @@ import CoreTelephony
 import CoreLocation
 import AVFoundation
 
+let OtherTimeKey = "OtherTimeKey"
 let FrontQualityModeKey = "FrontQualityModeKey"
 let BackQualityModeKey = "BackQualityModeKey"
 let TypeCameraKey = "TypeCameraKey"
@@ -46,7 +47,6 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var resetRecordingTimer = false
   var changingCamera = false
   var isPhotoImage = false
-  var isMicOn = true
   var freeSpace: Float = 0
   
   var recordingTimer: Timer?
@@ -176,15 +176,15 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     speedLabelNoData()
     speedView.isHidden = false
     
-    timeLabel.text = "2016/01/01 00:00:00"
-    batteryLabel.text = "80"
-    fillDiskLabel.text = "0.0"
+    //timeLabel.text = "2016/01/01 00:00:00"
+    //batteryLabel.text = "80"
+    //fillDiskLabel.text = "0.0"
     
-    frameRateLabel.text = "0.0"
+    //frameRateLabel.text = "0.0"
     frameRateLabel.textColor = UIColor.red
 
     recordButton.setImage(UIImage(named: "StartNormal"), for: UIControlState())
-    micButton.setImage(UIImage(named: isMicOn ? "Mic" : "NoMic"), for: UIControlState())
+    micButton.setImage(UIImage(named: settings.isMicOn ? "Mic" : "NoMic"), for: UIControlState())
 
     //controlView.hidden = true
     
@@ -200,7 +200,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       captureManager.typeCamera = settings.typeCamera
       captureManager.logotype = settings.logotype
       captureManager.textOnVideo = settings.textOnVideo
-      captureManager.isMicOn = isMicOn
+      captureManager.isMicOn = settings.isMicOn
       
       // Setup and start the capture session
       captureManager.setupAndStartCaptureSession()
@@ -574,19 +574,19 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   @IBAction func toggleMic(_ sender: UIButton) {
-    if isMicOn {
+    if settings.isMicOn {
       micButton.setImage(UIImage(named: "NoMic"), for: UIControlState())
-      isMicOn = false
+      settings.isMicOn = false
       // print("NO MIC")
     } else {
       micButton.setImage(UIImage(named: "Mic"), for: UIControlState())
-      isMicOn = true
+      settings.isMicOn = true
       // print("MIC")
     }
     if let cm = captureManager {
-      cm.isMicOn = isMicOn
+      cm.isMicOn = settings.isMicOn
     }
-    UserDefaults.standard.setValue(isMicOn, forKey: MicOnKey)
+    UserDefaults.standard.setValue(settings.isMicOn, forKey: MicOnKey)
     UserDefaults.standard.synchronize()
   }
 }
@@ -993,41 +993,65 @@ extension CameraViewController : CaptureManagerDelegate {
   
   func loadSettings() {
     
-    let frontStoredQuality = UserDefaults.standard.integer(forKey: FrontQualityModeKey)
-    if let mode = QualityMode(rawValue: frontStoredQuality) {
-      settings.frontQualityMode = mode
+    let isOtherTime = UserDefaults.standard.bool(forKey: OtherTimeKey)
+    
+    if isOtherTime {
+      let frontStoredQuality = UserDefaults.standard.integer(forKey: FrontQualityModeKey)
+      if let mode = QualityMode(rawValue: frontStoredQuality) {
+        settings.frontQualityMode = mode
+      }
+      
+      let backStoredQuality = UserDefaults.standard.integer(forKey: BackQualityModeKey)
+      if let mode = QualityMode(rawValue: backStoredQuality) {
+        settings.backQualityMode = mode
+      }
+      
+      let storedTypeCamera = UserDefaults.standard.integer(forKey: TypeCameraKey)
+      if let type = TypeCamera(rawValue: storedTypeCamera) {
+        settings.typeCamera = type
+      }
+      
+      settings.autofocusing = UserDefaults.standard.bool(forKey: AutofocusingKey)
+      settings.textOnVideo = UserDefaults.standard.bool(forKey: TextOnVideoKey)
+      
+      if let storedLogotype = UserDefaults.standard.string(forKey: LogotypeKey) {
+        settings.logotype = storedLogotype
+      }
+      
+      settings.minIntervalLocations = UserDefaults.standard.integer(forKey: MinIntervalLocationsKey)
+      
+      let storedTypeSpeed = UserDefaults.standard.integer(forKey: TypeSpeedKey)
+      if let typeSpeed = TypeSpeed(rawValue: storedTypeSpeed) {
+        settings.typeSpeed = typeSpeed
+      }
+      
+      settings.maxRecordingTime = UserDefaults.standard.integer(forKey: MaxRecordingTimeKey)
+      settings.maxNumberVideo = UserDefaults.standard.integer(forKey: MaxNumberVideoKey)
+      settings.intervalPictures = UserDefaults.standard.integer(forKey: IntevalPictureKey)
+      settings.odometerMeters = UserDefaults.standard.integer(forKey: OdometerMetersKey)
+      
+      settings.isMicOn = UserDefaults.standard.bool(forKey: MicOnKey)
+      
+    } else {
+      
+      UserDefaults.standard.set(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey) //
+      UserDefaults.standard.set(settings.backQualityMode.rawValue, forKey: BackQualityModeKey) //
+      UserDefaults.standard.set(settings.typeCamera.rawValue, forKey: TypeCameraKey) //
+      UserDefaults.standard.set(settings.autofocusing, forKey: AutofocusingKey) //
+      UserDefaults.standard.set(settings.minIntervalLocations, forKey: MinIntervalLocationsKey) //
+      UserDefaults.standard.set(settings.typeSpeed.rawValue, forKey: TypeSpeedKey) //
+      UserDefaults.standard.set(settings.maxRecordingTime, forKey: MaxRecordingTimeKey) //
+      UserDefaults.standard.set(settings.maxNumberVideo, forKey: MaxNumberVideoKey) //
+      UserDefaults.standard.set(settings.intervalPictures, forKey: IntevalPictureKey) //
+      UserDefaults.standard.set(settings.textOnVideo, forKey: TextOnVideoKey) //
+      UserDefaults.standard.set(settings.logotype, forKey: LogotypeKey) //
+      UserDefaults.standard.set(settings.isMicOn, forKey: MicOnKey)
+      UserDefaults.standard.set(true, forKey: OtherTimeKey)
+      
+      UserDefaults.standard.synchronize()
     }
     
-    let backStoredQuality = UserDefaults.standard.integer(forKey: BackQualityModeKey)
-    if let mode = QualityMode(rawValue: backStoredQuality) {
-      settings.backQualityMode = mode
-    }
     
-    let storedTypeCamera = UserDefaults.standard.integer(forKey: TypeCameraKey)
-    if let type = TypeCamera(rawValue: storedTypeCamera) {
-      settings.typeCamera = type
-    }
-    
-    settings.autofocusing = UserDefaults.standard.bool(forKey: AutofocusingKey)
-    settings.textOnVideo = UserDefaults.standard.bool(forKey: TextOnVideoKey)
-    
-    if let storedLogotype = UserDefaults.standard.string(forKey: LogotypeKey) {
-      settings.logotype = storedLogotype
-    }
-    
-    settings.minIntervalLocations = UserDefaults.standard.integer(forKey: MinIntervalLocationsKey)
-    
-    let storedTypeSpeed = UserDefaults.standard.integer(forKey: TypeSpeedKey)
-    if let typeSpeed = TypeSpeed(rawValue: storedTypeSpeed) {
-      settings.typeSpeed = typeSpeed
-    }
-    
-    settings.maxRecordingTime = UserDefaults.standard.integer(forKey: MaxRecordingTimeKey)
-    settings.maxNumberVideo = UserDefaults.standard.integer(forKey: MaxNumberVideoKey)
-    settings.intervalPictures = UserDefaults.standard.integer(forKey: IntevalPictureKey)
-    settings.odometerMeters = UserDefaults.standard.integer(forKey: OdometerMetersKey)
-    
-    isMicOn = UserDefaults.standard.bool(forKey: MicOnKey)
     
   }
   
@@ -1043,6 +1067,16 @@ extension CameraViewController : CaptureManagerDelegate {
       odometer.reset()
     }
     
+    if settings.isMicOn {
+      micButton.setImage(UIImage(named: "Mic"), for: UIControlState())
+      // print("MIC")
+    } else {
+      micButton.setImage(UIImage(named: "NoMic"), for: UIControlState())
+      // print("NO MIC")
+    }
+    captureManager?.isMicOn = settings.isMicOn
+
+    
     checkMaxNumberFiles() // <===========
     
     UserDefaults.standard.set(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
@@ -1056,6 +1090,7 @@ extension CameraViewController : CaptureManagerDelegate {
     UserDefaults.standard.set(settings.intervalPictures, forKey: IntevalPictureKey)
     UserDefaults.standard.set(settings.textOnVideo, forKey: TextOnVideoKey)
     UserDefaults.standard.set(settings.logotype, forKey: LogotypeKey)
+    UserDefaults.standard.set(settings.isMicOn, forKey: MicOnKey)
     
     UserDefaults.standard.synchronize()
   }

@@ -26,10 +26,14 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>App will use your Cam</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location will be recorded along with audio and video</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App can use your Mic </string>
 	<key>UILaunchStoryboardName</key>
-	<string>Main</string>
+	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>

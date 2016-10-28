@@ -33,8 +33,9 @@ class Settings {
   var logotype: String = "NKPRO.NET"
   var minIntervalLocations: Int = 0
   var typeSpeed: TypeSpeed = .km
-  var maxRecordingTime: Int = 5
+  var maxRecordingTime: Int = 1
   var maxNumberVideo: Int = 2
   var intervalPictures: Int = 60
   var odometerMeters: Int = 0
+  var isMicOn: Bool = true
 }
