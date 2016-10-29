@@ -32,6 +32,8 @@
 	<string>Your location will be recorded along with audio and video</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>App can use your Mic </string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App can use your Photo</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

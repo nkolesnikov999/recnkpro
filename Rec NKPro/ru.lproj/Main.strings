@@ -8,8 +8,8 @@
 /* Class = "UINavigationItem"; title = "Title"; ObjectID = "3Mt-t3-OjU"; */
 "3Mt-t3-OjU.title" = "Title";
 
-/* Class = "UINavigationItem"; title = "TMP"; ObjectID = "3vp-Mc-V76"; */
-"3vp-Mc-V76.title" = "Врм Записи";
+/* Class = "UINavigationItem"; title = "Videos"; ObjectID = "3vp-Mc-V76"; */
+"3vp-Mc-V76.title" = "Видео";
 
 /* Class = "UILabel"; text = "Subtitle"; ObjectID = "4bB-aA-DRS"; */
 "4bB-aA-DRS.text" = "Subtitle";
@@ -29,6 +29,9 @@
 /* Class = "UILabel"; text = "Loading..."; ObjectID = "8f3-Qe-Zvz"; */
 "8f3-Qe-Zvz.text" = "Загрузка...";
 
+/* Class = "UIBarButtonItem"; title = "< Back"; ObjectID = "CDw-GV-ACF"; */
+"CDw-GV-ACF.title" = "< Назад";
+
 /* Class = "UILabel"; text = "Autofocusing:"; ObjectID = "CHg-ar-HDg"; */
 "CHg-ar-HDg.text" = "Автофокус:";
 
@@ -38,13 +41,13 @@
 /* Class = "UITableViewSection"; headerTitle = "Location"; ObjectID = "Fnl-Ca-9ge"; */
 "Fnl-Ca-9ge.headerTitle" = "Локация";
 
-/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[0] = "288p"; ObjectID = "GYt-8r-HXd"; */
+/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[0] = "480p"; ObjectID = "GYt-8r-HXd"; */
 "GYt-8r-HXd.segmentTitles[0]" = "480p";
 
-/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[1] = "480p"; ObjectID = "GYt-8r-HXd"; */
+/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[1] = "720p"; ObjectID = "GYt-8r-HXd"; */
 "GYt-8r-HXd.segmentTitles[1]" = "720p";
 
-/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[2] = "720p"; ObjectID = "GYt-8r-HXd"; */
+/* Class = "UISegmentedControl"; GYt-8r-HXd.segmentTitles[2] = "1080p"; ObjectID = "GYt-8r-HXd"; */
 "GYt-8r-HXd.segmentTitles[2]" = "1080p";
 
 /* Class = "UILabel"; text = "Text On Video:"; ObjectID = "HVc-iE-b3d"; */
@@ -56,7 +59,7 @@
 /* Class = "UILabel"; text = "%"; ObjectID = "ILh-wG-LHc"; */
 "ILh-wG-LHc.text" = "%";
 
-/* Class = "UILabel"; text = "Interval Auto Picture:"; ObjectID = "KVY-Xe-4kz"; */
+/* Class = "UILabel"; text = "Time Auto Picture:"; ObjectID = "KVY-Xe-4kz"; */
 "KVY-Xe-4kz.text" = "Время автоснимка:";
 
 /* Class = "UILabel"; text = "Max Numb. Videos:"; ObjectID = "KuL-1o-Hog"; */
@@ -77,20 +80,17 @@
 /* Class = "UILabel"; text = "Min Interval:"; ObjectID = "O1I-gw-ubP"; */
 "O1I-gw-ubP.text" = "Мин интервал:";
 
-/* Class = "UILabel"; text = "100"; ObjectID = "Owy-tK-M4D"; */
-"Owy-tK-M4D.text" = "100";
-
-/* Class = "UILabel"; text = "9999/99/99 99:99:99"; ObjectID = "PtV-hu-ps3"; */
-"PtV-hu-ps3.text" = "9999/99/99 99:99:99";
-
 /* Class = "UIButton"; normalTitle = "< Back"; ObjectID = "RUw-aN-7V3"; */
 "RUw-aN-7V3.normalTitle" = "< Назад";
+
+/* Class = "UIBarButtonItem"; title = "< Back"; ObjectID = "SEc-is-aM1"; */
+"SEc-is-aM1.title" = "< Назад";
 
 /* Class = "UILabel"; text = "Gb"; ObjectID = "ScI-ZB-0sO"; */
 "ScI-ZB-0sO.text" = "Гб";
 
-/* Class = "UIBarButtonItem"; title = "Back"; ObjectID = "Sgp-jk-foc"; */
-"Sgp-jk-foc.title" = "Назад";
+/* Class = "UIBarButtonItem"; title = "< Back"; ObjectID = "Sgp-jk-foc"; */
+"Sgp-jk-foc.title" = "< Назад";
 
 /* Class = "UITableViewSection"; headerTitle = "Saving"; ObjectID = "T8a-ea-399"; */
 "T8a-ea-399.headerTitle" = "Сохранение";
@@ -125,23 +125,14 @@
 /* Class = "UILabel"; text = "60 min"; ObjectID = "aOb-xc-nhK"; */
 "aOb-xc-nhK.text" = "60 мин";
 
-/* Class = "UILabel"; text = "0.0"; ObjectID = "ac8-gS-Hsc"; */
-"ac8-gS-Hsc.text" = "0.0";
-
 /* Class = "UIButton"; normalTitle = "Satellite"; ObjectID = "cfU-Gd-GkE"; */
 "cfU-Gd-GkE.normalTitle" = "Спутник";
 
 /* Class = "UIButton"; normalTitle = "< Back"; ObjectID = "d8R-lk-vqK"; */
 "d8R-lk-vqK.normalTitle" = "< Назад";
 
-/* Class = "UILabel"; text = "200"; ObjectID = "emU-Lb-NdJ"; */
-"emU-Lb-NdJ.text" = "200";
-
 /* Class = "UILabel"; text = "Resolution:"; ObjectID = "ffM-sO-38I"; */
 "ffM-sO-38I.text" = "Разрешение:";
-
-/* Class = "UILabel"; text = "00.0"; ObjectID = "fmk-Mx-NGs"; */
-"fmk-Mx-NGs.text" = "00.0";
 
 /* Class = "UILabel"; text = "Units:"; ObjectID = "gkR-4V-vtd"; */
 "gkR-4V-vtd.text" = "Ед измерения:";
@@ -160,9 +151,6 @@
 
 /* Class = "UISegmentedControl"; mOX-GY-Lwt.segmentTitles[1] = "mi"; ObjectID = "mOX-GY-Lwt"; */
 "mOX-GY-Lwt.segmentTitles[1]" = "мили";
-
-/* Class = "UILabel"; text = "8000.0"; ObjectID = "mRS-bt-HHr"; */
-"mRS-bt-HHr.text" = "8000.0";
 
 /* Class = "UILabel"; text = "Address"; ObjectID = "nJV-8t-5rQ"; */
 "nJV-8t-5rQ.text" = "Адрес";
