@@ -949,7 +949,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="yId-Ow-o07">
-                        <barButtonItem key="leftBarButtonItem" title="Back" id="Sgp-jk-foc">
+                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="Sgp-jk-foc">
                             <connections>
                                 <action selector="tapBackButton:" destination="u8v-CQ-GHX" id="UXn-Yb-Ciq"/>
                             </connections>
@@ -1031,7 +1031,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Pictures" id="30f-pe-ggC">
                         <leftBarButtonItems>
-                            <barButtonItem systemItem="camera" id="SEc-is-aM1">
+                            <barButtonItem title="&lt; Back" id="SEc-is-aM1">
                                 <connections>
                                     <action selector="tapCamera:" destination="6Vu-A7-GCA" id="5br-sq-5eh"/>
                                 </connections>
@@ -1200,7 +1200,7 @@
             </objects>
             <point key="canvasLocation" x="5698" y="-255"/>
         </scene>
-        <!--TMP-->
+        <!--Videos-->
         <scene sceneID="sWW-SN-gkb">
             <objects>
                 <viewController modalTransitionStyle="flipHorizontal" id="gyA-ih-oXg" customClass="AssetsViewController" customModule="Rec_NKPro" customModuleProvider="target" sceneMemberID="viewController">
@@ -1242,9 +1242,9 @@
                             <outlet property="delegate" destination="gyA-ih-oXg" id="7M3-u5-nOX"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="TMP" id="3vp-Mc-V76">
+                    <navigationItem key="navigationItem" title="Videos" id="3vp-Mc-V76">
                         <leftBarButtonItems>
-                            <barButtonItem systemItem="camera" id="CDw-GV-ACF">
+                            <barButtonItem title="&lt; Back" id="CDw-GV-ACF">
                                 <connections>
                                     <action selector="tapBackItem:" destination="gyA-ih-oXg" id="srv-ay-iUC"/>
                                 </connections>
@@ -1633,7 +1633,7 @@
         <image name="Video" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="CPA-h6-6Ch"/>
+        <segue reference="mwz-9X-USl"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.98613083362579346" green="0.48045802116394043" blue="0.032503090798854828" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

@@ -310,8 +310,6 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     optionMenu.addAction(deleteAction)
     optionMenu.addAction(cancelAction)
     
-    optionMenu.view.tintColor = UIColor(red: 128.0/255.0, green: 0, blue: 128.0/255.0, alpha: 1)
-    
     if let popoverController = optionMenu.popoverPresentationController {
       let cell = tableView.cellForRow(at: indexPath)
       popoverController.sourceView = cell
@@ -344,7 +342,6 @@ extension AssetsViewController {
 // MARK: - UIImagePickerControllerDelegate
 
 extension AssetsViewController: UIImagePickerControllerDelegate {
-  
   
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
     
