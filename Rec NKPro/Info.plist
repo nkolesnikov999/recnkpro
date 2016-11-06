@@ -34,6 +34,8 @@
 	<string>App can use your Mic </string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App can use your Photo</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>I want to listen to your commands</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

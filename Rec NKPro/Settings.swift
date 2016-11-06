@@ -25,8 +25,8 @@ enum TypeSpeed: Int {
 }
 
 class Settings {
-  var frontQualityMode: QualityMode = .medium
-  var backQualityMode: QualityMode = .medium
+  var frontQualityMode: QualityMode = .low
+  var backQualityMode: QualityMode = .low
   var typeCamera: TypeCamera = .back
   var autofocusing: Bool = true
   var textOnVideo: Bool = true

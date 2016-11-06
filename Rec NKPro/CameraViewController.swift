@@ -18,6 +18,7 @@ import UIKit
 import CoreTelephony
 import CoreLocation
 import AVFoundation
+import Speech
 
 let OtherTimeKey = "OtherTimeKey"
 let FrontQualityModeKey = "FrontQualityModeKey"
@@ -68,6 +69,12 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   let titleAlert = NSLocalizedString("Message", comment: "SettingVC Error-Title")
   let messageAlert = NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message")
+  
+  let audioEngine = AVAudioEngine()
+  let speechRecognizer = SFSpeechRecognizer(locale: Locale.current)
+  var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+  var recognitionTask: SFSpeechRecognitionTask?
+  var mostRecentlyProcessedSegmentDuration: TimeInterval = 0
   
   var iconsImage: UIImage? {
     didSet {
@@ -129,6 +136,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   
   @IBOutlet weak var flashView: UIView!
   @IBOutlet weak var photoView: UIImageView!
+  @IBOutlet weak var transcriptionOutputLabel: UILabel!
 
   //MARK: - View Loading
   
@@ -159,6 +167,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     
     odometerLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
     odometerLabel.layer.cornerRadius = 10.0
+    
+    transcriptionOutputLabel.layer.backgroundColor = UIColor(red: 176.0/255.0, green: 176.0/255.0, blue: 176.0/255.0, alpha: 0.5).cgColor
+    transcriptionOutputLabel.layer.cornerRadius = 10.0
     
     // Keep track of changes to the device orientation so we can update the capture manager
     let notificationCenter = NotificationCenter.default
@@ -265,6 +276,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       print("CaptureManager didn't create!")
     }
 
+    initSpeechRecognition()
   }
   
   override func viewWillDisappear(_ animated: Bool) {
@@ -280,6 +292,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     odometer.stop()
     
     UIApplication.shared.isIdleTimerDisabled = false
+    
+    stopSpeechRecording()
     
     //Stop update timer label
     stopTimer(&updateTimeTimer)
@@ -415,6 +429,29 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
   }
   
+  func startRecordigByCommand() {
+    if let cm = captureManager {
+      if !cm.recording {
+        cm.startRecording()
+        mustRecord = true
+      }
+    }
+  }
+  
+  func stopRecordigByCommand() {
+    if let cm = captureManager {
+      if cm.recording {
+        if controlViewConstraint.constant != 0 {
+          drawControlView()
+          resetControlViewTimer()
+        }
+
+        cm.stopRecording()
+        mustRecord = false
+      }
+    }
+  }
+  
   func stopRecordigByTimer() {
     if let cm = captureManager {
       if cm.recording {
@@ -486,6 +523,15 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
         }
       }
     }
+    
+    if !audioEngine.isRunning {
+      do {
+        try self.startSpeechRecording()
+      } catch let error {
+        print("There was a problem starting recording: \(error.localizedDescription)")
+      }
+      //recordButton.setTitle("Stop recording", for: [])
+    }
   }
 
   
@@ -493,47 +539,54 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     //print("LONG Tap")
     if sender.state == .began {
       //print("LongTapBegan")
-      if picturesCount < maxNumberPictures || IAPHelper.iapHelper.setFullVersion {
-        photoTimer = Timer.scheduledTimer(timeInterval: Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhoto), userInfo: nil, repeats: true)
-        self.flashView.alpha = 1
-        UIView.animate(withDuration: 0.2, animations: {
-          self.flashView.alpha = 0
-        }) 
-      }
       takeAutoPhoto()
     }
+  }
+  
+  func takeAutoPhoto() {
+    if picturesCount < maxNumberPictures || IAPHelper.iapHelper.setFullVersion {
+      photoTimer = Timer.scheduledTimer(timeInterval: Double(settings.intervalPictures), target: self, selector: #selector(CameraViewController.takeAutoPhotoByTimer), userInfo: nil, repeats: true)
+      self.flashView.alpha = 1
+      UIView.animate(withDuration: 0.2, animations: {
+        self.flashView.alpha = 0
+      })
+    }
+    takeAutoPhotoByTimer()
   }
   
   func photoTap(_ sender: UITapGestureRecognizer) {
     //print("Photo Tap")
     if sender.state == .ended {
-      
-      if photoTimer != nil {
-        // print("Stop Auto")
-        stopTimer(&photoTimer)
+      takePhoto()
+    }
+  }
+  
+  func takePhoto() {
+    if photoTimer != nil {
+      // print("Stop Auto")
+      stopTimer(&photoTimer)
+    }
+    
+    if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
+      // show alert
+      // print("ALERT")
+      showAlert(title: titleAlert, message: messageAlert)
+    } else {
+      self.flashView.alpha = 1
+      UIView.animate(withDuration: 0.2, animations: {
+        self.flashView.alpha = 0
+      })
+      photoView.image = UIImage(named: "CameraPhoto")
+      delay(0.5) {
+        self.photoView.image = UIImage(named: "Camera")
       }
-      
-      if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
-        // show alert
-        // print("ALERT")
-        showAlert(title: titleAlert, message: messageAlert)
-      } else {
-        self.flashView.alpha = 1
-        UIView.animate(withDuration: 0.2, animations: {
-          self.flashView.alpha = 0
-        }) 
-        photoView.image = UIImage(named: "CameraPhoto")
-        delay(0.5) {
-          self.photoView.image = UIImage(named: "Camera")
-        }
-        if let cm = captureManager {
-          cm.snapImage()
-        }
+      if let cm = captureManager {
+        cm.snapImage()
       }
     }
   }
   
-  func takeAutoPhoto() {
+  func takeAutoPhotoByTimer() {
     // print("Photo!")
     if picturesCount >= maxNumberPictures && !IAPHelper.iapHelper.setFullVersion {
       // show alert
@@ -557,7 +610,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
 
   
-  @IBAction func changeCamera(_ sender: AnyObject) {
+  @IBAction func changeCamera() {
     
     //if settings.typeCamera == .back && settings.backQualityMode == .high {
     //  print("ALERT: First Change resolution for back camera")
@@ -1171,8 +1224,163 @@ extension CameraViewController : CaptureManagerDelegate {
       }
     }
   }
+}
+
+extension CameraViewController {
+  
+  fileprivate func initSpeechRecognition() {
+    
+    speechRecognizer?.delegate = self
+    
+    SFSpeechRecognizer.requestAuthorization { authStatus in
+      /*
+       The callback may not be called on the main thread. Add an
+       operation to the main queue to update the record button's state.
+       */
+      DispatchQueue.main.async {
+        switch authStatus {
+        case .authorized:
+          //self.recordButton.isEnabled = true
+          self.transcriptionOutputLabel.text = "Hi!"
+          do {
+            try self.startSpeechRecording()
+          } catch let error {
+            print("There was a problem starting recording: \(error.localizedDescription)")
+          }
+
+        case .denied:
+          //self.recordButton.isEnabled = false
+          self.transcriptionOutputLabel.text = "User denied access to speech recognition"
+          
+        case .restricted:
+          //self.recordButton.isEnabled = false
+          self.transcriptionOutputLabel.text = "Speech recognition restricted on this device"
+          
+        case .notDetermined:
+          //self.recordButton.isEnabled = false
+          self.transcriptionOutputLabel.text = "Speech recognition not yet authorized"
+        }
+      }
+    }
+
+  
+  }
+  
+  fileprivate func startSpeechRecording() throws {
+    
+    mostRecentlyProcessedSegmentDuration = 0
+    // Cancel the previous task if it's running.
+    if let recognitionTask = recognitionTask {
+      recognitionTask.cancel()
+      self.recognitionTask = nil
+    }
+    
+    recognitionRequest = SFSpeechAudioBufferRecognitionRequest ()
+    
+    guard let inputNode = audioEngine.inputNode else {
+      print("Audio engine has no input node")
+      return
+    }
+    guard let recognitionRequest = recognitionRequest else {
+      print("Unable to created a SFSpeechAudioBufferRecognitionRequest object")
+      return
+    }
+    
+    // Configure request so that results are returned before audio recording is finished
+    recognitionRequest.shouldReportPartialResults = true
+    
+    // A recognition task represents a speech recognition session.
+    // We keep a reference to the task so that it can be cancelled.
+    recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { [unowned self] result, error in
+      var isFinal = false
+      
+      if let result = result {
+        let transcription = result.bestTranscription
+        self.updateUIWithTranscription(transcription)
+        isFinal = result.isFinal
+      }
+      
+      if error != nil || isFinal {
+        self.audioEngine.stop()
+        inputNode.removeTap(onBus: 0)
+        
+        self.recognitionRequest = nil
+        self.recognitionTask = nil
+        
+        //self.recordButton.isEnabled = true
+        self.transcriptionOutputLabel.text = "Tap"
+      }
+    }
+    
+    let recordingFormat = inputNode.outputFormat(forBus: 0)
+    inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [unowned self] (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
+      self.recognitionRequest?.append(buffer)
+    }
+    
+    audioEngine.prepare()
+    
+    try audioEngine.start()
+    self.transcriptionOutputLabel.text = "Tell"
+  }
+  
+  fileprivate func stopSpeechRecording() {
+    
+    if audioEngine.isRunning {
+      audioEngine.stop()
+      recognitionRequest?.endAudio()
+      
+      self.recognitionRequest = nil
+      self.recognitionTask = nil
+      
+      //recordButton.isEnabled = false
+      self.transcriptionOutputLabel.text = "Stopping"
+    }
+    
+  }
   
   
+  fileprivate func updateUIWithTranscription(_ transcription: SFTranscription) {
+    
+    // 2
+    if let lastSegment = transcription.segments.last, lastSegment.duration > mostRecentlyProcessedSegmentDuration {
+      mostRecentlyProcessedSegmentDuration = lastSegment.duration
+      self.transcriptionOutputLabel.text = lastSegment.substring
+      executeCommand(lastSegment.substring)
+    }
+  }
+  
+  fileprivate func executeCommand(_ command: String) {
+    let lowCommand = command.lowercased()
+    switch lowCommand {
+      case "снимок":
+        takePhoto()
+      case "авто":
+        takeAutoPhoto()
+      case "запись":
+        startRecordigByCommand()
+      case "стоп":
+        stopRecordigByCommand()
+      case "камера":
+        changeCamera()
+    default:
+      return
+    }
+  }
 
 }
+
+extension CameraViewController: SFSpeechRecognizerDelegate {
+  
+  public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
+    if available {
+      //recordButton.isEnabled = true
+      self.transcriptionOutputLabel.text = "Recognition is available"
+    } else {
+      //recordButton.isEnabled = false
+      self.transcriptionOutputLabel.text = "Recognition not available"
+    }
+  }
+  
+}
+
 
