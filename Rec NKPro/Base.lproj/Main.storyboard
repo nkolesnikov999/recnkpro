@@ -131,7 +131,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87O-aO-cC9">
-                                <rect key="frame" x="255" y="103" width="90" height="75"/>
+                                <rect key="frame" x="255" y="98" width="90" height="75"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emU-Lb-NdJ">
                                         <rect key="frame" x="45" y="30" width="0.0" height="0.0"/>
@@ -165,8 +165,9 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OFF" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VTp-Pl-io3">
-                                <rect key="frame" x="278" y="200" width="44" height="29"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OFF" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VTp-Pl-io3" customClass="PaddingLabel" customModule="Rec_NKPro" customModuleProvider="target">
+                                <rect key="frame" x="278" y="181" width="44" height="29"/>
+                                <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" red="1" green="0.89391629750000001" blue="0.11041354220000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -266,7 +267,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mRS-bt-HHr">
-                                <rect key="frame" x="245" y="469" width="110" height="36"/>
+                                <rect key="frame" x="245" y="476" width="110" height="36"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="110" id="8pd-yJ-JVf"/>
                                     <constraint firstAttribute="height" constant="36" id="oUU-Oj-1pa"/>
@@ -277,10 +278,10 @@
                                 <color key="shadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <size key="shadowOffset" width="-1" height="-1"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PtV-hu-ps3">
-                                <rect key="frame" x="180" y="25" width="240" height="28"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PtV-hu-ps3" customClass="PaddingLabel" customModule="Rec_NKPro" customModuleProvider="target">
+                                <rect key="frame" x="185" y="25" width="230" height="28"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="240" id="JHg-jx-AWW"/>
+                                    <constraint firstAttribute="width" constant="230" id="JHg-jx-AWW"/>
                                     <constraint firstAttribute="height" constant="28" id="wo0-f1-s8o"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
@@ -396,12 +397,12 @@
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="T2h-dV-0Y4" secondAttribute="bottom" id="0jA-NC-uUg"/>
                             <constraint firstItem="FAb-ho-7Zh" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" constant="10" id="1tl-ry-1rd"/>
                             <constraint firstItem="ReQ-ib-nty" firstAttribute="top" secondItem="Mjl-GR-1Mx" secondAttribute="top" id="6vi-ND-2ah"/>
-                            <constraint firstItem="87O-aO-cC9" firstAttribute="top" secondItem="PtV-hu-ps3" secondAttribute="bottom" constant="50" id="8gH-8y-bzL"/>
-                            <constraint firstItem="VN3-rA-N7X" firstAttribute="top" secondItem="mRS-bt-HHr" secondAttribute="bottom" constant="15" id="8o5-qr-kEm"/>
+                            <constraint firstItem="87O-aO-cC9" firstAttribute="top" secondItem="PtV-hu-ps3" secondAttribute="bottom" constant="45" id="8gH-8y-bzL"/>
+                            <constraint firstItem="VN3-rA-N7X" firstAttribute="top" secondItem="mRS-bt-HHr" secondAttribute="bottom" constant="8" id="8o5-qr-kEm"/>
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="VN3-rA-N7X" secondAttribute="bottom" id="8od-W5-BLs"/>
                             <constraint firstItem="ReQ-ib-nty" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="9Kz-Dj-XA2"/>
                             <constraint firstItem="gTM-bj-bZc" firstAttribute="top" secondItem="MDt-aa-swn" secondAttribute="bottom" constant="5" id="A1g-x6-2pi"/>
-                            <constraint firstItem="VTp-Pl-io3" firstAttribute="top" secondItem="87O-aO-cC9" secondAttribute="bottom" constant="22" id="AWh-Q2-4vp"/>
+                            <constraint firstItem="VTp-Pl-io3" firstAttribute="top" secondItem="87O-aO-cC9" secondAttribute="bottom" constant="8" id="AWh-Q2-4vp"/>
                             <constraint firstItem="SSq-jP-VFA" firstAttribute="top" secondItem="ReQ-ib-nty" secondAttribute="bottom" id="AzX-MR-mKL"/>
                             <constraint firstItem="VN3-rA-N7X" firstAttribute="leading" secondItem="Mjl-GR-1Mx" secondAttribute="leading" id="FmG-lH-pOE"/>
                             <constraint firstItem="FYr-2J-afa" firstAttribute="top" secondItem="FAb-ho-7Zh" secondAttribute="bottom" constant="15" id="H9J-mE-CwX"/>

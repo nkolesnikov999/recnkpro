@@ -61,6 +61,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var assetItemsList: [AssetItem]!
   var picturesCount: Int = 0
   var odometer: Odometer!
+  var lastLocation: CLLocation?
   
   let kUpdateTimeInterval: TimeInterval = 1.0
   let kUpdateLocationInterval: TimeInterval = 3.0
@@ -75,6 +76,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
   var recognitionTask: SFSpeechRecognitionTask?
   var mostRecentlyProcessedSegmentDuration: TimeInterval = 0
+  
+  let synth = AVSpeechSynthesizer()
   
   var iconsImage: UIImage? {
     didSet {
@@ -761,6 +764,7 @@ extension CameraViewController : CaptureManagerDelegate {
       createOdometerLabel(distance)
       settings.odometerMeters = distance
     }
+    lastLocation = location
   }
   
   func createOdometerLabel(_ distance: Int) {
@@ -1192,7 +1196,54 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
 
+  func synthezeReady() {
+    let myUtterance = AVSpeechUtterance(string: "Сделано")
+    myUtterance.rate = 0.5
+    synth.speak(myUtterance)
+  }
   
+  func synthezeSpeed() {
+    let strNodata = NSLocalizedString("NoData", comment: "CameraVC: No data")
+    if var strSpeed = speedLabel.text {
+      if strSpeed == strNodata {
+        strSpeed = "Нет данных"
+      }
+      let myUtterance = AVSpeechUtterance(string: strSpeed)
+      myUtterance.rate = 0.5
+      synth.speak(myUtterance)
+    }
+  }
+  
+  func synthezeAddress(_ location: CLLocation?) {
+    var address = "Не найден"
+    guard let location = location else {
+      let myUtterance = AVSpeechUtterance(string: address)
+      myUtterance.rate = 0.5
+      self.synth.speak(myUtterance)
+      return
+    }
+    let geoCoder = CLGeocoder()
+    geoCoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
+      
+      if let placemarks = placemarks {
+        if placemarks.count > 0 {
+          let placemark = placemarks[0]
+          
+          if let city = placemark.addressDictionary?["City"] as? String {
+            address = city
+          }
+          
+          if let locationName = placemark.addressDictionary?["Name"] as? String {
+            address = address + "\n" + locationName
+          }
+        }
+      }
+      let myUtterance = AVSpeechUtterance(string: address)
+      myUtterance.rate = 0.5
+      self.synth.speak(myUtterance)
+    })
+  }
+
   
   // MARK: - Navigation
   
@@ -1354,14 +1405,23 @@ extension CameraViewController {
     switch lowCommand {
       case "снимок":
         takePhoto()
+        synthezeReady()
       case "авто":
         takeAutoPhoto()
+        synthezeReady()
       case "запись":
         startRecordigByCommand()
+        synthezeReady()
       case "стоп":
         stopRecordigByCommand()
+        synthezeReady()
       case "камера":
         changeCamera()
+        synthezeReady()
+      case "скорость":
+        synthezeSpeed()
+      case "адрес":
+        synthezeAddress(lastLocation)
     default:
       return
     }
@@ -1374,13 +1434,12 @@ extension CameraViewController: SFSpeechRecognizerDelegate {
   public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
     if available {
       //recordButton.isEnabled = true
-      self.transcriptionOutputLabel.text = "Recognition is available"
+      self.transcriptionOutputLabel.text = "Tell"
     } else {
       //recordButton.isEnabled = false
-      self.transcriptionOutputLabel.text = "Recognition not available"
+      self.transcriptionOutputLabel.text = "Not available"
     }
   }
   
 }
-
 
