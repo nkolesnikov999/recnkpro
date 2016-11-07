@@ -486,18 +486,20 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       alert.addAction(cancelAction)
       present(alert, animated: true, completion: nil)
     } else {
-      let asset = assetItemsList[0]
-      removeFile(asset.url as URL)
-      assetItemsList.remove(at: 0)
+      if let asset = assetItemsList.last {
+        removeFile(asset.url as URL)
+        assetItemsList.removeLast()
+      }
     }
   }
   
   func checkMaxNumberFiles() {
     
     while assetItemsList.count > settings.maxNumberVideo { // <=========
-      let asset = assetItemsList[0]
-      removeFile(asset.url as URL)
-      assetItemsList.remove(at: 0)
+      if let asset = assetItemsList.last {
+        removeFile(asset.url as URL)
+        assetItemsList.removeLast()
+      }
     }
     
   }
@@ -1170,7 +1172,7 @@ extension CameraViewController : CaptureManagerDelegate {
         if item.hasSuffix(".mov") {
           
           let asset = AssetItem(title: item)
-          assetItemsList.append(asset)
+          assetItemsList.insert(asset, at: 0)
           //print("ASSETS_COUNT: \(assetItemsList.count)")
         }
       }

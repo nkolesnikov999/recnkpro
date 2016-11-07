@@ -14,6 +14,7 @@ class AssetItem {
   var size: UInt64 = 0
   var url: URL
   var image: UIImage?
+  var isLocked: Bool = false
   
   init(title: String) {
     self.title = title
