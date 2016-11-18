@@ -62,7 +62,7 @@ class AssetItem {
   
     var thumbUIImage: UIImage? = nil
     let thumbRect = CGRect(x: 0, y: 0, width: CGFloat(image.width), height: CGFloat(image.height))
-    let size = CGSize(width: 96, height: 64)
+    let size = CGSize(width: 96, height: 96)
     var cropRect = AVMakeRect(aspectRatio: size, insideRect: thumbRect)
     cropRect.origin.x = round(cropRect.origin.x)
     cropRect.origin.y = round(cropRect.origin.y)

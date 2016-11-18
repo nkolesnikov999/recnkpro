@@ -226,24 +226,25 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     //print("AssetsVC.cellForRowAtIndexPath: \(indexPath.row)")
-    let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell", for: indexPath) as UITableViewCell
+    let cell = tableView.dequeueReusableCell(withIdentifier: "AssetCell", for: indexPath) as! VideoCell
     let asset = assetItemsList[(indexPath as NSIndexPath).row]
     
     let words = asset.title.components(separatedBy: ".")
     if words.count == 2 {
-      cell.textLabel?.text = words[0]
+      cell.descriptionLabel.text = words[0]
     } else {
-      cell.textLabel?.text = asset.title
+      cell.descriptionLabel.text = asset.title
     }
-    // TODO:
-    var detText = "\(asset.size/1000000) M"
+
     if asset.isLocked {
-      detText += " - LOCK"
+      cell.lockImageView.isHidden = false
+    } else {
+      cell.lockImageView.isHidden = true
     }
-    cell.detailTextLabel?.text = detText
+    cell.sizeLabel.text = "\(asset.size/1000000) M"
     
     if let image = asset.image {
-      cell.imageView?.image = image
+      cell.photoImageView.image = image
     }
   
     return cell
@@ -252,15 +253,20 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == UITableViewCellEditingStyle.delete {
       let asset = assetItemsList[(indexPath as NSIndexPath).row]
-      let movieURL = asset.url
-      removeFile(movieURL as URL)
-      assetItemsList.remove(at: (indexPath as NSIndexPath).row)
-      tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+      if !asset.isLocked {
+        let movieURL = asset.url
+        removeFile(movieURL as URL)
+        assetItemsList.remove(at: (indexPath as NSIndexPath).row)
+        tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+      }
     }
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-    
+    let asset = assetItemsList[(indexPath as NSIndexPath).row]
+    if asset.isLocked {
+      return false
+    }
     return true
   }
   
