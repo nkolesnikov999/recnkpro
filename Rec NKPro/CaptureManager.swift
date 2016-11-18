@@ -164,6 +164,18 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     return (readyToRecordAudio || !isAudioInput) && readyToRecordVideo && readyToRecordMetadata
   }
   
+  var isLock: Bool = false {
+    didSet {
+      if recording && isLock {
+        let title = movieURL.lastPathComponent
+        if !LockedList.lockList.lockVideo.contains(title) {
+          LockedList.lockList.lockVideo.append(title)
+          LockedList.lockList.saveLockedVideo()
+        }
+      }
+    }
+  }
+  
   var textOnVideo = false
   
   //MARK: - Init
@@ -526,6 +538,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
       // Create a new movieURL
       
       self.movieURL = URL(fileURLWithPath: NSString(format: "%@%@", NSTemporaryDirectory(), "\(self.createDateString()).mov") as String)
+      
+      if self.isLock {
+        LockedList.lockList.lockVideo.append(self.movieURL.lastPathComponent)
+        LockedList.lockList.saveLockedVideo()
+      }
       
       // Create an asset writer
       do {

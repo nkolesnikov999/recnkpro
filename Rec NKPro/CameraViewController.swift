@@ -48,6 +48,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var resetRecordingTimer = false
   var changingCamera = false
   var isPhotoImage = false
+  var isLock = false
   var freeSpace: Float = 0
   
   var recordingTimer: Timer?
@@ -136,6 +137,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   @IBOutlet weak var fillDiskLabel: UILabel!
   @IBOutlet weak var batteryLabel: UILabel!
   @IBOutlet weak var controlViewConstraint: NSLayoutConstraint!
+  @IBOutlet weak var lockButton: UIButton!
   
   @IBOutlet weak var flashView: UIView!
   @IBOutlet weak var photoView: UIImageView!
@@ -466,7 +468,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func checkFilesStopRecordingDueSpaceLimit() {
-    if assetItemsList.count <= 1 {
+    if (assetItemsList.count - LockedList.lockList.lockVideo.count) <= 1 { // <=========
+      print("Assets: \(assetItemsList.count), Locked: \(LockedList.lockList.lockVideo.count)")
       drawControlView()
       recordButton.isEnabled = false
       if let cm = captureManager {
@@ -486,22 +489,29 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
       alert.addAction(cancelAction)
       present(alert, animated: true, completion: nil)
     } else {
-      if let asset = assetItemsList.last {
-        removeFile(asset.url as URL)
-        assetItemsList.removeLast()
+      var index = assetItemsList.count - 1
+      while index >= 1 {
+        let asset = assetItemsList[index]
+        if !asset.isLocked {
+          removeFile(asset.url as URL)
+          assetItemsList.remove(at: index)
+          break
+        }
+        index -= 1
       }
     }
   }
   
   func checkMaxNumberFiles() {
-    
-    while assetItemsList.count > settings.maxNumberVideo { // <=========
-      if let asset = assetItemsList.last {
+    var index = assetItemsList.count - 1
+    while (assetItemsList.count - LockedList.lockList.lockVideo.count) > settings.maxNumberVideo {
+      let asset = assetItemsList[index]
+      if !asset.isLocked {
         removeFile(asset.url as URL)
-        assetItemsList.removeLast()
+        assetItemsList.remove(at: index)
       }
+      index -= 1
     }
-    
   }
   
   @IBAction func changeOpacity(_ sender: UISlider) {
@@ -654,6 +664,28 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     UserDefaults.standard.setValue(settings.isMicOn, forKey: MicOnKey)
     UserDefaults.standard.synchronize()
   }
+  
+  @IBAction func toggleLockVideo(_ sender: UIButton) {
+    if isLock {
+      unlockVideo()
+    } else {
+      lockVideo()
+    }
+    if let cm = captureManager {
+      cm.isLock = isLock
+    }
+    print(LockedList.lockList.lockVideo)
+  }
+  
+  func lockVideo() {
+    lockButton.setImage(UIImage(named: "Lock"), for: .normal)
+    isLock = true
+  }
+  
+  func unlockVideo() {
+    lockButton.setImage(UIImage(named: "UnLock"), for: .normal)
+    isLock = false
+  }
 }
 
 //MARK: - CaptureManagerDelegate
@@ -744,7 +776,7 @@ extension CameraViewController : CaptureManagerDelegate {
       }
       
       self.createMovieContents()
-      self.checkMaxNumberFiles() // <==============
+      self.checkMaxNumberFiles()
     }
   }
   
@@ -905,7 +937,7 @@ extension CameraViewController : CaptureManagerDelegate {
       } else {
         fillDiskLabel.textColor = UIColor.green
       }
-      if mustRecord && freeSpace < 0.3 {
+      if mustRecord && freeSpace <= 0.3 {
         checkFilesStopRecordingDueSpaceLimit()
       }
     }
@@ -1142,7 +1174,7 @@ extension CameraViewController : CaptureManagerDelegate {
     captureManager?.isMicOn = settings.isMicOn
 
     
-    checkMaxNumberFiles() // <===========
+    checkMaxNumberFiles()
     
     UserDefaults.standard.set(settings.frontQualityMode.rawValue, forKey: FrontQualityModeKey)
     UserDefaults.standard.set(settings.backQualityMode.rawValue, forKey: BackQualityModeKey)
@@ -1199,7 +1231,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
 
   func synthezeReady() {
-    let myUtterance = AVSpeechUtterance(string: "Сделано")
+    let myUtterance = AVSpeechUtterance(string: "Окей")
     myUtterance.rate = 0.5
     synth.speak(myUtterance)
   }
@@ -1424,6 +1456,12 @@ extension CameraViewController {
         synthezeSpeed()
       case "адрес":
         synthezeAddress(lastLocation)
+      case "блокировать":
+        lockVideo()
+        synthezeReady()
+      case "разблокировать":
+        unlockVideo()
+        synthezeReady()
     default:
       return
     }

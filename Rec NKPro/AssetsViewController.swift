@@ -235,8 +235,13 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     } else {
       cell.textLabel?.text = asset.title
     }
+    // TODO:
+    var detText = "\(asset.size/1000000) M"
+    if asset.isLocked {
+      detText += " - LOCK"
+    }
+    cell.detailTextLabel?.text = detText
     
-    cell.detailTextLabel?.text = "\(asset.size/1000000) M"
     if let image = asset.image {
       cell.imageView?.image = image
     }
@@ -305,9 +310,40 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
       (alert: UIAlertAction!) -> Void in
     })
     
-    optionMenu.addAction(moveAction)
+    let lockAction = UIAlertAction(title: "Lock", style: .default, handler: {
+      (alert: UIAlertAction!) -> Void in
+      // Lock file
+      asset.isLocked = true
+      if !LockedList.lockList.lockVideo.contains(asset.title) {
+        LockedList.lockList.lockVideo.append(asset.title)
+        LockedList.lockList.saveLockedVideo()
+      }
+      self.tableView.reloadData()
+    })
+    
+    let unlockAction = UIAlertAction(title: "Unock", style: .default, handler: {
+      (alert: UIAlertAction!) -> Void in
+      // Unock file
+      asset.isLocked = false
+      if let index = LockedList.lockList.lockVideo.index(of: asset.title) {
+        // print("Index: \(index)")
+        LockedList.lockList.lockVideo.remove(at: index)
+        LockedList.lockList.saveLockedVideo()
+        self.tableView.reloadData()
+      }
+    })
+
+    
     optionMenu.addAction(copyAction)
-    optionMenu.addAction(deleteAction)
+    
+    if asset.isLocked {
+      optionMenu.addAction(unlockAction)
+    } else {
+      optionMenu.addAction(moveAction)
+      optionMenu.addAction(lockAction)
+      optionMenu.addAction(deleteAction)
+    }
+    
     optionMenu.addAction(cancelAction)
     
     if let popoverController = optionMenu.popoverPresentationController {

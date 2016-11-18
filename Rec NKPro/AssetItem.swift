@@ -35,6 +35,10 @@ class AssetItem {
     
     image = UIImage(named: "Placeholder")
     generateImage()
+    
+    if LockedList.lockList.lockVideo.contains(title) {
+      isLocked = true
+    }
   }
   
   func generateImage() {
