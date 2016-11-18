@@ -1394,6 +1394,7 @@ extension CameraViewController {
         
         //self.recordButton.isEnabled = true
         self.transcriptionOutputLabel.text = "Tap"
+        self.transcriptionOutputLabel.textColor = UIColor.yellow
       }
     }
     
@@ -1406,6 +1407,7 @@ extension CameraViewController {
     
     try audioEngine.start()
     self.transcriptionOutputLabel.text = "Tell"
+    self.transcriptionOutputLabel.textColor = UIColor.green
   }
   
   fileprivate func stopSpeechRecording() {
@@ -1419,6 +1421,7 @@ extension CameraViewController {
       
       //recordButton.isEnabled = false
       self.transcriptionOutputLabel.text = "Stopping"
+      self.transcriptionOutputLabel.textColor = UIColor.yellow
     }
     
   }
@@ -1430,6 +1433,7 @@ extension CameraViewController {
     if let lastSegment = transcription.segments.last, lastSegment.duration > mostRecentlyProcessedSegmentDuration {
       mostRecentlyProcessedSegmentDuration = lastSegment.duration
       self.transcriptionOutputLabel.text = lastSegment.substring
+      self.transcriptionOutputLabel.textColor = UIColor.blue
       executeCommand(lastSegment.substring)
     }
   }
@@ -1475,9 +1479,11 @@ extension CameraViewController: SFSpeechRecognizerDelegate {
     if available {
       //recordButton.isEnabled = true
       self.transcriptionOutputLabel.text = "Tell"
+      self.transcriptionOutputLabel.textColor = UIColor.green
     } else {
       //recordButton.isEnabled = false
       self.transcriptionOutputLabel.text = "Not available"
+      self.transcriptionOutputLabel.textColor = UIColor.red
     }
   }
   
