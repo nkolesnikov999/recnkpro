@@ -32,7 +32,9 @@ class IAPHelper: NSObject {
   
   typealias ProductsRequestCompletionHandler = (_ products: [SKProduct]?) -> ()
   
-  
+  var fullVersionProduct: SKProduct?
+  var price = ""
+  var isSelling = false
   
   var setFullVersion = false {
     didSet {

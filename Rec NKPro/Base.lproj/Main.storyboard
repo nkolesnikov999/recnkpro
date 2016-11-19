@@ -779,7 +779,7 @@
                                                     <color key="textColor" red="0.98613083362579346" green="0.48045802116394043" blue="0.032503090798854828" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="30" minValue="5" maxValue="90" translatesAutoresizingMaskIntoConstraints="NO" id="rzf-TL-0g5">
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="30" minValue="1" maxValue="90" translatesAutoresizingMaskIntoConstraints="NO" id="rzf-TL-0g5">
                                                     <rect key="frame" x="246" y="7" width="348" height="31"/>
                                                     <connections>
                                                         <action selector="setMaxRecordingTime:" destination="u8v-CQ-GHX" eventType="valueChanged" id="nv8-DL-xgd"/>

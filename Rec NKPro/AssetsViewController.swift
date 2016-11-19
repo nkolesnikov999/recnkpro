@@ -37,6 +37,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     
     let notificationCenter = NotificationCenter.default
     notificationCenter.addObserver(self, selector: #selector(AssetsViewController.deviceOrientationDidChange), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+    notificationCenter.addObserver(self, selector: #selector(AssetsViewController.handlePurchaseNotification(_:)), name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
   
     activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
     activityIndicator.color = UIColor(red: 252.0/255.0, green: 142.0/255.0, blue: 37.0/255.0, alpha: 1.0)
@@ -50,6 +51,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     //print("AssetsViewController.deinit")
     let notificationCenter = NotificationCenter.default
     notificationCenter.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+    notificationCenter.removeObserver(self, name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
   }
   
   override var prefersStatusBarHidden : Bool {
@@ -207,10 +209,20 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
   }
   
   func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
-      
+    let message = NSLocalizedString("For running this function you need to buy Full Version\n", comment: "SettingVC Error-Message") + IAPHelper.iapHelper.price
+    
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
+    
+    let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "CameraVC Alert-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
+      guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+      IAPHelper.iapHelper.buyProduct(fullVersionProduct)
+    }
+    
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "CameraVC Alert-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
+    }
+    if IAPHelper.iapHelper.isSelling {
+      alert.addAction(buyAction)
     }
     alert.addAction(cancelAction)
     self.present(alert, animated: true, completion: nil)
@@ -318,13 +330,17 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     
     let lockAction = UIAlertAction(title: "Lock", style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
-      // Lock file
-      asset.isLocked = true
-      if !LockedList.lockList.lockVideo.contains(asset.title) {
-        LockedList.lockList.lockVideo.append(asset.title)
-        LockedList.lockList.saveLockedVideo()
+      if IAPHelper.iapHelper.setFullVersion {
+        // Lock file
+        asset.isLocked = true
+        if !LockedList.lockList.lockVideo.contains(asset.title) {
+          LockedList.lockList.lockVideo.append(asset.title)
+          LockedList.lockList.saveLockedVideo()
+        }
+        self.tableView.reloadData()
+      } else {
+        self.showAlert()
       }
-      self.tableView.reloadData()
     })
     
     let unlockAction = UIAlertAction(title: "Unock", style: .default, handler: {
@@ -370,6 +386,21 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     
     return indexPath
   }
+  
+  func handlePurchaseNotification(_ notification: Notification) {
+    // print("AssetsVC handlePurchaseNotification")
+    if let productID = notification.object as? String {
+      
+      print("Bought: \(productID)")
+      if productID == RecPurchase.FullVersion.productId {
+        IAPHelper.iapHelper.setFullVersion = true
+        IAPHelper.iapHelper.saveSettings(IAPHelper.FullVersionKey)
+      } else {
+        print("No such product")
+      }
+    }
+  }
+
 }
 
 // MARK: - UIScrollViewDelegate

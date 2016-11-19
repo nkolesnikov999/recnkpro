@@ -25,11 +25,8 @@ protocol SettingsControllerDelegate: class {
 
 class SettingsViewController: UITableViewController {
   
-  fileprivate var fullVersionProduct: SKProduct?
-  
   weak var delegate: SettingsControllerDelegate?
   var settings: Settings!
-  var price = ""
   var alertMaxVideo = false
   var alertMaxTime = false
   
@@ -57,12 +54,6 @@ class SettingsViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    let modelName = UIDevice.current.modelName
-    
-    if modelName == "iPhone 4s" {
-      //qualityModeSegment.removeSegmentAtIndex(2, animated: false)
-    }
-    
     fullVersionButton.isEnabled = false
 
     logotypeTextField.delegate = self
@@ -72,7 +63,10 @@ class SettingsViewController: UITableViewController {
     //print("Distance: \(settings.odometerMeters)")
     //settings.odometerMeters = 1_000_001
     
-    requestIAPProducts()
+    fullVersionButton.isEnabled = IAPHelper.iapHelper.isSelling
+    let title = NSLocalizedString("Full Version - ", comment: "SettingsVC: Full Version") + IAPHelper.iapHelper.price
+    fullVersionButton.setTitle(title, for: UIControlState())
+    
     NotificationCenter.default.addObserver(self, selector: #selector(SettingsViewController.handlePurchaseNotification(_:)), name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
     checkStateRestoreButton()
     
@@ -176,21 +170,31 @@ class SettingsViewController: UITableViewController {
   @IBAction func setMaxRecordingTime(_ sender: UISlider) {
     
     if !IAPHelper.iapHelper.setFullVersion {
-      sender.value = 5.0
+      sender.value = 1.0
       if !alertMaxTime {
         alertMaxTime = true
-        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .alert)
+        let message = NSLocalizedString("For running this function you need to buy Full Version\n", comment: "SettingVC Error-Message") + IAPHelper.iapHelper.price
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
+        let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "SettingVC Error-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
+          self.alertMaxVideo = false
+          guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+          IAPHelper.iapHelper.buyProduct(fullVersionProduct)
+        }
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "SettingVC Error-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
           self.alertMaxTime = false
+        }
+        
+        if IAPHelper.iapHelper.isSelling {
+          alert.addAction(buyAction)
         }
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
       }
 
     } else {
-      let partValue = sender.value/5
-      let value = Int(partValue) * 5
+      let value = Int(sender.value)
       sender.value = Float(value)
       maxRecordingTimeLabel.text =  String(format: NSLocalizedString("%d min", comment: "SettingsVC Format for maxRecordingTimeLabel"), value)
       settings.maxRecordingTime = value
@@ -205,12 +209,21 @@ class SettingsViewController: UITableViewController {
       
       if !alertMaxVideo {
         alertMaxVideo = true
-        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For running this function you need to buy Full Version", comment: "SettingVC Error-Message"), preferredStyle: .alert)
+        let message = NSLocalizedString("For running this function you need to buy Full Version\n", comment: "SettingVC Error-Message") + IAPHelper.iapHelper.price
+        let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
+        let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "SettingVC Error-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
           self.alertMaxVideo = false
+          guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+          IAPHelper.iapHelper.buyProduct(fullVersionProduct)
         }
         
+        let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "SettingVC Error-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
+          self.alertMaxVideo = false
+        }
+        if IAPHelper.iapHelper.isSelling {
+          alert.addAction(buyAction)
+        }
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
       }
@@ -239,7 +252,7 @@ class SettingsViewController: UITableViewController {
   
   @IBAction func buyFullVersion(_ sender: UIButton) {
     // print("Logo")
-    guard let fullVersionProduct = fullVersionProduct else { return }
+    guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
     IAPHelper.iapHelper.buyProduct(fullVersionProduct)
   }
 
@@ -292,42 +305,6 @@ class SettingsViewController: UITableViewController {
     intervalPicturesLabel.text = String(format: NSLocalizedString("%d s", comment: "SettingsVC Format for intervalPicturesLabel"), settings.intervalPictures)
   }
   
-  func requestIAPProducts() {
-    
-    IAPHelper.iapHelper.requestProducts {
-      products in
-      guard let products = products else { return }
-      
-      if !IAPHelper.iapHelper.setFullVersion {
-        self.fullVersionProduct = products.filter {
-          $0.productIdentifier == RecPurchase.FullVersion.productId
-        }.first
-      }
-      
-      if self.fullVersionProduct != .none {
-        self.fullVersionButton.isEnabled = true
-        
-        let priceFormatter = NumberFormatter()
-        priceFormatter.numberStyle = .currency
-        priceFormatter.locale = self.fullVersionProduct?.priceLocale
-        
-        if let price = self.fullVersionProduct?.price {
-          if let strPrice = priceFormatter.string(from: price) {
-            self.price = strPrice
-          }
-        }
-        
-        let title = NSLocalizedString("Full Version - ", comment: "SettingsVC: Full Version") + self.price
-        self.fullVersionButton.setTitle(title, for: UIControlState())
-      }
-      
-      
-    
-      print("FullVersion Product: \(self.fullVersionProduct?.productIdentifier), price: \(self.price)")
-    }
-    
-  }
-  
   func handlePurchaseNotification(_ notification: Notification) {
     // print("handlePurchaseNotification")
     if let productID = notification.object as? String {
@@ -359,47 +336,5 @@ extension SettingsViewController: UITextFieldDelegate {
     textField.resignFirstResponder()
     return true
   }
-}
-
-
-public extension UIDevice {
-  
-  var modelName: String {
-    var systemInfo = utsname()
-    uname(&systemInfo)
-    let machineMirror = Mirror(reflecting: systemInfo.machine)
-    let identifier = machineMirror.children.reduce("") { identifier, element in
-      guard let value = element.value as? Int8 , value != 0 else { return identifier }
-      return identifier + String(UnicodeScalar(UInt8(value)))
-    }
-    
-    switch identifier {
-    case "iPod5,1":                                 return "iPod Touch 5"
-    case "iPod7,1":                                 return "iPod Touch 6"
-    case "iPhone3,1", "iPhone3,2", "iPhone3,3":     return "iPhone 4"
-    case "iPhone4,1":                               return "iPhone 4s"
-    case "iPhone5,1", "iPhone5,2":                  return "iPhone 5"
-    case "iPhone5,3", "iPhone5,4":                  return "iPhone 5c"
-    case "iPhone6,1", "iPhone6,2":                  return "iPhone 5s"
-    case "iPhone7,2":                               return "iPhone 6"
-    case "iPhone7,1":                               return "iPhone 6 Plus"
-    case "iPhone8,1":                               return "iPhone 6s"
-    case "iPhone8,2":                               return "iPhone 6s Plus"
-    case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4":return "iPad 2"
-    case "iPad3,1", "iPad3,2", "iPad3,3":           return "iPad 3"
-    case "iPad3,4", "iPad3,5", "iPad3,6":           return "iPad 4"
-    case "iPad4,1", "iPad4,2", "iPad4,3":           return "iPad Air"
-    case "iPad5,3", "iPad5,4":                      return "iPad Air 2"
-    case "iPad2,5", "iPad2,6", "iPad2,7":           return "iPad Mini"
-    case "iPad4,4", "iPad4,5", "iPad4,6":           return "iPad Mini 2"
-    case "iPad4,7", "iPad4,8", "iPad4,9":           return "iPad Mini 3"
-    case "iPad5,1", "iPad5,2":                      return "iPad Mini 4"
-    case "iPad6,7", "iPad6,8":                      return "iPad Pro"
-    case "AppleTV5,3":                              return "Apple TV"
-    case "i386", "x86_64":                          return "Simulator"
-    default:                                        return identifier
-    }
-  }
-  
 }
 

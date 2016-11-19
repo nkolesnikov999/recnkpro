@@ -19,6 +19,7 @@ import CoreTelephony
 import CoreLocation
 import AVFoundation
 import Speech
+import StoreKit
 
 let OtherTimeKey = "OtherTimeKey"
 let FrontQualityModeKey = "FrontQualityModeKey"
@@ -35,7 +36,7 @@ let OdometerMetersKey = "OdometerMetersKey"
 let TextOnVideoKey = "TextOnVideoKey"
 let LogotypeKey = "LogotypeKey"
 let MicOnKey = "MicOnKey"
-let maxNumberPictures = 10
+let maxNumberPictures = 5
 
 
 class CameraViewController : UIViewController, SettingsControllerDelegate {
@@ -70,7 +71,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   let kRemoveControlViewInterval: TimeInterval = 10.0
   
   let titleAlert = NSLocalizedString("Message", comment: "SettingVC Error-Title")
-  let messageAlert = NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message")
+  let messageAlert = NSLocalizedString("For more pictures you need to buy Full Version\n", comment: "CameraVC Alert-Message")
+  let lockAlert = NSLocalizedString("For running this function you need to buy Full Version\n", comment: "SettingVC Error-Message")
   
   let audioEngine = AVAudioEngine()
   let speechRecognizer = SFSpeechRecognizer(locale: Locale.current)
@@ -181,6 +183,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     notificationCenter.addObserver(self, selector: #selector(CameraViewController.deviceOrientationDidChange), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationDidBecomeActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive, object: UIApplication.shared)
     notificationCenter.addObserver(self, selector: #selector(CameraViewController.applicationWillResignActive(_:)), name: NSNotification.Name.UIApplicationWillResignActive, object: UIApplication.shared)
+    notificationCenter.addObserver(self, selector: #selector(CameraViewController.handlePurchaseNotification(_:)), name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
     
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     
@@ -282,6 +285,9 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
 
     initSpeechRecognition()
+    if !IAPHelper.iapHelper.setFullVersion {
+      requestIAPProducts()
+    }
   }
   
   override func viewWillDisappear(_ animated: Bool) {
@@ -340,7 +346,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     notificationCenter.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     notificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive, object: UIApplication.shared)
     notificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationWillResignActive, object: UIApplication.shared)
-
+    notificationCenter.removeObserver(self, name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
     
     // Stop and tear down the capture session
     captureManager?.stopAndTearDownCaptureSession()
@@ -678,8 +684,14 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func lockVideo() {
-    lockButton.setImage(UIImage(named: "Lock"), for: .normal)
-    isLock = true
+    if !IAPHelper.iapHelper.setFullVersion {
+      // show alert
+      // print("ALERT")
+      showAlert(title: titleAlert, message: lockAlert)
+    }else {
+      lockButton.setImage(UIImage(named: "Lock"), for: .normal)
+      isLock = true
+    }
   }
   
   func unlockVideo() {
@@ -822,11 +834,18 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func showAlert(title: String, message: String) {
-    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    let alert = UIAlertController(title: title, message: message + IAPHelper.iapHelper.price, preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .default) { (action: UIAlertAction!) -> Void in
+    let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "CameraVC Alert-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
+      guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+      IAPHelper.iapHelper.buyProduct(fullVersionProduct)
     }
-    
+
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "CameraVC Alert-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
+    }
+    if IAPHelper.iapHelper.isSelling {
+      alert.addAction(buyAction)
+    }
     alert.addAction(cancelAction)
     present(alert, animated: true, completion: nil)
   }
@@ -1433,7 +1452,7 @@ extension CameraViewController {
     if let lastSegment = transcription.segments.last, lastSegment.duration > mostRecentlyProcessedSegmentDuration {
       mostRecentlyProcessedSegmentDuration = lastSegment.duration
       self.transcriptionOutputLabel.text = lastSegment.substring
-      self.transcriptionOutputLabel.textColor = UIColor.blue
+      self.transcriptionOutputLabel.textColor = UIColor.green
       executeCommand(lastSegment.substring)
     }
   }
@@ -1484,6 +1503,55 @@ extension CameraViewController: SFSpeechRecognizerDelegate {
       //recordButton.isEnabled = false
       self.transcriptionOutputLabel.text = "Not available"
       self.transcriptionOutputLabel.textColor = UIColor.red
+    }
+  }
+  
+}
+
+extension CameraViewController {
+  
+  func requestIAPProducts() {
+    
+    IAPHelper.iapHelper.requestProducts {
+      products in
+      guard let products = products else { return }
+      
+      if !IAPHelper.iapHelper.setFullVersion {
+        IAPHelper.iapHelper.fullVersionProduct = products.filter {
+          $0.productIdentifier == RecPurchase.FullVersion.productId
+          }.first
+      }
+      
+      if IAPHelper.iapHelper.fullVersionProduct != .none {
+        IAPHelper.iapHelper.isSelling = true
+        
+        let priceFormatter = NumberFormatter()
+        priceFormatter.numberStyle = .currency
+        priceFormatter.locale = IAPHelper.iapHelper.fullVersionProduct?.priceLocale
+        
+        if let price = IAPHelper.iapHelper.fullVersionProduct?.price {
+          if let strPrice = priceFormatter.string(from: price) {
+            IAPHelper.iapHelper.price = strPrice
+          }
+        }
+        
+      }
+      
+      print("FullVersion Product: \(IAPHelper.iapHelper.fullVersionProduct?.productIdentifier), price: \(IAPHelper.iapHelper.price)")
+    }
+  }
+  
+  func handlePurchaseNotification(_ notification: Notification) {
+    // print(" Camera handlePurchaseNotification")
+    if let productID = notification.object as? String {
+      
+      print("Bought: \(productID)")
+      if productID == RecPurchase.FullVersion.productId {
+        IAPHelper.iapHelper.setFullVersion = true
+        IAPHelper.iapHelper.saveSettings(IAPHelper.FullVersionKey)
+      } else {
+        print("No such product")
+      }
     }
   }
   

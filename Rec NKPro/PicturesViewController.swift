@@ -21,7 +21,8 @@ class PicturesViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.addObserver(self, selector: #selector(PicturesViewController.handlePurchaseNotification(_:)), name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
     // Do any additional setup after loading the view.
     navigationItem.rightBarButtonItem = editButtonItem
   }
@@ -39,6 +40,12 @@ class PicturesViewController: UITableViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
+  }
+  
+  deinit {
+    //print("AssetsViewController.deinit")
+    let notificationCenter = NotificationCenter.default
+    notificationCenter.removeObserver(self, name: NSNotification.Name(rawValue: IAPHelper.IAPHelperPurchaseNotification), object: nil)
   }
   
   override var prefersStatusBarHidden : Bool {
@@ -291,28 +298,47 @@ class PicturesViewController: UITableViewController {
     return "\(latitudeStr), \(longitudeStr)\n"
   }
   
-  func showAlert(_ alert: AlertMessage) {
+  func showAlert(_ alertMessage: AlertMessage) {
     
-    var message = ""
-    
-    switch alert {
-    case .fullVersion:
-      message = NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "PictureVC FullVersion")
-    case .photoSaved:
-      message = NSLocalizedString("Photo has been copied", comment: "PictureVC PhotoSaved")
-    case .photoNoSaved:
-      message = NSLocalizedString("Photo hasn't been copied", comment: "PictureVC PhotoNoSaved")
-    }
-    
+    let message = ""
     let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
-    
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
-      
+    switch alertMessage {
+      case .fullVersion:
+        alert.message = NSLocalizedString("For running this function you need to buy Full Version\n", comment: "SettingVC Error-Message") + IAPHelper.iapHelper.price
+        let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "CameraVC Alert-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
+          guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+          IAPHelper.iapHelper.buyProduct(fullVersionProduct)
+        }
+        if IAPHelper.iapHelper.isSelling {
+          alert.addAction(buyAction)
+        }
+        
+      case .photoSaved:
+        alert.message = NSLocalizedString("Photo has been copied", comment: "PictureVC PhotoSaved")
+        
+      case .photoNoSaved:
+        alert.message = NSLocalizedString("Photo hasn't been copied", comment: "PictureVC PhotoNoSaved")
+    }
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "CameraVC Alert-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
     }
     alert.addAction(cancelAction)
     self.present(alert, animated: true, completion: nil)
   }
   
+  func handlePurchaseNotification(_ notification: Notification) {
+    //print(" Camera handlePurchaseNotification")
+    if let productID = notification.object as? String {
+      
+      print("Bought: \(productID)")
+      if productID == RecPurchase.FullVersion.productId {
+        IAPHelper.iapHelper.setFullVersion = true
+        IAPHelper.iapHelper.saveSettings(IAPHelper.FullVersionKey)
+      } else {
+        print("No such product")
+      }
+    }
+  }
+
 }
 
 

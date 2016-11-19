@@ -777,12 +777,21 @@ class PlayerViewController : UIViewController {
   }
   
   func showAlert() {
-    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: NSLocalizedString("For more pictures you need to go to Settings and buy Full Version", comment: "CameraVC Alert-Message"), preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "CameraVC Alert-OK"), style: .default) { (action: UIAlertAction!) -> Void in
-      //self.alertMaxVideo = false
+    let message = NSLocalizedString("For more pictures you need to buy Full Version\n", comment: "CameraVC Alert-Message") + IAPHelper.iapHelper.price
+    let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
+    
+    let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "SettingVC Error-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
+      guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+      IAPHelper.iapHelper.buyProduct(fullVersionProduct)
     }
     
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "SettingVC Error-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
+    }
+    
+    if IAPHelper.iapHelper.isSelling {
+      alert.addAction(buyAction)
+    }
     alert.addAction(cancelAction)
     present(alert, animated: true, completion: nil)
   }
