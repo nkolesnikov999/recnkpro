@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C041A061DDF654500364F37 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C041A051DDF654500364F37 /* VideoCell.swift */; };
+		4C041A081DE0A8F800364F37 /* VoiceControlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C041A071DE0A8F800364F37 /* VoiceControlViewController.swift */; };
 		4C0D2D6A1C38292600B14E22 /* Odometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0D2D691C38292600B14E22 /* Odometer.swift */; };
 		4C1E791C1C391B6C004A86B9 /* FrameRateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */; };
 		4C2279301C425A7C0021F3F9 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C22792F1C425A7C0021F3F9 /* Metadata.swift */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		4C041A051DDF654500364F37 /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
+		4C041A071DE0A8F800364F37 /* VoiceControlViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceControlViewController.swift; sourceTree = "<group>"; };
 		4C0D2D691C38292600B14E22 /* Odometer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Odometer.swift; sourceTree = "<group>"; };
 		4C1E791B1C391B6C004A86B9 /* FrameRateCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameRateCalculator.swift; sourceTree = "<group>"; };
 		4C22792F1C425A7C0021F3F9 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 				4C66F6B21CB6BE9C00570FE1 /* MapPicture */,
 				4C3EECA61BF8FA9300FE0C4C /* CameraViewController.swift */,
 				4C3EECA71BF8FA9300FE0C4C /* SettingsViewController.swift */,
+				4C041A071DE0A8F800364F37 /* VoiceControlViewController.swift */,
 				4C3EECA81BF8FA9300FE0C4C /* AssetsViewController.swift */,
 				4C041A051DDF654500364F37 /* VideoCell.swift */,
 				4CE24E4A1C93437000775F1B /* PicturesViewController.swift */,
@@ -269,6 +272,7 @@
 				4C66F6A91CB4293800570FE1 /* PicturesList.swift in Sources */,
 				4C66F6A71CB3F8F100570FE1 /* TabBarViewController.swift in Sources */,
 				4C66F6B41CB7021300570FE1 /* PictureAnnotation.swift in Sources */,
+				4C041A081DE0A8F800364F37 /* VoiceControlViewController.swift in Sources */,
 				4C3EECB11BF8FA9300FE0C4C /* CameraViewController.swift in Sources */,
 				4C3EECB41BF8FA9300FE0C4C /* PickerViewController.swift in Sources */,
 				4C66F6AF1CB6B35C00570FE1 /* PicturePageViewController.swift in Sources */,
