@@ -36,6 +36,18 @@ let OdometerMetersKey = "OdometerMetersKey"
 let TextOnVideoKey = "TextOnVideoKey"
 let LogotypeKey = "LogotypeKey"
 let MicOnKey = "MicOnKey"
+
+let RecordVideoVoiceKey = "RecordVideoVoiceKey"
+let StopVideoVoiceKey = "StopVideoVoiceKey"
+let LockVideoVoiceKey = "LockVideoVoiceKey"
+let UnlockVideoVoiceKey = "UnlockVideoVoiceKey"
+let ChangeCameraVoiceKey = "ChangeCameraVoiceKey"
+let TakePictureVoiceKey = "TakePictureVoiceKey"
+let AutoPictureVoiceKey = "AutoPictureVoiceKey"
+let AddressVoiceKey = "AddressVoiceKey"
+let SpeedVoiceKey = "SpeedVoiceKey"
+let AnswerVoiceKey = "AnswerVoiceKey"
+
 let maxNumberPictures = 5
 
 
@@ -120,6 +132,16 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     }
   }
   
+  var recordVideoCommand = recordVideoVoiceString
+  var stopRecordCommand = stopVideoVoiceString
+  var lockVideoCommand = lockVideoVoiceString
+  var unlockVideoCommand = unlockVideoVoiceString
+  var changeCameraCommand = changeCameraVoiceString
+  var takePictureCommand = takePictureVoiceString
+  var autoPictureCommand = autoPictureVoiceString
+  var addressCommand = addressVoiceString
+  var speedCommand = speedVoiceString
+  var answerCommand = answerVoiceString
   
   @IBOutlet weak var previewView: UIView!
   @IBOutlet weak var speedView: UIView!
@@ -283,6 +305,8 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     } else {
       print("CaptureManager didn't create!")
     }
+    
+    loadCommands()
 
     initSpeechRecognition()
     if !IAPHelper.iapHelper.setFullVersion {
@@ -1171,6 +1195,70 @@ extension CameraViewController : CaptureManagerDelegate {
     
   }
   
+  func loadCommands() {
+    if let storedRecord = UserDefaults.standard.string(forKey: RecordVideoVoiceKey) {
+      recordVideoCommand = storedRecord
+    } else {
+      UserDefaults.standard.set(recordVideoCommand, forKey: RecordVideoVoiceKey)
+    }
+    
+    if let storedStop = UserDefaults.standard.string(forKey: StopVideoVoiceKey) {
+      stopRecordCommand = storedStop
+    } else {
+      UserDefaults.standard.set(stopRecordCommand, forKey: StopVideoVoiceKey)
+    }
+    
+    if let storedLock = UserDefaults.standard.string(forKey: LockVideoVoiceKey) {
+      lockVideoCommand = storedLock
+    } else {
+      UserDefaults.standard.set(lockVideoCommand, forKey: LockVideoVoiceKey)
+    }
+    
+    if let storedUnlock = UserDefaults.standard.string(forKey: UnlockVideoVoiceKey) {
+      unlockVideoCommand = storedUnlock
+    } else {
+      UserDefaults.standard.set(unlockVideoCommand, forKey: UnlockVideoVoiceKey)
+    }
+    
+    if let storedCamera = UserDefaults.standard.string(forKey: ChangeCameraVoiceKey) {
+      changeCameraCommand = storedCamera
+    } else {
+      UserDefaults.standard.set(changeCameraCommand, forKey: ChangeCameraVoiceKey)
+    }
+    
+    if let storedPicture = UserDefaults.standard.string(forKey: TakePictureVoiceKey) {
+      takePictureCommand = storedPicture
+    } else {
+      UserDefaults.standard.set(takePictureCommand, forKey: TakePictureVoiceKey)
+    }
+    
+    if let storedAuto = UserDefaults.standard.string(forKey: AutoPictureVoiceKey) {
+      autoPictureCommand = storedAuto
+    } else {
+      UserDefaults.standard.set(autoPictureCommand, forKey: AutoPictureVoiceKey)
+    }
+    
+    if let storedAddress = UserDefaults.standard.string(forKey: AddressVoiceKey) {
+      addressCommand = storedAddress
+    } else {
+      UserDefaults.standard.set(addressCommand, forKey: AddressVoiceKey)
+    }
+    
+    if let storedSpeed = UserDefaults.standard.string(forKey: SpeedVoiceKey) {
+      speedCommand = storedSpeed
+    } else {
+      UserDefaults.standard.set(speedCommand, forKey: SpeedVoiceKey)
+    }
+    
+    if let storedAnswer = UserDefaults.standard.string(forKey: AnswerVoiceKey) {
+      answerCommand = storedAnswer
+    } else {
+      UserDefaults.standard.set(answerCommand, forKey: AnswerVoiceKey)
+    }
+    
+    UserDefaults.standard.synchronize()
+  }
+  
   func saveSettings() {
     captureManager?.typeCamera = settings.typeCamera
     captureManager?.minInterval = settings.minIntervalLocations
@@ -1250,7 +1338,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
 
   func synthezeReady() {
-    let myUtterance = AVSpeechUtterance(string: "Окей") // <==========
+    let myUtterance = AVSpeechUtterance(string: answerCommand)
     myUtterance.rate = 0.5
     synth.speak(myUtterance)
   }
@@ -1460,29 +1548,29 @@ extension CameraViewController {
   fileprivate func executeCommand(_ command: String) {
     let lowCommand = command.lowercased()
     switch lowCommand {
-      case "снимок":
+      case takePictureCommand:
         takePhoto()
         synthezeReady()
-      case "авто":
+      case autoPictureCommand:
         takeAutoPhoto()
         synthezeReady()
-      case "запись":
+      case recordVideoCommand:
         startRecordigByCommand()
         synthezeReady()
-      case "стоп":
+      case stopRecordCommand:
         stopRecordigByCommand()
         synthezeReady()
-      case "камера":
+      case changeCameraCommand:
         changeCamera()
         synthezeReady()
-      case "скорость":
+      case speedCommand:
         synthezeSpeed()
-      case "адрес":
+      case addressCommand:
         synthezeAddress(lastLocation)
-      case "блокировать":
+      case lockVideoCommand:
         lockVideo()
         synthezeReady()
-      case "разблокировать":
+      case unlockVideoCommand:
         unlockVideo()
         synthezeReady()
     default:
