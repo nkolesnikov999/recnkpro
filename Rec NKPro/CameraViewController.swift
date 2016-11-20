@@ -496,7 +496,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   }
   
   func checkFilesStopRecordingDueSpaceLimit() {
-    if (assetItemsList.count - LockedList.lockList.lockVideo.count) <= 1 { // <=========
+    if (assetItemsList.count - LockedList.lockList.lockVideo.count) <= 1 { // <======= Need check
       print("Assets: \(assetItemsList.count), Locked: \(LockedList.lockList.lockVideo.count)")
       drawControlView()
       recordButton.isEnabled = false
@@ -1329,7 +1329,7 @@ extension CameraViewController : CaptureManagerDelegate {
     let strNodata = NSLocalizedString("NoData", comment: "CameraVC: No data")
     if var strSpeed = speedLabel.text {
       if strSpeed == strNodata {
-        strSpeed = "Нет данных" // <==========
+        strSpeed = NSLocalizedString("No data", comment: "CameraVC: No data")
       }
       let myUtterance = AVSpeechUtterance(string: strSpeed)
       myUtterance.rate = 0.5
@@ -1338,7 +1338,7 @@ extension CameraViewController : CaptureManagerDelegate {
   }
   
   func synthezeAddress(_ location: CLLocation?) {
-    var address = "Не найден" // <==========
+    var address = NSLocalizedString("Not found", comment: "CameraVC: Not found")
     guard let location = location else {
       let myUtterance = AVSpeechUtterance(string: address)
       myUtterance.rate = 0.5
@@ -1415,7 +1415,7 @@ extension CameraViewController {
         switch authStatus {
         case .authorized:
           //self.recordButton.isEnabled = true
-          self.transcriptionOutputLabel.text = "Hi!" // <==========
+          self.transcriptionOutputLabel.text = NSLocalizedString("Hi!", comment: "CameraVC: Hi!")
           do {
             try self.startSpeechRecording()
           } catch let error {
@@ -1424,15 +1424,14 @@ extension CameraViewController {
 
         case .denied:
           //self.recordButton.isEnabled = false
-          self.transcriptionOutputLabel.text = "User denied access to speech recognition" // <==========
+          self.transcriptionOutputLabel.text = NSLocalizedString("Denied", comment: "CameraVC: Denied")
           
         case .restricted:
           //self.recordButton.isEnabled = false
-          self.transcriptionOutputLabel.text = "Speech recognition restricted on this device" // <==========
-          
+          self.transcriptionOutputLabel.text = NSLocalizedString("Restricted", comment: "CameraVC: Restricted")          
         case .notDetermined:
           //self.recordButton.isEnabled = false
-          self.transcriptionOutputLabel.text = "Speech recognition not yet authorized" // <==========
+          self.transcriptionOutputLabel.text = NSLocalizedString("Not authorized", comment: "CameraVC: Not authorized")
         }
       }
     }
@@ -1482,7 +1481,7 @@ extension CameraViewController {
         self.recognitionTask = nil
         
         //self.recordButton.isEnabled = true
-        self.transcriptionOutputLabel.text = "Tap" // <==========
+        self.transcriptionOutputLabel.text = NSLocalizedString("Tap", comment: "CameraVC: Tap")
         self.transcriptionOutputLabel.textColor = UIColor.yellow
       }
     }
@@ -1495,7 +1494,7 @@ extension CameraViewController {
     audioEngine.prepare()
     
     try audioEngine.start()
-    self.transcriptionOutputLabel.text = "Tell" // <==========
+    self.transcriptionOutputLabel.text = NSLocalizedString("Tell", comment: "CameraVC: Tell")
     self.transcriptionOutputLabel.textColor = UIColor.green
   }
   
@@ -1509,7 +1508,7 @@ extension CameraViewController {
       self.recognitionTask = nil
       
       //recordButton.isEnabled = false
-      self.transcriptionOutputLabel.text = "Stopping" // <==========
+      self.transcriptionOutputLabel.text = NSLocalizedString("Stopping", comment: "CameraVC: Stopping")
       self.transcriptionOutputLabel.textColor = UIColor.yellow
     }
     
@@ -1567,11 +1566,11 @@ extension CameraViewController: SFSpeechRecognizerDelegate {
   public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
     if available {
       //recordButton.isEnabled = true
-      self.transcriptionOutputLabel.text = "Tell" // <==========
+      self.transcriptionOutputLabel.text = NSLocalizedString("Tell", comment: "CameraVC: Tell")
       self.transcriptionOutputLabel.textColor = UIColor.green
     } else {
       //recordButton.isEnabled = false
-      self.transcriptionOutputLabel.text = "Not available" // <==========
+      self.transcriptionOutputLabel.text = NSLocalizedString("Not available", comment: "CameraVC: Not available")
       self.transcriptionOutputLabel.textColor = UIColor.red
     }
   }

@@ -275,7 +275,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
             
             if let adaptor = self.assetWriterInputPixelBufferAdaptor {
               if !adaptor.append(buffer, withPresentationTime: timestamp) {
-                print("Timestamp error: \(timestamp) <=======================")
+                // print("Timestamp error: \(timestamp) <=======================")
               } else {
                 // print("Timestamp: \(timestamp)")
               }

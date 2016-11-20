@@ -351,8 +351,8 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
       style: .cancel, handler: {
       (alert: UIAlertAction!) -> Void in
     })
-    
-    let lockAction = UIAlertAction(title: "Lock", style: .default, handler: { // <==========
+    let lockStr = NSLocalizedString("Lock", comment: "AssetsVC: Lock")
+    let lockAction = UIAlertAction(title: lockStr, style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
       if IAPHelper.iapHelper.setFullVersion {
         // Lock file
@@ -367,7 +367,8 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
       }
     })
     
-    let unlockAction = UIAlertAction(title: "Unock", style: .default, handler: { // <==========
+    let unlockStr = NSLocalizedString("Unock", comment: "AssetsVC: Unlock")
+    let unlockAction = UIAlertAction(title: unlockStr, style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
       // Unock file
       asset.isLocked = false

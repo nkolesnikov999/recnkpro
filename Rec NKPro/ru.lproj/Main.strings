@@ -11,9 +11,6 @@
 /* Class = "UINavigationItem"; title = "Videos"; ObjectID = "3vp-Mc-V76"; */
 "3vp-Mc-V76.title" = "Видео";
 
-/* Class = "UILabel"; text = "Subtitle"; ObjectID = "4bB-aA-DRS"; */
-"4bB-aA-DRS.text" = "Subtitle";
-
 /* Class = "UIButton"; normalTitle = "Reset"; ObjectID = "5MK-5u-Y4E"; */
 "5MK-5u-Y4E.normalTitle" = "Сброс";
 
@@ -26,17 +23,32 @@
 /* Class = "UILabel"; text = "Text"; ObjectID = "72w-Ec-285"; */
 "72w-Ec-285.text" = "Текст";
 
+/* Class = "UILabel"; text = "Title"; ObjectID = "85p-wW-LDy"; */
+"85p-wW-LDy.text" = "Title";
+
 /* Class = "UILabel"; text = "Loading..."; ObjectID = "8f3-Qe-Zvz"; */
 "8f3-Qe-Zvz.text" = "Загрузка...";
+
+/* Class = "UILabel"; text = "Auto Picture:"; ObjectID = "BGo-7I-cty"; */
+"BGo-7I-cty.text" = "Авто Снимок:";
 
 /* Class = "UIBarButtonItem"; title = "< Back"; ObjectID = "CDw-GV-ACF"; */
 "CDw-GV-ACF.title" = "< Назад";
 
+/* Class = "UILabel"; text = "Change Camera:"; ObjectID = "CGg-Cz-cSZ"; */
+"CGg-Cz-cSZ.text" = "Смена Камеры:";
+
 /* Class = "UILabel"; text = "Autofocusing:"; ObjectID = "CHg-ar-HDg"; */
 "CHg-ar-HDg.text" = "Автофокус:";
 
+/* Class = "UILabel"; text = "Answer:"; ObjectID = "DoU-HY-2iM"; */
+"DoU-HY-2iM.text" = "Ответ:";
+
 /* Class = "UILabel"; text = "Camera:"; ObjectID = "EFO-Mk-ldW"; */
 "EFO-Mk-ldW.text" = "Камера:";
+
+/* Class = "UILabel"; text = "Say Speed:"; ObjectID = "EGT-0x-B1f"; */
+"EGT-0x-B1f.text" = "Скорость:";
 
 /* Class = "UITableViewSection"; headerTitle = "Location"; ObjectID = "Fnl-Ca-9ge"; */
 "Fnl-Ca-9ge.headerTitle" = "Локация";
@@ -68,6 +80,9 @@
 /* Class = "UILabel"; text = "km/h"; ObjectID = "L6G-H7-qG1"; */
 "L6G-H7-qG1.text" = "км/ч";
 
+/* Class = "UILabel"; text = "Record Video:"; ObjectID = "LJf-dM-oD8"; */
+"LJf-dM-oD8.text" = "Запись Видео:";
+
 /* Class = "UILabel"; text = "100 m"; ObjectID = "LZB-Xi-JNG"; */
 "LZB-Xi-JNG.text" = "100 м";
 
@@ -79,6 +94,9 @@
 
 /* Class = "UILabel"; text = "Min Interval:"; ObjectID = "O1I-gw-ubP"; */
 "O1I-gw-ubP.text" = "Мин интервал:";
+
+/* Class = "UILabel"; text = "Lock Video:"; ObjectID = "PMD-VV-ps3"; */
+"PMD-VV-ps3.text" = "Блок Видео:";
 
 /* Class = "UIButton"; normalTitle = "< Back"; ObjectID = "RUw-aN-7V3"; */
 "RUw-aN-7V3.normalTitle" = "< Назад";
@@ -98,8 +116,11 @@
 /* Class = "UILabel"; text = "Logotype:"; ObjectID = "TE0-t9-k61"; */
 "TE0-t9-k61.text" = "Логотип:";
 
-/* Class = "UILabel"; text = "Title"; ObjectID = "VHf-3D-frw"; */
-"VHf-3D-frw.text" = "Title";
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "Tlf-22-YjK"; */
+"Tlf-22-YjK.text" = "Subtitle";
+
+/* Class = "UILabel"; text = "OFF"; ObjectID = "VTp-Pl-io3"; */
+"VTp-Pl-io3.text" = "Выкл";
 
 /* Class = "UITabBarItem"; title = "Camera"; ObjectID = "Vbd-jF-gBE"; */
 "Vbd-jF-gBE.title" = "Камера";
@@ -131,11 +152,20 @@
 /* Class = "UIButton"; normalTitle = "< Back"; ObjectID = "d8R-lk-vqK"; */
 "d8R-lk-vqK.normalTitle" = "< Назад";
 
+/* Class = "UILabel"; text = "Say Address:"; ObjectID = "dPO-da-wjF"; */
+"dPO-da-wjF.text" = "Адрес:";
+
 /* Class = "UILabel"; text = "Resolution:"; ObjectID = "ffM-sO-38I"; */
 "ffM-sO-38I.text" = "Разрешение:";
 
+/* Class = "UILabel"; text = "Take Picture:"; ObjectID = "g1C-RN-q6g"; */
+"g1C-RN-q6g.text" = "Сделать Снимок:";
+
 /* Class = "UILabel"; text = "Units:"; ObjectID = "gkR-4V-vtd"; */
 "gkR-4V-vtd.text" = "Ед измерения:";
+
+/* Class = "UIButton"; normalTitle = "Voice Control"; ObjectID = "irv-iP-f47"; */
+"irv-iP-f47.normalTitle" = "Голосовое Управление";
 
 /* Class = "UITableViewSection"; headerTitle = " Purchases"; ObjectID = "j5t-el-dSn"; */
 "j5t-el-dSn.headerTitle" = " Покупки";
@@ -155,11 +185,17 @@
 /* Class = "UILabel"; text = "Address"; ObjectID = "nJV-8t-5rQ"; */
 "nJV-8t-5rQ.text" = "Адрес";
 
+/* Class = "UIButton"; normalTitle = "Reset"; ObjectID = "oK6-Gq-gxE"; */
+"oK6-Gq-gxE.normalTitle" = "Сброс";
+
 /* Class = "UILabel"; text = "Title"; ObjectID = "oa5-Hr-ZBJ"; */
 "oa5-Hr-ZBJ.text" = "Title";
 
 /* Class = "UILabel"; text = "Max Recording Time:"; ObjectID = "pvf-QP-kmD"; */
 "pvf-QP-kmD.text" = "Макс время записи:";
+
+/* Class = "UILabel"; text = "Stop Recording:"; ObjectID = "uIB-eC-xby"; */
+"uIB-eC-xby.text" = "Останов Запись:";
 
 /* Class = "UILabel"; text = "20"; ObjectID = "ucM-IH-wQ6"; */
 "ucM-IH-wQ6.text" = "20";
@@ -170,8 +206,14 @@
 /* Class = "UILabel"; text = "Subtitle"; ObjectID = "wN9-dg-8iv"; */
 "wN9-dg-8iv.text" = "Subtitle";
 
+/* Class = "UITableViewController"; title = "Voice Control"; ObjectID = "yBE-Lh-nWy"; */
+"yBE-Lh-nWy.title" = "Голосовое Управление";
+
 /* Class = "UINavigationItem"; title = "Settings"; ObjectID = "yId-Ow-o07"; */
 "yId-Ow-o07.title" = "Настройки";
+
+/* Class = "UILabel"; text = "Unlock Video:"; ObjectID = "yaQ-gJ-SEc"; */
+"yaQ-gJ-SEc.text" = "Разблок Видео:";
 
 /* Class = "UISegmentedControl"; ydl-cg-1hO.segmentTitles[0] = "Front"; ObjectID = "ydl-cg-1hO"; */
 "ydl-cg-1hO.segmentTitles[0]" = "Прдн";
