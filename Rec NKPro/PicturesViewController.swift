@@ -152,7 +152,7 @@ class PicturesViewController: UITableViewController {
                                         let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
                                         if let image = image {
                                         let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
-                                          activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
+                                          // activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
                                           if let popoverController = activityVC.popoverPresentationController {
                                             let cell = tableView.cellForRow(at: indexPath)
                                             popoverController.sourceView = cell

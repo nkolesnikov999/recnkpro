@@ -288,6 +288,30 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
     let movieURL = asset.url
     let optionMenu = UIAlertController(title: asset.title, message: nil, preferredStyle: .actionSheet)
     
+    let shareAction = UIAlertAction(title: NSLocalizedString("Share", comment: "AssetsVC: Share"),
+                                    style: .default, handler: {
+                                      (alert: UIAlertAction!) -> Void in
+                                      if IAPHelper.iapHelper.setFullVersion {
+                                        let objectsToShare = [movieURL]
+                                        let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+                                        activityVC.setValue("Video", forKey: "subject")
+                                        // activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
+                                        if let popoverController = activityVC.popoverPresentationController {
+                                          let cell = tableView.cellForRow(at: indexPath)
+                                          popoverController.sourceView = cell
+                                          if let cell = cell {
+                                            popoverController.sourceRect = cell.bounds
+                                          }
+                                        }
+                                        defer {
+                                          self.present(activityVC, animated: true, completion: nil)
+                                        }
+                                        
+                                      } else {
+                                        self.showAlert()
+                                      }
+    })
+    
     let moveAction = UIAlertAction(title: NSLocalizedString("Move to Photo", comment: "AssetsVC: Move to Photo"),
       style: .default, handler: {
       (alert: UIAlertAction!) -> Void in
@@ -355,7 +379,7 @@ class AssetsViewController : UITableViewController, UINavigationControllerDelega
       }
     })
 
-    
+    optionMenu.addAction(shareAction)
     optionMenu.addAction(copyAction)
     
     if asset.isLocked {
