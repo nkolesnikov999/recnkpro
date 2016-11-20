@@ -20,6 +20,7 @@ import CoreLocation
 import AVFoundation
 import Speech
 import StoreKit
+import CallKit
 
 let OtherTimeKey = "OtherTimeKey"
 let FrontQualityModeKey = "FrontQualityModeKey"
@@ -71,7 +72,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
   var updateBatteryAndDiskTimer: Timer?
   var removeControlViewTimer: Timer?
   
-  var callCenter: CTCallCenter!
+  let callCenter = CXCallObserver()
   var assetItemsList: [AssetItem]!
   var picturesCount: Int = 0
   var odometer: Odometer!
@@ -212,10 +213,7 @@ class CameraViewController : UIViewController, SettingsControllerDelegate {
     // Load settings if they are not we'll use defaults that was define in Settings
     loadSettings()
     
-    callCenter = CTCallCenter()
-    callCenter.callEventHandler = { (call: CTCall) in
-      self.treatPhoneCall(call)
-    }
+    callCenter.setDelegate(self, queue: nil)
     
     speedLabelNoData()
     speedView.isHidden = false
@@ -1117,22 +1115,6 @@ extension CameraViewController : CaptureManagerDelegate {
     }
   }
   
-  func treatPhoneCall(_ call: CTCall) {
-    //print("CALL: \(call.callState)")
-    if let cm = captureManager {
-      if cm.recording {
-        if call.callState == CTCallStateIncoming {
-          cm.stopRecording()
-        }
-      }
-      if mustRecord {
-        if call.callState == CTCallStateDisconnected {
-          cm.startRecording()
-        }
-      }
-    }
-  }
-  
   func loadSettings() {
     
     let isOtherTime = UserDefaults.standard.bool(forKey: OtherTimeKey)
@@ -1645,3 +1627,20 @@ extension CameraViewController {
   
 }
 
+extension CameraViewController: CXCallObserverDelegate {
+  func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
+    //print("CALL: \(call)")
+    if let cm = captureManager {
+      if cm.recording {
+        if call.hasConnected {
+          cm.stopRecording()
+        }
+      }
+      if mustRecord {
+        if call.hasEnded {
+          cm.startRecording()
+        }
+      }
+    }
+  }
+}
