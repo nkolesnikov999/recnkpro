@@ -673,22 +673,28 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   func videoDeviceWithPosition(_ position: AVCaptureDevicePosition) -> AVCaptureDevice? {
     //print("CaptureManager.videoDeviceWithPosition")
-    let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! [AVCaptureDevice]
-    for device in devices {
-      if device.position == position {
-        return device
-      }
+    
+    var defaultVideoDevice: AVCaptureDevice?
+    
+    // Choose the back dual camera if available, otherwise default to a wide angle camera.
+    if let dualCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInDuoCamera, mediaType: AVMediaTypeVideo, position: position) {
+      defaultVideoDevice = dualCameraDevice
     }
-    return nil
+    else if let backCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: position) {
+      // If the back dual camera is not available, default to the back wide angle camera.
+      defaultVideoDevice = backCameraDevice
+    }
+    else if let frontCameraDevice = AVCaptureDevice.defaultDevice(withDeviceType: .builtInWideAngleCamera, mediaType: AVMediaTypeVideo, position: position) {
+      // In some cases where users break their phones, the back wide angle camera is not available. In this case, we should default to the front wide angle camera.
+      defaultVideoDevice = frontCameraDevice
+    }
+
+    return defaultVideoDevice
   }
   
   func audioDevice() -> AVCaptureDevice? {
     //print("CaptureManager.audioDevice")
-    let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeAudio) as! [AVCaptureDevice]
-    if devices.count > 0 {
-      return devices.first
-    }
-    return nil
+    return AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
   }
   
   func setupCaptureSession() {
