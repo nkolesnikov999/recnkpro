@@ -832,6 +832,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
     
     videoConnection = videoOut.connection(withMediaType: AVMediaTypeVideo)
+    if let connection = videoConnection {
+      if connection.isVideoStabilizationSupported {
+        connection.preferredVideoStabilizationMode = .auto
+      }
+    }
     videoOrientation = videoConnection?.videoOrientation
     
     photoOut = AVCaptureStillImageOutput()
