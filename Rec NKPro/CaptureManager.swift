@@ -120,7 +120,7 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   var videoDevice: AVCaptureDevice!
   var videoIn: AVCaptureDeviceInput!
   var videoOut: AVCaptureVideoDataOutput!
-  var photoOut: AVCaptureStillImageOutput!
+  var photoOut: AVCapturePhotoOutput!
   var captureSession: AVCaptureSession?
   var audioConnection: AVCaptureConnection?
   var videoConnection: AVCaptureConnection?
@@ -845,9 +845,9 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
     }
     videoOrientation = videoConnection?.videoOrientation
     
-    photoOut = AVCaptureStillImageOutput()
+    photoOut = AVCapturePhotoOutput()
+    
     if session.canAddOutput(photoOut) {
-      photoOut.outputSettings = [AVVideoCodecKey : AVVideoCodecJPEG]
       session.addOutput(photoOut)
     }
     
@@ -858,57 +858,11 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   }
   
   func snapImage() {
-    
-    photoConnection?.videoOrientation = referenceOrientation
-    //print("ReferenceOrientation: \(referenceOrientation.rawValue)")
-    
-    guard let photoConnection = self.photoConnection else { return }
-    
-    
-      self.photoOut.captureStillImageAsynchronously(from: photoConnection) {
-        imageDataSampleBuffer, error in
-        if let error = error {
-          print(error.localizedDescription)
-        } else {
-          self.imageCreateQueue!.async {
-          self.setupHeightAndWidth(imageDataSampleBuffer)
-          let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
-          
-          
-          if let inputImage = UIImage(data: imageData!) {
-            let inputBackImage = CIImage(image: inputImage)
-            var outputImage: CIImage?
-            if self.textOnVideo {
-              let filter = CIFilter(name: "CISourceOverCompositing")
-              filter?.setDefaults()
-              filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
-              filter?.setValue(self.ciInputImage, forKey: "inputImage")
-              outputImage = filter?.outputImage
-            } else {
-              outputImage = inputBackImage
-            }
-            
-            guard let savedCIImage = outputImage else { return }
-            
-            // 1
-            let context = CIContext(options:nil)
-            
-            // 2
-            let cgimg = context.createCGImage(savedCIImage, from: savedCIImage.extent)
-            
-            // 3
-            let newImage = UIImage(cgImage: cgimg!, scale: 1.0, orientation: inputImage.imageOrientation)
-            
-            DispatchQueue.main.async {
-              self.delegate?.iconsImage = newImage.thumbnailOfSize(CGSize(width: 48, height: 48))
-            }
-
-            let picture = Picture(image: newImage, date: Date(), location: self.location)
-            self.delegate?.picture = picture
-            
-          }
-        }
-      }
+    self.imageCreateQueue!.async {
+      guard let photoConnection = self.photoConnection else { return }
+      photoConnection.videoOrientation = self.referenceOrientation
+      let settingsPhoto = AVCapturePhotoSettings()
+      self.photoOut.capturePhoto(with: settingsPhoto, delegate: self)
     }
     
   }
@@ -1155,4 +1109,48 @@ extension CaptureManager : CLLocationManagerDelegate {
   }
 }
 
+extension CaptureManager: AVCapturePhotoCaptureDelegate {
+  
+  func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+    if let photoSampleBuffer = photoSampleBuffer {
+      self.setupHeightAndWidth(photoSampleBuffer)
+      let imageData  = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+      if let inputImage = UIImage(data: imageData!) {
+        let inputBackImage = CIImage(image: inputImage)
+        var outputImage: CIImage?
+        if self.textOnVideo {
+          let filter = CIFilter(name: "CISourceOverCompositing")
+          filter?.setDefaults()
+          filter?.setValue(inputBackImage, forKey: "inputBackgroundImage")
+          filter?.setValue(self.ciInputImage, forKey: "inputImage")
+          outputImage = filter?.outputImage
+        } else {
+          outputImage = inputBackImage
+        }
+        
+        guard let savedCIImage = outputImage else { return }
+        
+        // 1
+        let context = CIContext(options:nil)
+        
+        // 2
+        let cgimg = context.createCGImage(savedCIImage, from: savedCIImage.extent)
+        
+        // 3
+        let newImage = UIImage(cgImage: cgimg!, scale: 1.0, orientation: inputImage.imageOrientation)
+        
+        DispatchQueue.main.async {
+          self.delegate?.iconsImage = newImage.thumbnailOfSize(CGSize(width: 48, height: 48))
+        }
+        
+        let picture = Picture(image: newImage, date: Date(), location: self.location)
+        self.delegate?.picture = picture
+      }
+    }
+    else {
+      print("Error capturing photo: \(error)")
+      return
+    }
+  }
 
+}

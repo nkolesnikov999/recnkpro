@@ -149,7 +149,7 @@ class PicturesViewController: UITableViewController {
                                         if let location = picture.location {
                                           locationMessage = self.coordinateStringFrom(location)
                                         }
-                                        let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
+                                        let message = dateString + picture.address + "\n" + locationMessage
                                         if let image = image {
                                         let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
                                           // activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
