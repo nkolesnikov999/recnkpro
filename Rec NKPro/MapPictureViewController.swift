@@ -101,7 +101,7 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
         if let location = picture.location {
           locationMessage = coordinateStringFrom(location)
         }
-        let message = dateString + picture.address + "\n" + locationMessage + "\nhttp://nkpro.net"
+        let message = dateString + picture.address + "\n" + locationMessage
         if let image = image {
           let activityVC = UIActivityViewController(activityItems: [message,image], applicationActivities: nil)
           activityVC.excludedActivityTypes = [UIActivityType.saveToCameraRoll]
@@ -142,12 +142,19 @@ class MapPictureViewController: UIViewController, PicturePageViewControllerDeleg
   
   func showAlert() {
     
-    let message = NSLocalizedString("For running this function you need to go to Settings and buy Full Version", comment: "PictureVC FullVersion")
+    let message = NSLocalizedString("For running this function you need to buy Full Version\n", comment: "SettingVC Error-Message") + IAPHelper.iapHelper.price
     
     let alert = UIAlertController(title: NSLocalizedString("Message", comment: "SettingVC Error-Title"), message: message, preferredStyle: .alert)
     
-    let cancelAction = UIAlertAction(title: NSLocalizedString("OK", comment: "SettingVC Error-OK"), style: .default) { (action: UIAlertAction!) -> Void in
-      
+    let buyAction = UIAlertAction(title: NSLocalizedString("Buy", comment: "CameraVC Alert-Buy"), style: .default) { (action: UIAlertAction!) -> Void in
+      guard let fullVersionProduct = IAPHelper.iapHelper.fullVersionProduct else { return }
+      IAPHelper.iapHelper.buyProduct(fullVersionProduct)
+    }
+    
+    let cancelAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: "CameraVC Alert-Cancel"), style: .cancel) { (action: UIAlertAction!) -> Void in
+    }
+    if IAPHelper.iapHelper.isSelling {
+      alert.addAction(buyAction)
     }
     alert.addAction(cancelAction)
     self.present(alert, animated: true, completion: nil)
