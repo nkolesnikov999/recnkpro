@@ -47,16 +47,17 @@ class CaptureManager : NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, A
   
   var typeCamera: TypeCamera! {
     didSet {
-      // Проблема при переходе с задней 1080 на перед, сначала поменяем разрешение на medium
+      // Проблема при переходе с задней 1080 на переднюю, сначала поменяем разрешение на medium
       if typeCamera == .front && delegate?.settings.backQualityMode == .high {
-        //print("ALERT: Change resolution for back camera")
-        delegate?.settings.typeCamera = .back
         typeCamera = .back
         delegate?.settings.backQualityMode = .medium
-        //self.delegate?.showAlert(title: "Warning", message: "Change resolution for back camera")
+        changeTypeCamera()
+        typeCamera = .front
+      }
+      if delegate?.settings.frontQualityMode == .high {
+        delegate?.settings.frontQualityMode = .medium
       }
       changeTypeCamera()
-      
     }
   }
   

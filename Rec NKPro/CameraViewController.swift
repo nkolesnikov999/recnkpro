@@ -1074,7 +1074,7 @@ extension CameraViewController : CaptureManagerDelegate {
     if let session = captureManager?.captureSession {
       switch value {
       case .high:
-        if session.canSetSessionPreset(AVCaptureSessionPreset1920x1080) {
+        if session.canSetSessionPreset(AVCaptureSessionPreset1920x1080) && settings.typeCamera == .back {
           session.sessionPreset = AVCaptureSessionPreset1920x1080
           captureManager?.scaleText = 2
           value = .high
